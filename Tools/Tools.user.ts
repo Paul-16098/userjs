@@ -1,0 +1,253 @@
+// ==UserScript==
+// @name         Tools
+// @namespace    Paul-16098
+// @description  paul Tools
+// @version      2.2.10.0
+// @match        *://*/*
+// @author       paul
+// @license      MIT
+// @grant        GM_getValue
+// @run-at       document-start
+// @grant        unsafeWindow
+// @supportURL   https://github.com/Paul-16098/vs_code/issues/
+// @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
+// @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
+// @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
+// ==/UserScript==
+
+const _unsafeWindow =
+  (() => {
+    if (!(typeof unsafeWindow === "undefined")) {
+      return unsafeWindow;
+    }
+  })() ??
+  window ??
+  globalThis; //兼容 ios userscripts 的寫法
+
+const IS_DEBUG_LOG: boolean = GM_getValue("debug.debug_log", false);
+
+function setGM() {
+  let debug = console.debug;
+  {
+    // #tag init set gm init
+    var _GM_xmlhttpRequest: Function,
+      _GM_registerMenuCommand: Function,
+      _GM_notification: Function,
+      _GM_addStyle: Function,
+      _GM_openInTab: Function,
+      _GM_info: object,
+      _GM_setClipboard: Function;
+    {
+      // #tag _GM_xmlhttpRequest
+      if (typeof GM_xmlhttpRequest !== "undefined") {
+        _GM_xmlhttpRequest = GM_xmlhttpRequest;
+      } else if (
+        typeof GM !== "undefined" &&
+        typeof GM.xmlHttpRequest !== "undefined"
+      ) {
+        _GM_xmlhttpRequest = GM.xmlHttpRequest;
+      } else {
+        _GM_xmlhttpRequest = (f: {
+          url: string | URL | Request;
+          method: any;
+          data: any;
+          headers: any;
+          onload: (arg0: { response: string }) => any;
+          onerror: () => any;
+        }) => {
+          fetch(f.url, {
+            method: f.method || "GET",
+            body: f.data,
+            headers: f.headers,
+          })
+            .then((response) => response.text())
+            .then((data) => {
+              f.onload && f.onload({ response: data });
+            })
+            .catch(f.onerror && f.onerror());
+        };
+      }
+    }
+    {
+      // #tag _GM_registerMenuCommand
+      if (typeof GM_registerMenuCommand !== "undefined") {
+        _GM_registerMenuCommand = GM_registerMenuCommand;
+      } else if (
+        typeof GM !== "undefined" &&
+        typeof GM.registerMenuCommand !== "undefined"
+      ) {
+        _GM_registerMenuCommand = GM.registerMenuCommand;
+      } else {
+        _GM_registerMenuCommand = (s: any, f: any) => {
+          debug(s);
+          debug(f);
+        };
+      }
+    }
+    {
+      // #tag _GM_info
+      if (typeof GM_info !== "undefined") {
+        _GM_info = GM_info;
+      } else if (typeof GM !== "undefined" && typeof GM.info !== "undefined") {
+        _GM_info = GM.info;
+      } else {
+        _GM_info = { script: {} };
+      }
+    }
+    {
+      // #tag _GM_notification
+      if (typeof GM_notification !== "undefined") {
+        _GM_notification = GM_notification;
+      } else if (
+        typeof GM !== "undefined" &&
+        typeof GM.notification !== "undefined"
+      ) {
+        _GM_notification = GM.notification;
+      } else {
+        _GM_notification = (s: { text: any }) => {
+          alert("_GM_notification: " + String(s.text || s));
+        };
+      }
+    }
+    {
+      // #tag _GM_openInTab
+      if (typeof GM_openInTab !== "undefined") {
+        _GM_openInTab = GM_openInTab;
+      } else if (
+        typeof GM !== "undefined" &&
+        typeof GM.openInTab !== "undefined"
+      ) {
+        _GM_openInTab = GM.openInTab;
+      } else {
+        _GM_openInTab = (s: string | URL | undefined, t: any) => {
+          window.open(s);
+          debug(t);
+        };
+      }
+    }
+    {
+      // #tag _GM_addStyle
+      if (typeof GM_addStyle !== "undefined") {
+        _GM_addStyle = GM_addStyle;
+      } else if (
+        typeof GM !== "undefined" &&
+        typeof GM.addStyle !== "undefined"
+      ) {
+        _GM_addStyle = GM.addStyle;
+      } else {
+        _GM_addStyle = (CssStr: string) => {
+          let styleEle = document.createElement("style");
+          styleEle.classList.add("_GM_addStyle");
+          styleEle.innerHTML = CssStr;
+          document.head.appendChild(styleEle);
+          return styleEle;
+        };
+      }
+    }
+    {
+      // #tag _GM_setClipboard
+      if (typeof GM_setClipboard !== "undefined") {
+        _GM_setClipboard = GM_setClipboard;
+      } else if (
+        typeof GM !== "undefined" &&
+        typeof GM.setClipboard !== "undefined"
+      ) {
+        _GM_setClipboard = GM.setClipboard;
+      } else {
+        _GM_setClipboard = (s: any, i: any) => {
+          debug(s);
+          debug(i);
+        };
+      }
+    }
+  }
+}
+function remove_ele(...args: string[]) {
+  try {
+    if (args && args.length > 0) {
+      args.forEach((args) => {
+        if (IS_DEBUG_LOG) {
+          console.log("args: ", args);
+          console.log(
+            "document.querySelectorAll(args): ",
+            document.querySelectorAll(args)
+          );
+        }
+        if (document.querySelectorAll(args).length !== 0) {
+          document.querySelectorAll(args).forEach((ele) => {
+            ele.remove();
+          });
+        } else {
+          console.debug(args, "is not a Html Element.");
+        }
+      });
+    } else {
+      throw new Error(
+        "fn remove error, args is not a array or args.length =< 0"
+      );
+    }
+  } catch (e) {
+    console.error(e);
+    return [false, args, e];
+  }
+  return [true, args];
+}
+
+function setMenu(
+  name: string,
+  fn?: ((ev?: MouseEvent | KeyboardEvent) => void) | undefined,
+  showValueMapping?:
+    | {
+        [x: string]: string;
+      }
+    | undefined
+) {
+  let trueShowMapping = showValueMapping ?? {
+    true: "true",
+    false: "false",
+  };
+  let showName: string = name.replaceAll("_", " ");
+  let getValue: any = GM_getValue(name);
+  let showValue = trueShowMapping[getValue];
+  let trueFn =
+    fn ??
+    ((ev: MouseEvent | KeyboardEvent) => {
+      GM_setValue(name, !getValue);
+      window.location.reload();
+    });
+  return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
+}
+function newEval(args: string) {
+  // 檢查是否包含不允許的關鍵字或代碼
+  let bList: (string | RegExp)[] = [
+    "eval",
+    "function",
+    "let",
+    "var",
+    "window",
+    "document",
+  ];
+  bList.forEach(function (value) {
+    switch (typeof value) {
+      case "string": {
+        if (args.includes(value)) {
+          throw Error("不允許的字元或代碼: " + JSON.stringify(value));
+        }
+        break;
+      }
+      case "object": {
+        // 用於正則表達式的類型檢查
+        if (value instanceof RegExp) {
+          if (value.test(args)) {
+            throw Error("不允許的字元或代碼: " + JSON.stringify(value));
+          }
+          break;
+        }
+      }
+      default: {
+        break;
+      }
+    }
+  });
+  return new Function(`return (${args})`)();
+}
