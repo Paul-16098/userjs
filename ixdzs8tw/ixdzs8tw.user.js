@@ -16,37 +16,13 @@
 // @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/ixdzs8tw.user.js
 // @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/ixdzs8tw.user.js
 // ==/UserScript==
-// @ts-expect-error
-var ele = [];
-{
-    // @ts-expect-error
-    var _GM_addStyle;
-    {
-        if (typeof GM_addStyle !== "undefined") {
-            _GM_addStyle = GM_addStyle;
-        }
-        else if (typeof GM !== "undefined" &&
-            typeof GM.addStyle !== "undefined") {
-            _GM_addStyle = GM.addStyle;
-        }
-        else {
-            _GM_addStyle = function (CssStr) {
-                var styleEle = document.createElement("style");
-                styleEle.classList.add("_GM_addStyle");
-                styleEle.innerHTML = CssStr;
-                document.head.appendChild(styleEle);
-                return styleEle;
-            };
-        }
-    }
-}
-var url = window.location.href;
-var next_page_url = document.querySelector("body > div.page-d.page-turn > div > a.chapter-paging.chapter-next").href;
-// @ts-expect-error
-var pattern = {
+let ele = [];
+let url = window.location.href;
+let next_page_url = document.querySelector("body > div.page-d.page-turn > div > a.chapter-paging.chapter-next").href;
+let pattern = {
     book: {
         pattern: /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/(?!end)p[0-9]*\.html)$/gm,
-        is: function (url) {
+        is: (url) => {
             if (pattern.book.pattern.test(url)) {
                 return true;
             }
@@ -57,7 +33,7 @@ var pattern = {
     },
     info: {
         pattern: /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/)$/gm,
-        is: function (url) {
+        is: (url) => {
             if (pattern.info.pattern.test(url)) {
                 return true;
             }
@@ -68,7 +44,7 @@ var pattern = {
     },
     end: {
         pattern: /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/end\.html)$/gm,
-        is: function (url) {
+        is: (url) => {
             if (pattern.end.pattern.test(url)) {
                 return true;
             }
@@ -84,12 +60,19 @@ if (pattern.book.is(url)) {
         "#page-toolbar",
         "#page > article > section > p:nth-child(1)",
     ];
-    ele.forEach(function (ele) {
+    ele.forEach((ele) => {
         if (document.querySelector(ele)) {
             document.querySelector(ele).remove();
         }
     });
-    _GM_addStyle("\n    .page-content{\nmax-width: none;\npadding: 10px 15px;\ntransform: translateX(0px);\nbackground: #ffffff!important;\n}\n");
+    GM_addStyle(`
+    .page-content{
+max-width: none;
+padding: 10px 15px;
+transform: translateX(0px);
+background: #ffffff!important;
+}
+`);
 }
 if (pattern.end.is(url) || pattern.end.is(next_page_url)) {
     // console.log("end")
