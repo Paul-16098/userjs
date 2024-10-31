@@ -1,39 +1,39 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.4.1.0
+// @version      3.4.2.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
 // @match        https://69shux.com/txt/*/*
 // @match        https://69shux.com/txt/*/end.html
 // @match        https://69shux.com/book/*.htm*
-// @match        https://69shux.com/modules/article/bookcase.php
+// @match        https://69shux.com/modules/article/bookcase.php*
 // #tag www.69shu.top
 // @match        https://www.69shu.top/txt/*/*
 // @match        https://www.69shu.top/txt/*/end.html
 // @match        https://www.69shu.top/book/*.htm*
-// @match        https://www.69shu.top/modules/article/bookcase.php
+// @match        https://www.69shu.top/modules/article/bookcase.php*
 // #tag www.69shu.cx
 // @match        https://www.69shu.cx/txt/*/*
 // @match        https://www.69shu.cx/txt/*/end.html
 // @match        https://www.69shu.cx/book/*.htm*
-// @match        https://www.69shu.cx/modules/article/bookcase.php
+// @match        https://www.69shu.cx/modules/article/bookcase.php*
 // #tag 69shuba.cx
 // @match        https://69shuba.cx/txt/*/*
 // @match        https://69shuba.cx/txt/*/end.html
 // @match        https://69shuba.cx/book/*.htm*
-// @match        https://69shuba.cx/modules/article/bookcase.php
+// @match        https://69shuba.cx/modules/article/bookcase.php*
 // #tag www.69shuba.pro
 // @match        https://www.69shuba.pro/txt/*/*
 // @match        https://www.69shuba.pro/txt/*/end.html
 // @match        https://www.69shuba.pro/book/*.htm*
-// @match        https://www.69shuba.pro/modules/article/bookcase.php
+// @match        https://www.69shuba.pro/modules/article/bookcase.php*
 // #tag 69shuba.cx
 // @match        https://69shu.me/txt/*/*
 // @match        https://69shu.me/txt/*/end.html
 // @match        https://69shu.me/book/*.htm*
-// @match        https://69shu.me/modules/article/bookcase.php
+// @match        https://69shu.me/modules/article/bookcase.php*
 // #tag 69shuba.cx
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
@@ -44,14 +44,12 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_openInTab
 // @run-at       document-idle
-// @require      https://github.com/Paul-16098/vs_code/raw/dev/js/userjs/Tools/Tools.user.js
-// #@require      file:///C:/Users/p/Documents/git/vs_code/js/userjs/Tools/Tools.user.js
+// @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+// #@require      C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/vs_code/issues/
 // @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
 // ==/UserScript==
-// https://github.com/scriptscat/scriptcat/issues/264
-// ToDo 希望支持// @grant        window.close
 
 const Debug: boolean = GM_getValue("Debug", false);
 const IsEndClose: boolean = GM_getValue("IsEndClose", true);
@@ -327,6 +325,64 @@ if (data.Book.is()) {
 }
 if (data.IsBookshelf()) {
   // #tag is_bookshelf
+
+  (function () {
+    // bug: Decoder
+    let qValue = new URL(location.href).searchParams.get("q");
+    if (qValue !== null) {
+      new URL(location.href).searchParams.has;
+      let ele = document.querySelector(
+        "body > header > div > form > div > div > input[type=text]:nth-child(2)"
+      ) as HTMLInputElement;
+      ele.value = qValue;
+
+      const encoder = new TextEncoder(); // 用於編碼字符串
+      const decoder = new TextDecoder("gbk"); // 用於解碼 GBK 編碼的內容
+
+      // 假設的搜索值
+      const searchValue = qValue;
+      const searchtype = "all";
+      const requestData = new URLSearchParams({
+        searchkey: searchValue,
+        searchtype: searchtype,
+      }).toString(); // 將數據轉換為 URL 查詢字串
+
+      // 將請求數據轉換為 ArrayBuffer
+      const encodedData = encoder.encode(requestData); // 使用 TextEncoder 進行編碼
+
+      // 發送請求
+      fetch("https://69shuba.cx/modules/article/search.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: encodedData, // 將編碼後的數據作為請求體
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("網絡響應不是 OK");
+          }
+          // 將響應轉換為 ArrayBuffer
+          return response.arrayBuffer();
+        })
+        .then((buffer) => {
+          // 使用 TextDecoder 進行解碼
+          let html = decoder.decode(buffer);
+          // html.replaceAll('<meta charset="gbk">', '<meta charset="utf-8">');
+
+          // const newWindow = window.open() as Window; // 開啟新窗口
+          const newWindow = window;
+          newWindow.document.open(); // 打開文檔流
+          newWindow.document.write(html); // 寫入返回的 HTML
+          newWindow.document.close(); // 關閉文檔流
+        })
+        .catch((error) => {
+          console.error("發生錯誤:", error);
+        });
+      // window.close();
+    }
+  });
+
   interface Type__BookData {
     updata: {
       HTML_obj: Element;
