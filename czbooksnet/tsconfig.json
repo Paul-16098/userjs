@@ -11,7 +11,8 @@
     "target": "ESNext",
     "module": "commonjs",
     "outDir": ".",
-    "strict": true
+    "strict": true,
+    "declaration": true
   },
   "exclude": ["node_modules", "**/node_modules/*", "./userjs"]
 }

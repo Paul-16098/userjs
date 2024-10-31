@@ -23,10 +23,10 @@ const _unsafeWindow = (() => {
     window ??
     globalThis; //兼容 ios userscripts 的寫法
 const IS_DEBUG_LOG = GM_getValue("debug.debug_log", false);
-function set_gm() {
+function setGM() {
     let debug = console.debug;
     {
-        // #tag SET_GM_INIT
+        // #tag init set gm init
         var _GM_xmlhttpRequest, _GM_registerMenuCommand, _GM_notification, _GM_addStyle, _GM_openInTab, _GM_info, _GM_setClipboard;
         {
             // #tag _GM_xmlhttpRequest
@@ -190,5 +190,39 @@ function setMenu(name, fn, showValueMapping) {
             window.location.reload();
         });
     return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
+}
+function newEval(args) {
+    // 檢查是否包含不允許的關鍵字或代碼
+    let bList = [
+        "eval",
+        "function",
+        "let",
+        "var",
+        "window",
+        "document",
+    ];
+    bList.forEach(function (value) {
+        switch (typeof value) {
+            case "string": {
+                if (args.includes(value)) {
+                    throw Error("不允許的字元或代碼: " + JSON.stringify(value));
+                }
+                break;
+            }
+            case "object": {
+                // 用於正則表達式的類型檢查
+                if (value instanceof RegExp) {
+                    if (value.test(args)) {
+                        throw Error("不允許的字元或代碼: " + JSON.stringify(value));
+                    }
+                    break;
+                }
+            }
+            default: {
+                break;
+            }
+        }
+    });
+    return new Function(`return (${args})`)();
 }
 //# sourceMappingURL=Tools.user.js.map

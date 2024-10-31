@@ -1,7 +1,8 @@
+/// <reference path = "./../Tools/Tools.user.d.ts" />
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.4.2.0
+// @version      3.4.3.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -61,32 +62,43 @@ const HookAlertBlockade: any[][] = GM_getValue("HookAlertBlockade", [
 ]);
 
 let data = {
-  IsBookshelf: (href: string = window.location.href): boolean => {
+  Has_bookinfo: function (): boolean {
+    return typeof bookinfo !== "undefined";
+  },
+  IsBookshelf: function (href: string = window.location.href): boolean {
     let pathname: string = new URL(href).pathname;
     return pathname === "/modules/article/bookcase.php";
   },
   Book: {
-    get_aid: function (href: string = window.location.href): string {
-      return bookinfo.articleid;
+    GetAid: function (href: string = window.location.href): string {
+      if (data.Has_bookinfo()) {
+        return bookinfo.articleid;
+      } else {
+        return href.split("/")[4];
+      }
     },
-    get_cid: function (href = window.location.href): string {
-      return bookinfo.chapterid;
+    GetCid: function (href = window.location.href): string {
+      if (data.Has_bookinfo()) {
+        return bookinfo.chapterid;
+      } else {
+        return href.split("/")[5];
+      }
     },
     pattern: /^\/txt\/[0-9]+\/[0-9]+$/m,
-    is: function (href: string = window.location.href): boolean {
+    Is: function (href: string = window.location.href): boolean {
       let pathname: string = new URL(href).pathname;
       return this.pattern.test(pathname);
     },
   },
   Info: {
     pattern: /^\/book\/[0-9]+\.htm$/m,
-    is: function (href: string = window.location.href): boolean {
+    Is: function (href: string = window.location.href): boolean {
       let pathname: string = new URL(href).pathname;
       return this.pattern.test(pathname);
     },
   },
   End: {
-    is: function (href: string = window.location.href): boolean {
+    Is: function (href: string = window.location.href): boolean {
       if (new URL(href).searchParams.get("FormTitle") === "false") {
         if (Debug) {
           console.log("b#searchParams.end;s#f");
@@ -94,13 +106,13 @@ let data = {
         return false;
       }
       if (new URL(href).searchParams.get("FromBook") === "true") {
-        return data.Info.is(href);
+        return data.Info.Is(href);
       }
       console.warn("err-2");
       return false;
     },
   },
-  GetNextPageUrl: (): string | undefined => {
+  GetNextPageUrl: function (): string | undefined {
     let ele = document.querySelector(
       "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
     ) as HTMLAnchorElement | null;
@@ -111,13 +123,13 @@ let data = {
     }
   },
   IsNextEnd: function (): boolean {
-    if (data.End.is(data.GetNextPageUrl())) {
+    if (data.End.Is(data.GetNextPageUrl())) {
       return true;
     }
     if (data.IsBookshelf(data.GetNextPageUrl())) {
       return false;
     }
-    if (data.Book.is(data.GetNextPageUrl())) {
+    if (data.Book.Is(data.GetNextPageUrl())) {
       return false;
     }
     if (Debug) {
@@ -153,7 +165,7 @@ if (GM_getValue("config.is_hook_alert", true)) {
 }
 
 let ele: string[] = [];
-if (data.Book.is()) {
+if (data.Book.Is()) {
   // #tag is_book
   if (Debug) {
     console.log("book");
@@ -250,7 +262,7 @@ if (data.Book.is()) {
   // 設置 <a> 元素的 href
   link.href = `${
     window.location.origin
-  }/book/${data.Book.get_aid()}.htm?FormTitle=false`;
+  }/book/${data.Book.GetAid()}.htm?FormTitle=false`;
 
   // 將 <a> 元素插入到 title 的父元素中
   title?.parentNode?.replaceChild(link, title);
@@ -260,13 +272,13 @@ if (data.Book.is()) {
   ) as HTMLAnchorElement;
   ele.href += "?FromBook=true";
 }
-if (data.Info.is()) {
+if (data.Info.Is()) {
   // #tag is_info
   if (Debug) {
     console.log("info");
   }
 }
-if (data.End.is()) {
+if (data.End.Is()) {
   // #tag is_end
   if (Debug) {
     console.log("end");
@@ -275,7 +287,7 @@ if (data.End.is()) {
     window.close();
   }
 }
-if (data.Book.is()) {
+if (data.Book.Is()) {
   if (data.IsNextEnd()) {
     // #tag is_next_end
     if (Debug) {
@@ -383,7 +395,7 @@ if (data.IsBookshelf()) {
     }
   });
 
-  interface Type__BookData {
+  interface BookData {
     updata: {
       HTML_obj: Element;
       url: {
@@ -409,9 +421,8 @@ if (data.IsBookshelf()) {
       book_ing_url: string;
     };
   }
-  let All_UpData_Url_Data: Type__BookData[] = [];
-  let all_updata_label: NodeListOf<Element> =
-    document.querySelectorAll(".newbox2 h3 label");
+  let All_UpData_Url_Data: BookData[] = [];
+  let all_updata_label = document.querySelectorAll(".newbox2 h3 label");
   if (Debug) {
     console.group();
   }
@@ -442,7 +453,7 @@ if (data.IsBookshelf()) {
     let updata_url_obj: URLSearchParams = new URLSearchParams(updata_url);
     //#endregion updata
 
-    let UpData_Url_Data: Type__BookData = {
+    let UpData_Url_Data: BookData = {
       updata: {
         HTML_obj: book_updata_HTML_obj,
         url: {
@@ -483,7 +494,7 @@ if (data.IsBookshelf()) {
         : `有${all_updata_label.length + "個"}`
     }更新`,
     () => {
-      All_UpData_Url_Data.forEach((UpData_Url_Data: Type__BookData) => {
+      All_UpData_Url_Data.forEach((UpData_Url_Data: BookData) => {
         GM_openInTab(UpData_Url_Data.updata.url.value);
       });
     }

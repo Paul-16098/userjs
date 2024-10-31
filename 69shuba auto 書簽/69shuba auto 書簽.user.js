@@ -1,8 +1,9 @@
 "use strict";
+/// <reference path = "./../Tools/Tools.user.d.ts" />
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.4.2.0
+// @version      3.4.3.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -60,32 +61,45 @@ const HookAlertBlockade = GM_getValue("HookAlertBlockade", [
     ["删除成功!"],
 ]);
 let data = {
-    IsBookshelf: (href = window.location.href) => {
+    Has_bookinfo: function () {
+        return typeof bookinfo !== "undefined";
+    },
+    IsBookshelf: function (href = window.location.href) {
         let pathname = new URL(href).pathname;
         return pathname === "/modules/article/bookcase.php";
     },
     Book: {
-        get_aid: function (href = window.location.href) {
-            return bookinfo.articleid;
+        GetAid: function (href = window.location.href) {
+            if (data.Has_bookinfo()) {
+                return bookinfo.articleid;
+            }
+            else {
+                return href.split("/")[4];
+            }
         },
-        get_cid: function (href = window.location.href) {
-            return bookinfo.chapterid;
+        GetCid: function (href = window.location.href) {
+            if (data.Has_bookinfo()) {
+                return bookinfo.chapterid;
+            }
+            else {
+                return href.split("/")[5];
+            }
         },
         pattern: /^\/txt\/[0-9]+\/[0-9]+$/m,
-        is: function (href = window.location.href) {
+        Is: function (href = window.location.href) {
             let pathname = new URL(href).pathname;
             return this.pattern.test(pathname);
         },
     },
     Info: {
         pattern: /^\/book\/[0-9]+\.htm$/m,
-        is: function (href = window.location.href) {
+        Is: function (href = window.location.href) {
             let pathname = new URL(href).pathname;
             return this.pattern.test(pathname);
         },
     },
     End: {
-        is: function (href = window.location.href) {
+        Is: function (href = window.location.href) {
             if (new URL(href).searchParams.get("FormTitle") === "false") {
                 if (Debug) {
                     console.log("b#searchParams.end;s#f");
@@ -93,13 +107,13 @@ let data = {
                 return false;
             }
             if (new URL(href).searchParams.get("FromBook") === "true") {
-                return data.Info.is(href);
+                return data.Info.Is(href);
             }
             console.warn("err-2");
             return false;
         },
     },
-    GetNextPageUrl: () => {
+    GetNextPageUrl: function () {
         let ele = document.querySelector("body > div.container > div.mybox > div.page1 > a:nth-child(4)");
         if (ele) {
             if (ele.href !== null) {
@@ -108,13 +122,13 @@ let data = {
         }
     },
     IsNextEnd: function () {
-        if (data.End.is(data.GetNextPageUrl())) {
+        if (data.End.Is(data.GetNextPageUrl())) {
             return true;
         }
         if (data.IsBookshelf(data.GetNextPageUrl())) {
             return false;
         }
-        if (data.Book.is(data.GetNextPageUrl())) {
+        if (data.Book.Is(data.GetNextPageUrl())) {
             return false;
         }
         if (Debug) {
@@ -147,7 +161,7 @@ if (GM_getValue("config.is_hook_alert", true)) {
     };
 }
 let ele = [];
-if (data.Book.is()) {
+if (data.Book.Is()) {
     // #tag is_book
     if (Debug) {
         console.log("book");
@@ -225,19 +239,19 @@ if (data.Book.is()) {
     // 設置 <a> 元素的 id 為 "title"
     link.id = "title";
     // 設置 <a> 元素的 href
-    link.href = `${window.location.origin}/book/${data.Book.get_aid()}.htm?FormTitle=false`;
+    link.href = `${window.location.origin}/book/${data.Book.GetAid()}.htm?FormTitle=false`;
     // 將 <a> 元素插入到 title 的父元素中
     title?.parentNode?.replaceChild(link, title);
     let ele = document.querySelector("body > div.container > div.mybox > div.page1 > a:nth-child(4)");
     ele.href += "?FromBook=true";
 }
-if (data.Info.is()) {
+if (data.Info.Is()) {
     // #tag is_info
     if (Debug) {
         console.log("info");
     }
 }
-if (data.End.is()) {
+if (data.End.Is()) {
     // #tag is_end
     if (Debug) {
         console.log("end");
@@ -246,7 +260,7 @@ if (data.End.is()) {
         window.close();
     }
 }
-if (data.Book.is()) {
+if (data.Book.Is()) {
     if (data.IsNextEnd()) {
         // #tag is_next_end
         if (Debug) {
