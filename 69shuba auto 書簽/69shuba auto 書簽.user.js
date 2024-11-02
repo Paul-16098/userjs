@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.4.3.0
+// @version      3.4.4.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -31,12 +31,16 @@
 // @match        https://www.69shuba.pro/txt/*/end.html
 // @match        https://www.69shuba.pro/book/*.htm*
 // @match        https://www.69shuba.pro/modules/article/bookcase.php*
-// #tag 69shuba.cx
+// #tag 69shuba.me
 // @match        https://69shu.me/txt/*/*
 // @match        https://69shu.me/txt/*/end.html
 // @match        https://69shu.me/book/*.htm*
 // @match        https://69shu.me/modules/article/bookcase.php*
-// #tag 69shuba.cx
+// #tag 69shu.biz
+// @match        https://69shu.biz/c/*/*
+// @match        https://69shu.biz/c/*/end.html
+// @match        https://69shu.biz/b/*.htm*
+// @match        https://69shu.biz/modules/article/bookcase.php*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
 // @grant        GM_addStyle
@@ -85,14 +89,16 @@ let data = {
                 return href.split("/")[5];
             }
         },
-        pattern: /^\/txt\/[0-9]+\/[0-9]+$/m,
+        pattern: /^\/(txt|c)\/[0-9]+\/[0-9]+(\.html)?$/m,
+        // /c/53475/35619708.html
+        // /txt/53475/35584194
         Is: function (href = window.location.href) {
             let pathname = new URL(href).pathname;
             return this.pattern.test(pathname);
         },
     },
     Info: {
-        pattern: /^\/book\/[0-9]+\.htm$/m,
+        pattern: /^\/(book|b)\/[0-9]+\.htm(l)?$/m,
         Is: function (href = window.location.href) {
             let pathname = new URL(href).pathname;
             return this.pattern.test(pathname);
@@ -137,32 +143,32 @@ let data = {
         return false;
     },
 };
-if (GM_getValue("config.is_hook_alert", true)) {
-    // #tag hook_alert
-    const _alert = alert;
-    _unsafeWindow.alert = (...message) => {
-        let blockade = HookAlertBlockade;
-        let r = false;
-        let n = 0;
-        blockade.forEach((blockade_ele) => {
-            n++;
-            if (JSON.stringify(message) === JSON.stringify(blockade_ele) ||
-                JSON.stringify(blockade_ele) === "*") {
-                console.log("hook alert: ", message);
-                r = true;
-            }
-        });
-        if (r === false) {
-            if (Debug) {
-                console.log("alert: ", message);
-            }
-            _alert(...message);
-        }
-    };
-}
 let ele = [];
 if (data.Book.Is()) {
     // #tag is_book
+    if (IsHookAlert) {
+        // #tag hook_alert
+        const _alert = alert;
+        _unsafeWindow.alert = (...message) => {
+            let blockade = HookAlertBlockade;
+            let r = false;
+            let n = 0;
+            blockade.forEach((blockade_ele) => {
+                n++;
+                if (JSON.stringify(message) === JSON.stringify(blockade_ele) ||
+                    JSON.stringify(blockade_ele) === "*") {
+                    console.log("hook alert: ", message);
+                    r = true;
+                }
+            });
+            if (r === false) {
+                if (Debug) {
+                    console.log("alert: ", message);
+                }
+                _alert(...message);
+            }
+        };
+    }
     if (Debug) {
         console.log("book");
     }
