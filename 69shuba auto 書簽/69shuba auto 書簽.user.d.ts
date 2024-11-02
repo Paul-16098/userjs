@@ -21,5 +21,6 @@ declare let data: {
     };
     GetNextPageUrl: () => string | undefined;
     IsNextEnd: () => boolean;
+    IsBiz: (host?: string) => boolean;
 };
 declare let ele: string[];

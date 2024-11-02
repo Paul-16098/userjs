@@ -144,6 +144,9 @@ let data = {
     }
     return false;
   },
+  IsBiz: function (host = location.host): boolean {
+    return host === "69shu.biz";
+  },
 };
 
 let ele: string[] = [];
@@ -244,7 +247,7 @@ if (data.Book.Is()) {
   let link = document.createElement("a");
 
   // 設置 <a> 元素的內容為 bookinfo.articlename
-  if ((typeof bookinfo != "undefined" && bookinfo) ?? false) {
+  if (data.Has_bookinfo()) {
     if (Debug) {
       console.log("user bookinfo.articlename");
     }
@@ -267,9 +270,9 @@ if (data.Book.Is()) {
   link.id = "title";
 
   // 設置 <a> 元素的 href
-  link.href = `${
-    window.location.origin
-  }/book/${data.Book.GetAid()}.htm?FormTitle=false`;
+  link.href = `${window.location.origin}/${
+    data.IsBiz() ? "b" : "book"
+  }/${data.Book.GetAid()}.${data.IsBiz() ? "html" : "htm"}?FormTitle=false`;
 
   // 將 <a> 元素插入到 title 的父元素中
   title?.parentNode?.replaceChild(link, title);
