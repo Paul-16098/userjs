@@ -15,21 +15,15 @@
 // @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
 // ==/UserScript==
 
-const _unsafeWindow =
-  (() => {
-    if (!(typeof unsafeWindow === "undefined")) {
-      return unsafeWindow;
-    }
-  })() ??
-  window ??
-  globalThis; //兼容 ios userscripts 的寫法
+const _unsafeWindow = unsafeWindow ?? window;
 
 const IS_DEBUG_LOG: boolean = GM_getValue("debug.debug_log", false);
 
+// 設置和初始化 GM API 的函數
 function setGM() {
   let debug = console.debug;
   {
-    // #tag init set gm init
+    // 初始化 GM API 相關的方法和信息
     var _GM_xmlhttpRequest: Function,
       _GM_registerMenuCommand: Function,
       _GM_notification: Function,
@@ -38,7 +32,7 @@ function setGM() {
       _GM_info: object,
       _GM_setClipboard: Function;
     {
-      // #tag _GM_xmlhttpRequest
+      // 處理 GM_xmlhttpRequest
       if (typeof GM_xmlhttpRequest !== "undefined") {
         _GM_xmlhttpRequest = GM_xmlhttpRequest;
       } else if (
@@ -69,7 +63,7 @@ function setGM() {
       }
     }
     {
-      // #tag _GM_registerMenuCommand
+      // 處理 GM_registerMenuCommand
       if (typeof GM_registerMenuCommand !== "undefined") {
         _GM_registerMenuCommand = GM_registerMenuCommand;
       } else if (
@@ -85,7 +79,7 @@ function setGM() {
       }
     }
     {
-      // #tag _GM_info
+      // 處理 GM_info
       if (typeof GM_info !== "undefined") {
         _GM_info = GM_info;
       } else if (typeof GM !== "undefined" && typeof GM.info !== "undefined") {
@@ -95,7 +89,7 @@ function setGM() {
       }
     }
     {
-      // #tag _GM_notification
+      // 處理 GM_notification
       if (typeof GM_notification !== "undefined") {
         _GM_notification = GM_notification;
       } else if (
@@ -110,7 +104,7 @@ function setGM() {
       }
     }
     {
-      // #tag _GM_openInTab
+      // 處理 GM_openInTab
       if (typeof GM_openInTab !== "undefined") {
         _GM_openInTab = GM_openInTab;
       } else if (
@@ -126,7 +120,7 @@ function setGM() {
       }
     }
     {
-      // #tag _GM_addStyle
+      // 處理 GM_addStyle
       if (typeof GM_addStyle !== "undefined") {
         _GM_addStyle = GM_addStyle;
       } else if (
@@ -145,7 +139,7 @@ function setGM() {
       }
     }
     {
-      // #tag _GM_setClipboard
+      // 處理 GM_setClipboard
       if (typeof GM_setClipboard !== "undefined") {
         _GM_setClipboard = GM_setClipboard;
       } else if (
@@ -162,7 +156,9 @@ function setGM() {
     }
   }
 }
-function remove_ele(...args: string[]) {
+
+// 從 DOM 中移除指定的元素
+function remove_ele(...args: Array<string>) {
   try {
     if (args && args.length > 0) {
       args.forEach((args) => {
@@ -193,6 +189,7 @@ function remove_ele(...args: string[]) {
   return [true, args];
 }
 
+// 設置菜單功能，允許註冊命令並處理顯示值的映射
 function setMenu(
   name: string,
   fn?: ((ev?: MouseEvent | KeyboardEvent) => void) | undefined,
@@ -202,6 +199,7 @@ function setMenu(
       }
     | undefined
 ) {
+  // 顯示值的映射
   let trueShowMapping = showValueMapping ?? {
     true: "true",
     false: "false",
@@ -217,9 +215,11 @@ function setMenu(
     });
   return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
-function newEval(args: string) {
+
+// 定義一個新的評估函數，用於執行傳入的字符串代碼
+function newEval(stringCode: string) {
   // 檢查是否包含不允許的關鍵字或代碼
-  let bList: (string | RegExp)[] = [
+  let bList: Array<string | RegExp> = [
     "eval",
     "function",
     "let",
@@ -227,10 +227,12 @@ function newEval(args: string) {
     "window",
     "document",
   ];
+  // 遍歷不允許的字元或代碼列表
   bList.forEach(function (value) {
     switch (typeof value) {
       case "string": {
-        if (args.includes(value)) {
+        // 檢查字符串是否包含不允許的字元
+        if (stringCode.includes(value)) {
           throw Error("不允許的字元或代碼: " + JSON.stringify(value));
         }
         break;
@@ -238,7 +240,8 @@ function newEval(args: string) {
       case "object": {
         // 用於正則表達式的類型檢查
         if (value instanceof RegExp) {
-          if (value.test(args)) {
+          // 檢查字符串是否匹配不允許的正則表達式
+          if (value.test(stringCode)) {
             throw Error("不允許的字元或代碼: " + JSON.stringify(value));
           }
           break;
@@ -249,5 +252,6 @@ function newEval(args: string) {
       }
     }
   });
-  return new Function(`return (${args})`)();
+  // 返回執行傳入字符串代碼的結果
+  return new Function(`return (${stringCode})`)();
 }

@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.4.3.0
+// @version      3.4.4.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -30,12 +30,17 @@
 // @match        https://www.69shuba.pro/txt/*/end.html
 // @match        https://www.69shuba.pro/book/*.htm*
 // @match        https://www.69shuba.pro/modules/article/bookcase.php*
-// #tag 69shuba.cx
+// #tag 69shuba.me
 // @match        https://69shu.me/txt/*/*
 // @match        https://69shu.me/txt/*/end.html
 // @match        https://69shu.me/book/*.htm*
 // @match        https://69shu.me/modules/article/bookcase.php*
-// #tag 69shuba.cx
+// #tag 69shu.biz
+// @match        https://69shu.biz/c/*/*
+// @match        https://69shu.biz/c/*/end.html
+// @match        https://69shu.biz/b/*.htm*
+// @match        https://69shu.biz/modules/article/bookcase.php*
+
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
 // @grant        GM_addStyle
@@ -56,7 +61,7 @@ const Debug: boolean = GM_getValue("Debug", false);
 const IsEndClose: boolean = GM_getValue("IsEndClose", true);
 const AutoAddBookcase: boolean = GM_getValue("AutoAddBookcase", true);
 const IsHookAlert: boolean = GM_getValue("IsHookAlert", true);
-const HookAlertBlockade: any[][] = GM_getValue("HookAlertBlockade", [
+const HookAlertBlockade: Array<Array<any>> = GM_getValue("HookAlertBlockade", [
   ["添加成功"],
   ["删除成功!"],
 ]);
@@ -84,14 +89,16 @@ let data = {
         return href.split("/")[5];
       }
     },
-    pattern: /^\/txt\/[0-9]+\/[0-9]+$/m,
+    pattern: /^\/(txt|c)\/[0-9]+\/[0-9]+(\.html)?$/m,
+    // /c/53475/35619708.html
+    // /txt/53475/35584194
     Is: function (href: string = window.location.href): boolean {
       let pathname: string = new URL(href).pathname;
       return this.pattern.test(pathname);
     },
   },
   Info: {
-    pattern: /^\/book\/[0-9]+\.htm$/m,
+    pattern: /^\/(book|b)\/[0-9]+\.htm(l)?$/m,
     Is: function (href: string = window.location.href): boolean {
       let pathname: string = new URL(href).pathname;
       return this.pattern.test(pathname);
@@ -137,36 +144,39 @@ let data = {
     }
     return false;
   },
+  IsBiz: function (host = location.host): boolean {
+    return host === "69shu.biz";
+  },
 };
-if (GM_getValue("config.is_hook_alert", true)) {
-  // #tag hook_alert
-  const _alert: Function = alert;
-  _unsafeWindow.alert = (...message: any) => {
-    let blockade: any[][] = HookAlertBlockade;
-    let r: boolean = false;
-    let n: number = 0;
-    blockade.forEach((blockade_ele) => {
-      n++;
-      if (
-        JSON.stringify(message) === JSON.stringify(blockade_ele) ||
-        JSON.stringify(blockade_ele) === "*"
-      ) {
-        console.log("hook alert: ", message);
-        r = true;
-      }
-    });
-    if (r === false) {
-      if (Debug) {
-        console.log("alert: ", message);
-      }
-      _alert(...message);
-    }
-  };
-}
 
-let ele: string[] = [];
+let ele: Array<string> = [];
 if (data.Book.Is()) {
   // #tag is_book
+  if (IsHookAlert) {
+    // #tag hook_alert
+    const _alert: Function = alert;
+    _unsafeWindow.alert = (...message: any) => {
+      let blockade: Array<Array<any>> = HookAlertBlockade;
+      let r: boolean = false;
+      let n: number = 0;
+      blockade.forEach((blockade_ele) => {
+        n++;
+        if (
+          JSON.stringify(message) === JSON.stringify(blockade_ele) ||
+          JSON.stringify(blockade_ele) === "*"
+        ) {
+          console.log("hook alert: ", message);
+          r = true;
+        }
+      });
+      if (r === false) {
+        if (Debug) {
+          console.log("alert: ", message);
+        }
+        _alert(...message);
+      }
+    };
+  }
   if (Debug) {
     console.log("book");
   }
@@ -237,7 +247,7 @@ if (data.Book.Is()) {
   let link = document.createElement("a");
 
   // 設置 <a> 元素的內容為 bookinfo.articlename
-  if ((typeof bookinfo != "undefined" && bookinfo) ?? false) {
+  if (data.Has_bookinfo()) {
     if (Debug) {
       console.log("user bookinfo.articlename");
     }
@@ -260,9 +270,9 @@ if (data.Book.Is()) {
   link.id = "title";
 
   // 設置 <a> 元素的 href
-  link.href = `${
-    window.location.origin
-  }/book/${data.Book.GetAid()}.htm?FormTitle=false`;
+  link.href = `${window.location.origin}/${
+    data.IsBiz() ? "b" : "book"
+  }/${data.Book.GetAid()}.${data.IsBiz() ? "html" : "htm"}?FormTitle=false`;
 
   // 將 <a> 元素插入到 title 的父元素中
   title?.parentNode?.replaceChild(link, title);
@@ -421,7 +431,7 @@ if (data.IsBookshelf()) {
       book_ing_url: string;
     };
   }
-  let All_UpData_Url_Data: BookData[] = [];
+  let All_UpData_Url_Data: Array<BookData> = [];
   let all_updata_label = document.querySelectorAll(".newbox2 h3 label");
   if (Debug) {
     console.group();
