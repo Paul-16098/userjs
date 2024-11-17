@@ -61,7 +61,7 @@ const Debug: boolean = GM_getValue("Debug", false);
 const IsEndClose: boolean = GM_getValue("IsEndClose", true);
 const AutoAddBookcase: boolean = GM_getValue("AutoAddBookcase", true);
 const IsHookAlert: boolean = GM_getValue("IsHookAlert", true);
-const HookAlertBlockade: any[][] = GM_getValue("HookAlertBlockade", [
+const HookAlertBlockade: Array<Array<any>> = GM_getValue("HookAlertBlockade", [
   ["添加成功"],
   ["删除成功!"],
 ]);
@@ -149,14 +149,14 @@ let data = {
   },
 };
 
-let ele: string[] = [];
+let ele: Array<string> = [];
 if (data.Book.Is()) {
   // #tag is_book
   if (IsHookAlert) {
     // #tag hook_alert
     const _alert: Function = alert;
     _unsafeWindow.alert = (...message: any) => {
-      let blockade: any[][] = HookAlertBlockade;
+      let blockade: Array<Array<any>> = HookAlertBlockade;
       let r: boolean = false;
       let n: number = 0;
       blockade.forEach((blockade_ele) => {
@@ -431,7 +431,7 @@ if (data.IsBookshelf()) {
       book_ing_url: string;
     };
   }
-  let All_UpData_Url_Data: BookData[] = [];
+  let All_UpData_Url_Data: Array<BookData> = [];
   let all_updata_label = document.querySelectorAll(".newbox2 h3 label");
   if (Debug) {
     console.group();

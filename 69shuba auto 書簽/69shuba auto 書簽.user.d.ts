@@ -2,7 +2,7 @@ declare const Debug: boolean;
 declare const IsEndClose: boolean;
 declare const AutoAddBookcase: boolean;
 declare const IsHookAlert: boolean;
-declare const HookAlertBlockade: any[][];
+declare const HookAlertBlockade: Array<Array<any>>;
 declare let data: {
     Has_bookinfo: () => boolean;
     IsBookshelf: (href?: string) => boolean;
@@ -23,4 +23,4 @@ declare let data: {
     IsNextEnd: () => boolean;
     IsBiz: (host?: string) => boolean;
 };
-declare let ele: string[];
+declare let ele: Array<string>;
