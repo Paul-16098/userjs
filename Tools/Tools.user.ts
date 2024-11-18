@@ -178,9 +178,7 @@ function remove_ele(...args: Array<string>) {
         }
       });
     } else {
-      throw new Error(
-        "fn remove error, args is not a array or args.length =< 0"
-      );
+      throw Error("fn remove error, args is not a array or args.length =< 0");
     }
   } catch (e) {
     console.error(e);
@@ -220,38 +218,40 @@ function setMenu(
 function newEval(stringCode: string) {
   // 檢查是否包含不允許的關鍵字或代碼
   let bList: Array<string | RegExp> = [
-    "eval",
-    "function",
+    "eval", // 防止执行恶意代码
+    "function", // 防止构造新的函数对象
     "let",
-    "var",
-    "window",
-    "document",
+    "var", // 防止变量声明
+    "document", // 防止 DOM 操作
+    "alert", // 防止弹窗
+    "navigator", // 防止获取浏览器相关信息
+    "localStorage",
+    "sessionStorage", // 防止访问浏览器的存储
+    "console", // 防止使用 console.log 或其他控制台方法
+    "XMLHttpRequest",
+    "fetch", // 防止发起网络请求
+    "import",
+    "export", // 防止模块导入和导出
+    "async",
+    "await", // 防止定义异步函数
+    "with", // 防止使用 with 语句
+    "Promise", // 防止使用 Promise，可能导致复杂的异步操作
+    /window\.[0-9a-zA-Z_]+ *=/, // 拉丁字符 (0-9,a-z,A-Z) 和下划线字符,对 window 对象的某个属性进行赋值
   ];
   // 遍歷不允許的字元或代碼列表
-  bList.forEach(function (value) {
-    switch (typeof value) {
-      case "string": {
-        // 檢查字符串是否包含不允許的字元
-        if (stringCode.includes(value)) {
-          throw Error("不允許的字元或代碼: " + JSON.stringify(value));
-        }
-        break;
+  for (const value of bList) {
+    if (typeof value === "string") {
+      if (stringCode.includes(value)) {
+        throw new Error(
+          `不允許的字元或代碼: ${JSON.stringify(value)},在代码: ${stringCode}`
+        );
       }
-      case "object": {
-        // 用於正則表達式的類型檢查
-        if (value instanceof RegExp) {
-          // 檢查字符串是否匹配不允許的正則表達式
-          if (value.test(stringCode)) {
-            throw Error("不允許的字元或代碼: " + JSON.stringify(value));
-          }
-          break;
-        }
-      }
-      default: {
-        break;
+    } else if (value instanceof RegExp) {
+      if (value.test(stringCode)) {
+        throw new Error(`不允許的字元或代碼: ${value},在代码: ${stringCode}`);
       }
     }
-  });
+  }
   // 返回執行傳入字符串代碼的結果
   return new Function(`return (${stringCode})`)();
 }
