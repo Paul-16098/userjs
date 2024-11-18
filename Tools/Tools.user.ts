@@ -261,3 +261,50 @@ function newEval(stringCode: string, safety: boolean = true) {
   // 返回執行傳入字符串代碼的結果
   return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
+
+// 定義一個接口 langJson，用於描述一個多語言的 JSON 對象
+interface langJson {
+  [lang: string]: {
+    [key: string]: string;
+  };
+}
+// 國際化類，用於處理多語言文本
+class i18n {
+  langJson: langJson; // 存儲語言映射的對象
+  langList: Array<string> = []; // 語言列表
+  constructor(langJson: langJson, lang: string | Array<string>) {
+    // 構造函數，接受語言和語言映射
+    this.langJson = langJson;
+    if (lang instanceof Array) {
+      // 如果傳入的是數組
+      this.langList.push(...lang);
+    } else if (typeof lang === "string") {
+      // 如果傳入的是單個語言
+      this.langList.push(lang);
+    }
+  }
+  // 根據鍵獲取對應的語言文本
+  get(key: string, ...args: Array<any>): string {
+    for (const lang of this.langList) {
+      // 遍歷語言列表
+      if (this.langJson[lang] && this.langJson[lang][key]) {
+        // 檢查語言映射中是否存在該鍵
+        let text = this.langJson[lang][key]; // 獲取對應的語言文本
+        if (args && args.length > 0) {
+          // 如果傳入了參數
+          text = text.replace(/{(\d+)}/g, (match, number) => {
+            if (number >= 0 && number < args.length) {
+              // 替換文本中的 {n} 參數
+              return typeof args[number] === "undefined" ? match : args[number];
+            }
+            return match;
+          });
+        }
+        return text;
+      }
+    }
+    return `{Translation not found for \`${key}\` in [${this.langList.join(
+      ", "
+    )}]}`;
+  }
+}
