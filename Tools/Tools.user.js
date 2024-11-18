@@ -163,7 +163,7 @@ function remove_ele(...args) {
             });
         }
         else {
-            throw new Error("fn remove error, args is not a array or args.length =< 0");
+            throw Error("fn remove error, args is not a array or args.length =< 0");
         }
     }
     catch (e) {
@@ -190,42 +190,45 @@ function setMenu(name, fn, showValueMapping) {
     return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
 // 定義一個新的評估函數，用於執行傳入的字符串代碼
-function newEval(stringCode) {
+function newEval(stringCode, safety = true) {
     // 檢查是否包含不允許的關鍵字或代碼
-    let bList = [
-        "eval",
-        "function",
+    const blackList = [
+        "eval", // 防止執行惡意代碼
+        "function", // 防止構造新的函數對象
         "let",
-        "var",
-        "window",
-        "document",
+        "var", // 防止變量聲明
+        "document", // 防止 DOM 操作
+        "alert", // 防止彈窗
+        "navigator", // 防止獲取瀏覽器相關信息
+        "localStorage",
+        "sessionStorage", // 防止訪問瀏覽器的存儲
+        "console", // 防止使用 console.log 或其他控制枱方法
+        "XMLHttpRequest",
+        "fetch", // 防止發起網絡請求
+        "import",
+        "export", // 防止模塊導入和導出
+        "async",
+        "await", // 防止定義異步函數
+        "with", // 防止使用 with 語句
+        "Promise", // 防止使用 Promise，可能導致複雜的異步操作
+        /window\.[0-9a-zA-Z_]+ *=/, // 檢查對 window 對象的屬性賦值
     ];
-    // 遍歷不允許的字元或代碼列表
-    bList.forEach(function (value) {
-        switch (typeof value) {
-            case "string": {
-                // 檢查字符串是否包含不允許的字元
+    if (safety) {
+        // 遍歷不允許的字元或代碼列表
+        for (const value of blackList) {
+            if (typeof value === "string") {
                 if (stringCode.includes(value)) {
-                    throw Error("不允許的字元或代碼: " + JSON.stringify(value));
-                }
-                break;
-            }
-            case "object": {
-                // 用於正則表達式的類型檢查
-                if (value instanceof RegExp) {
-                    // 檢查字符串是否匹配不允許的正則表達式
-                    if (value.test(stringCode)) {
-                        throw Error("不允許的字元或代碼: " + JSON.stringify(value));
-                    }
-                    break;
+                    throw new Error(`不允許的關鍵字或代碼: ${JSON.stringify(value)},在代碼: ${stringCode}`);
                 }
             }
-            default: {
-                break;
+            else if (value instanceof RegExp) {
+                if (value.test(stringCode)) {
+                    throw new Error(`不允許的關鍵字或代碼: ${value},在代碼: ${stringCode}`);
+                }
             }
         }
-    });
+    }
     // 返回執行傳入字符串代碼的結果
-    return new Function(`return (${stringCode})`)();
+    return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
 //# sourceMappingURL=Tools.user.js.map

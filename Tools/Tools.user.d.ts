@@ -5,4 +5,4 @@ declare function remove_ele(...args: Array<string>): unknown[];
 declare function setMenu(name: string, fn?: ((ev?: MouseEvent | KeyboardEvent) => void) | undefined, showValueMapping?: {
     [x: string]: string;
 } | undefined): number;
-declare function newEval(stringCode: string): any;
+declare function newEval(stringCode: string, safety?: boolean): any;

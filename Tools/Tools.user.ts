@@ -215,43 +215,49 @@ function setMenu(
 }
 
 // 定義一個新的評估函數，用於執行傳入的字符串代碼
-function newEval(stringCode: string) {
+function newEval(stringCode: string, safety: boolean = true) {
   // 檢查是否包含不允許的關鍵字或代碼
-  let bList: Array<string | RegExp> = [
-    "eval", // 防止执行恶意代码
-    "function", // 防止构造新的函数对象
+  const blackList: Array<string | RegExp> = [
+    "eval", // 防止執行惡意代碼
+    "function", // 防止構造新的函數對象
     "let",
-    "var", // 防止变量声明
+    "var", // 防止變量聲明
     "document", // 防止 DOM 操作
-    "alert", // 防止弹窗
-    "navigator", // 防止获取浏览器相关信息
+    "alert", // 防止彈窗
+    "navigator", // 防止獲取瀏覽器相關信息
     "localStorage",
-    "sessionStorage", // 防止访问浏览器的存储
-    "console", // 防止使用 console.log 或其他控制台方法
+    "sessionStorage", // 防止訪問瀏覽器的存儲
+    "console", // 防止使用 console.log 或其他控制枱方法
     "XMLHttpRequest",
-    "fetch", // 防止发起网络请求
+    "fetch", // 防止發起網絡請求
     "import",
-    "export", // 防止模块导入和导出
+    "export", // 防止模塊導入和導出
     "async",
-    "await", // 防止定义异步函数
-    "with", // 防止使用 with 语句
-    "Promise", // 防止使用 Promise，可能导致复杂的异步操作
-    /window\.[0-9a-zA-Z_]+ *=/, // 拉丁字符 (0-9,a-z,A-Z) 和下划线字符,对 window 对象的某个属性进行赋值
+    "await", // 防止定義異步函數
+    "with", // 防止使用 with 語句
+    "Promise", // 防止使用 Promise，可能導致複雜的異步操作
+    /window\.[0-9a-zA-Z_]+ *=/, // 檢查對 window 對象的屬性賦值
   ];
-  // 遍歷不允許的字元或代碼列表
-  for (const value of bList) {
-    if (typeof value === "string") {
-      if (stringCode.includes(value)) {
-        throw new Error(
-          `不允許的字元或代碼: ${JSON.stringify(value)},在代码: ${stringCode}`
-        );
-      }
-    } else if (value instanceof RegExp) {
-      if (value.test(stringCode)) {
-        throw new Error(`不允許的字元或代碼: ${value},在代码: ${stringCode}`);
+  if (safety) {
+    // 遍歷不允許的字元或代碼列表
+    for (const value of blackList) {
+      if (typeof value === "string") {
+        if (stringCode.includes(value)) {
+          throw new Error(
+            `不允許的關鍵字或代碼: ${JSON.stringify(
+              value
+            )},在代碼: ${stringCode}`
+          );
+        }
+      } else if (value instanceof RegExp) {
+        if (value.test(stringCode)) {
+          throw new Error(
+            `不允許的關鍵字或代碼: ${value},在代碼: ${stringCode}`
+          );
+        }
       }
     }
   }
   // 返回執行傳入字符串代碼的結果
-  return new Function(`return (${stringCode})`)();
+  return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
