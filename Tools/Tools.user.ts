@@ -207,10 +207,12 @@ function setMenu(
   let showValue = trueShowMapping[getValue];
   let trueFn =
     fn ??
-    ((ev: MouseEvent | KeyboardEvent) => {
-      GM_setValue(name, !getValue);
-      window.location.reload();
-    });
+    function (ev: MouseEvent | KeyboardEvent) {
+      if (typeof getValue === "boolean") {
+        GM_setValue(name, !getValue);
+        window.location.reload();
+      }
+    };
   return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
 
