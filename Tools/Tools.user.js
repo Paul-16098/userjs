@@ -183,10 +183,12 @@ function setMenu(name, fn, showValueMapping) {
     let getValue = GM_getValue(name);
     let showValue = trueShowMapping[getValue];
     let trueFn = fn ??
-        ((ev) => {
-            GM_setValue(name, !getValue);
-            window.location.reload();
-        });
+        function (ev) {
+            if (typeof getValue === "boolean") {
+                GM_setValue(name, !getValue);
+                window.location.reload();
+            }
+        };
     return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
 // 定義一個新的評估函數，用於執行傳入的字符串代碼
