@@ -25,4 +25,8 @@ fetch(`https://api.czbooks.net/user/favorite/remove?novelId=${id}`, {
   })
   .then((json) => {
     console.log(json);
+    return json;
+  })
+  .catch((err) => {
+    console.error(err);
   });
