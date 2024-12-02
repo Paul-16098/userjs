@@ -313,56 +313,6 @@ if (data.Book.Is()) {
     }
 }
 if (data.IsBookshelf()) {
-    // #tag is_bookshelf
-    (function () {
-        // bug: Decoder
-        let qValue = new URL(location.href).searchParams.get("q");
-        if (qValue !== null) {
-            new URL(location.href).searchParams.has;
-            let ele = document.querySelector("body > header > div > form > div > div > input[type=text]:nth-child(2)");
-            ele.value = qValue;
-            const encoder = new TextEncoder(); // 用於編碼字符串
-            const decoder = new TextDecoder("gbk"); // 用於解碼 GBK 編碼的內容
-            // 假設的搜索值
-            const searchValue = qValue;
-            const searchtype = "all";
-            const requestData = new URLSearchParams({
-                searchkey: searchValue,
-                searchtype: searchtype,
-            }).toString(); // 將數據轉換為 URL 查詢字串
-            // 將請求數據轉換為 ArrayBuffer
-            const encodedData = encoder.encode(requestData); // 使用 TextEncoder 進行編碼
-            // 發送請求
-            fetch("https://69shuba.cx/modules/article/search.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: encodedData, // 將編碼後的數據作為請求體
-            })
-                .then((response) => {
-                if (!response.ok) {
-                    throw new Error("網絡響應不是 OK");
-                }
-                // 將響應轉換為 ArrayBuffer
-                return response.arrayBuffer();
-            })
-                .then((buffer) => {
-                // 使用 TextDecoder 進行解碼
-                let html = decoder.decode(buffer);
-                // html.replaceAll('<meta charset="gbk">', '<meta charset="utf-8">');
-                // const newWindow = window.open() as Window; // 開啟新窗口
-                const newWindow = window;
-                newWindow.document.open(); // 打開文檔流
-                newWindow.document.write(html); // 寫入返回的 HTML
-                newWindow.document.close(); // 關閉文檔流
-            })
-                .catch((error) => {
-                console.error("發生錯誤:", error);
-            });
-            // window.close();
-        }
-    });
     let All_UpData_Url_Data = [];
     let all_updata_label = document.querySelectorAll(".newbox2 h3 label");
     if (Debug) {

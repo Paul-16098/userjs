@@ -347,7 +347,7 @@ if (data.Book.Is()) {
 }
 if (data.IsBookshelf()) {
   // #tag is_bookshelf
-
+  /*
   (function () {
     // bug: Decoder
     let qValue = new URL(location.href).searchParams.get("q");
@@ -404,7 +404,7 @@ if (data.IsBookshelf()) {
       // window.close();
     }
   });
-
+*/
   interface BookData {
     updata: {
       HTML_obj: Element;
