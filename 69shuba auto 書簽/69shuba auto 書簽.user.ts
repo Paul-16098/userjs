@@ -40,6 +40,8 @@
 // @match        https://69shu.biz/c/*/end.html
 // @match        https://69shu.biz/b/*.htm*
 // @match        https://69shu.biz/modules/article/bookcase.php*
+// #tag www.69yuedu.net
+// @match        https://www.69yuedu.net/r/*/*.html
 
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
