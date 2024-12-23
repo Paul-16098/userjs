@@ -42,6 +42,7 @@
 // @match        https://69shu.biz/modules/article/bookcase.php*
 // #tag www.69yuedu.net
 // @match        https://www.69yuedu.net/r/*/*.html
+// @match        https://www.69yuedu.net/modules/article/bookcase.php*
 
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
@@ -68,7 +69,7 @@ const HookAlertBlockade: Array<Array<any>> = GM_getValue("HookAlertBlockade", [
   ["删除成功!"],
 ]);
 
-let data = {
+const data = {
   Has_bookinfo: function (): boolean {
     return typeof bookinfo !== "undefined";
   },
@@ -91,9 +92,10 @@ let data = {
         return href.split("/")[5];
       }
     },
-    pattern: /^\/(txt|c)\/[0-9]+\/[0-9]+(\.html)?$/m,
+    pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
     // /c/53475/35619708.html
     // /txt/53475/35584194
+    // /r/mgiysntxtj/glhgfqtytpiatghb.html
     Is: function (href: string = window.location.href): boolean {
       let pathname: string = new URL(href).pathname;
       return this.pattern.test(pathname);
@@ -152,8 +154,13 @@ let data = {
 };
 
 let ele: Array<string> = [];
+let run: boolean = false;
 if (data.Book.Is()) {
   // #tag is_book
+  if (Debug) {
+    console.log("book");
+  }
+  run = true;
   if (IsHookAlert) {
     // #tag hook_alert
     const _alert: Function = alert;
@@ -180,11 +187,12 @@ if (data.Book.Is()) {
     };
   }
   if (Debug) {
-    console.log("book");
-  }
-  if (Debug) {
     console.log("GM_addStyle start");
   }
+  // #tag addStyle
+  const script = document.createElement("script");
+  script.src = "https://cdn.jsdelivr.net/npm/less";
+  document.head.appendChild(script);
   GM_addStyle(`#title {
     font-size: large;
     font-weight: bold;
@@ -281,132 +289,82 @@ if (data.Book.Is()) {
 
   let ele = document.querySelector(
     "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
-  ) as HTMLAnchorElement;
-  ele.href += "?FromBook=true";
+  ) as HTMLAnchorElement | null;
+  if (ele) {
+    ele.href += "?FromBook=true";
+  }
 }
 if (data.Info.Is()) {
   // #tag is_info
   if (Debug) {
     console.log("info");
   }
+  run = true;
 }
 if (data.End.Is()) {
   // #tag is_end
   if (Debug) {
     console.log("end");
   }
+  run = true;
   if (IsEndClose) {
     window.close();
   }
 }
-if (data.Book.Is()) {
-  if (data.IsNextEnd()) {
-    // #tag is_next_end
-    if (Debug) {
-      console.log("next_is_end");
-    }
-    document.addEventListener("keydown", function (e) {
-      if (!e.repeat) {
-        switch (true) {
-          case e.key === "ArrowRight": {
-            if (Debug) {
-              console.log('(e.key === "ArrowRight") === true');
-            }
-            if (IsEndClose) {
-              window.close();
-            }
-            break;
+if (data.Book.Is() && data.IsNextEnd()) {
+  // #tag is_next_end
+  if (Debug) {
+    console.log("next_is_end");
+  }
+  run = true;
+  document.addEventListener("keydown", function (e) {
+    if (!e.repeat) {
+      switch (true) {
+        case e.key === "ArrowRight": {
+          if (Debug) {
+            console.log('(e.key === "ArrowRight") === true');
           }
-          default: {
-            if (Debug) {
-              console.log("e: ", e);
-            }
-            break;
+          if (IsEndClose) {
+            window.close();
           }
+          break;
+        }
+        default: {
+          if (Debug) {
+            console.log("e: ", e);
+          }
+          break;
         }
       }
-    });
-    (
-      document.querySelector(
-        "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
-      ) as HTMLAnchorElement | null
-    )?.addEventListener("click", function () {
-      if (Debug) {
-        console.log("click");
-      }
-      if (AutoAddBookcase) {
-        (
-          document.querySelector("#a_addbookcase") as HTMLAnchorElement | null
-        )?.click();
-      } else if (Debug) {
-        console.log("auto_bookcase !== true");
-      }
-      if (IsEndClose) {
-        window.close();
-      }
-    });
-  }
+    }
+  });
+  (
+    document.querySelector(
+      "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
+    ) as HTMLAnchorElement | null
+  )?.addEventListener("click", function () {
+    if (Debug) {
+      console.log("click");
+    }
+    if (AutoAddBookcase) {
+      (
+        document.querySelector("#a_addbookcase") as HTMLAnchorElement | null
+      )?.click();
+    } else if (Debug) {
+      console.log("auto_bookcase !== true");
+    }
+    if (IsEndClose) {
+      window.close();
+    }
+  });
 }
 if (data.IsBookshelf()) {
   // #tag is_bookshelf
-  /*
-  (function () {
-    // bug: Decoder
-    let qValue = new URL(location.href).searchParams.get("q");
-    if (qValue !== null) {
-      new URL(location.href).searchParams.has;
-      let ele = document.querySelector(
-        "body > header > div > form > div > div > input[type=text]:nth-child(2)"
-      ) as HTMLInputElement;
-      ele.value = qValue;
+  if (Debug) {
+    console.log("bookshelf");
+  }
+  run = true;
 
-      const encoder = new TextEncoder(); // 用於編碼字符串
-      const decoder = new TextDecoder("gbk"); // 用於解碼 GBK 編碼的內容
-
-      // 假設的搜索值
-      const searchValue = qValue;
-      const searchtype = "all";
-      const requestData = new URLSearchParams({
-        searchkey: searchValue,
-        searchtype: searchtype,
-      }).toString(); // 將數據轉換為 URL 查詢字串
-
-      // 將請求數據轉換為 ArrayBuffer
-      const encodedData = encoder.encode(requestData); // 使用 TextEncoder 進行編碼
-
-      // 發送請求
-      fetch("https://69shuba.cx/modules/article/search.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: encodedData, // 將編碼後的數據作為請求體
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("網絡響應不是 OK");
-          }
-          // 將響應轉換為 ArrayBuffer
-          return response.arrayBuffer();
-        })
-        .then((buffer) => {
-          // 使用 TextDecoder 進行解碼
-          let html = decoder.decode(buffer);
-          // html.replaceAll('<meta charset="gbk">', '<meta charset="utf-8">');
-
-          // const newWindow = window.open() as Window; // 開啟新窗口
-          const newWindow = window;
-          newWindow.document.open(); // 打開文檔流
-          newWindow.document.write(html); // 寫入返回的 HTML
-          newWindow.document.close(); // 關閉文檔流
-        })
-        .catch((error) => {
-          console.error("發生錯誤:", error);
-        });
-      // window.close();
-    }
-  });
-*/
   interface BookData {
     updata: {
       HTML_obj: Element;
@@ -417,7 +375,6 @@ if (data.IsBookshelf()) {
         };
       };
     };
-
     mark: {
       HTML_obj: Element;
       url: {
@@ -511,6 +468,23 @@ if (data.IsBookshelf()) {
       });
     }
   );
+}
+if (!run) {
+  console.error("no run", this);
+  console.table({
+    Is_Book: data.Book.Is(),
+    Is_Info: data.Info.Is(),
+    Is_End: data.End.Is(),
+    IsNextEnd: data.IsNextEnd(),
+    IsBookshelf: data.IsBookshelf(),
+    Has_bookinfo: data.Has_bookinfo(),
+    IsBiz: data.IsBiz(),
+    IsEndClose: IsEndClose,
+    AutoAddBookcase: AutoAddBookcase,
+    IsHookAlert: IsHookAlert,
+    HookAlertBlockade: HookAlertBlockade,
+    Debug: Debug,
+  });
 }
 
 //#region Menu
