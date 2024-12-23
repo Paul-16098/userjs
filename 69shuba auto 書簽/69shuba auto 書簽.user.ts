@@ -52,9 +52,11 @@
 // @grant        unsafeWindow
 // @grant        GM_registerMenuCommand
 // @grant        GM_openInTab
+// @grant        GM_getResourceText
 // @run-at       document-idle
 // @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 // #@require      C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
+// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/vs_code/issues/
 // @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
@@ -187,32 +189,14 @@ if (data.Book.Is()) {
     };
   }
   if (Debug) {
-    console.log("GM_addStyle start");
+    console.log("addStyle start");
   }
   // #tag addStyle
-  const script = document.createElement("script");
-  script.src = "https://cdn.jsdelivr.net/npm/less";
-  document.head.appendChild(script);
-  GM_addStyle(`#title {
-    font-size: large;
-    font-weight: bold;
-    color: #000;
-  }
-  
-  .container {
-    margin: 0px !important;
-    min-height: 0px !important;
-    width: 100% !important;
-    max-width: none !important;
-  }
-  
-  .mybox {
-    padding: 0px;
-    margin: 0px;
-  }
-  `);
+  let css1 = GM_getResourceText("css1");
+  GM_addStyle(css1);
+
   if (Debug) {
-    console.log("GM_addStyle end");
+    console.log("addStyle end");
   }
   remove_ele(
     ".mytitle",
