@@ -1,0 +1,7 @@
+{
+  "@match": {
+    "scope": "javascript,typescript",
+    "prefix": "@match",
+    "body": "// @match        "
+  }
+}
