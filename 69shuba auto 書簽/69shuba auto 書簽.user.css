@@ -15,9 +15,6 @@
   padding: 0px;
   margin: 0px;
 }
-body > div.mainbox > div {
-  margin: 0px !important;
-  min-height: 0px !important;
-  width: 100% !important;
-  max-width: none !important;
+body > div.mainbox {
+  margin: 0px;
 }
