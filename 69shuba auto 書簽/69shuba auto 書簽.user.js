@@ -56,7 +56,7 @@
 // @run-at       document-idle
 // @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 // #@require      C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
-// @resource     css1 https://raw.githubusercontent.com/Paul-16098/userjs/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
+// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/vs_code/issues/
 // @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
