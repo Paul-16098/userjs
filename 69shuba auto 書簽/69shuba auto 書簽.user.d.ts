@@ -3,7 +3,7 @@ declare const IsEndClose: boolean;
 declare const AutoAddBookcase: boolean;
 declare const IsHookAlert: boolean;
 declare const HookAlertBlockade: Array<Array<any>>;
-declare let data: {
+declare const data: {
     Has_bookinfo: () => boolean;
     IsBookshelf: (href?: string) => boolean;
     Book: {
@@ -24,3 +24,4 @@ declare let data: {
     IsBiz: (host?: string) => boolean;
 };
 declare let ele: Array<string>;
+declare let run: boolean;

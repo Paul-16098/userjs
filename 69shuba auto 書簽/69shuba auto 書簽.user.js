@@ -43,6 +43,7 @@
 // @match        https://69shu.biz/modules/article/bookcase.php*
 // #tag www.69yuedu.net
 // @match        https://www.69yuedu.net/r/*/*.html
+// @match        https://www.69yuedu.net/modules/article/bookcase.php*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
 // @grant        GM_addStyle
@@ -66,7 +67,7 @@ const HookAlertBlockade = GM_getValue("HookAlertBlockade", [
     ["添加成功"],
     ["删除成功!"],
 ]);
-let data = {
+const data = {
     Has_bookinfo: function () {
         return typeof bookinfo !== "undefined";
     },
@@ -91,9 +92,10 @@ let data = {
                 return href.split("/")[5];
             }
         },
-        pattern: /^\/(txt|c)\/[0-9]+\/[0-9]+(\.html)?$/m,
+        pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
         // /c/53475/35619708.html
         // /txt/53475/35584194
+        // /r/mgiysntxtj/glhgfqtytpiatghb.html
         Is: function (href = window.location.href) {
             let pathname = new URL(href).pathname;
             return this.pattern.test(pathname);
@@ -149,8 +151,13 @@ let data = {
     },
 };
 let ele = [];
+let run = false;
 if (data.Book.Is()) {
     // #tag is_book
+    if (Debug) {
+        console.log("book");
+    }
+    run = true;
     if (IsHookAlert) {
         // #tag hook_alert
         const _alert = alert;
@@ -175,11 +182,12 @@ if (data.Book.Is()) {
         };
     }
     if (Debug) {
-        console.log("book");
-    }
-    if (Debug) {
         console.log("GM_addStyle start");
     }
+    // #tag addStyle
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/less";
+    document.head.appendChild(script);
     GM_addStyle(`#title {
     font-size: large;
     font-weight: bold;
@@ -254,67 +262,75 @@ if (data.Book.Is()) {
     // 將 <a> 元素插入到 title 的父元素中
     title?.parentNode?.replaceChild(link, title);
     let ele = document.querySelector("body > div.container > div.mybox > div.page1 > a:nth-child(4)");
-    ele.href += "?FromBook=true";
+    if (ele) {
+        ele.href += "?FromBook=true";
+    }
 }
 if (data.Info.Is()) {
     // #tag is_info
     if (Debug) {
         console.log("info");
     }
+    run = true;
 }
 if (data.End.Is()) {
     // #tag is_end
     if (Debug) {
         console.log("end");
     }
+    run = true;
     if (IsEndClose) {
         window.close();
     }
 }
-if (data.Book.Is()) {
-    if (data.IsNextEnd()) {
-        // #tag is_next_end
-        if (Debug) {
-            console.log("next_is_end");
-        }
-        document.addEventListener("keydown", function (e) {
-            if (!e.repeat) {
-                switch (true) {
-                    case e.key === "ArrowRight": {
-                        if (Debug) {
-                            console.log('(e.key === "ArrowRight") === true');
-                        }
-                        if (IsEndClose) {
-                            window.close();
-                        }
-                        break;
+if (data.Book.Is() && data.IsNextEnd()) {
+    // #tag is_next_end
+    if (Debug) {
+        console.log("next_is_end");
+    }
+    run = true;
+    document.addEventListener("keydown", function (e) {
+        if (!e.repeat) {
+            switch (true) {
+                case e.key === "ArrowRight": {
+                    if (Debug) {
+                        console.log('(e.key === "ArrowRight") === true');
                     }
-                    default: {
-                        if (Debug) {
-                            console.log("e: ", e);
-                        }
-                        break;
+                    if (IsEndClose) {
+                        window.close();
                     }
+                    break;
+                }
+                default: {
+                    if (Debug) {
+                        console.log("e: ", e);
+                    }
+                    break;
                 }
             }
-        });
-        document.querySelector("body > div.container > div.mybox > div.page1 > a:nth-child(4)")?.addEventListener("click", function () {
-            if (Debug) {
-                console.log("click");
-            }
-            if (AutoAddBookcase) {
-                document.querySelector("#a_addbookcase")?.click();
-            }
-            else if (Debug) {
-                console.log("auto_bookcase !== true");
-            }
-            if (IsEndClose) {
-                window.close();
-            }
-        });
-    }
+        }
+    });
+    document.querySelector("body > div.container > div.mybox > div.page1 > a:nth-child(4)")?.addEventListener("click", function () {
+        if (Debug) {
+            console.log("click");
+        }
+        if (AutoAddBookcase) {
+            document.querySelector("#a_addbookcase")?.click();
+        }
+        else if (Debug) {
+            console.log("auto_bookcase !== true");
+        }
+        if (IsEndClose) {
+            window.close();
+        }
+    });
 }
 if (data.IsBookshelf()) {
+    // #tag is_bookshelf
+    if (Debug) {
+        console.log("bookshelf");
+    }
+    run = true;
     let All_UpData_Url_Data = [];
     let all_updata_label = document.querySelectorAll(".newbox2 h3 label");
     if (Debug) {
@@ -381,6 +397,23 @@ if (data.IsBookshelf()) {
         All_UpData_Url_Data.forEach((UpData_Url_Data) => {
             GM_openInTab(UpData_Url_Data.updata.url.value);
         });
+    });
+}
+if (!run) {
+    console.error("no run", this);
+    console.table({
+        Is_Book: data.Book.Is(),
+        Is_Info: data.Info.Is(),
+        Is_End: data.End.Is(),
+        IsNextEnd: data.IsNextEnd(),
+        IsBookshelf: data.IsBookshelf(),
+        Has_bookinfo: data.Has_bookinfo(),
+        IsBiz: data.IsBiz(),
+        IsEndClose: IsEndClose,
+        AutoAddBookcase: AutoAddBookcase,
+        IsHookAlert: IsHookAlert,
+        HookAlertBlockade: HookAlertBlockade,
+        Debug: Debug,
     });
 }
 //#region Menu
