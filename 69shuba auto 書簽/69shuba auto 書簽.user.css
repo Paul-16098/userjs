@@ -17,4 +17,5 @@
 }
 body > div.mainbox {
   margin: 0px;
+  max-width: none;
 }
