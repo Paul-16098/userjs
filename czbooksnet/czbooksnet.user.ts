@@ -16,10 +16,8 @@
 // @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 // #@require      file:///C:/Users/p/Documents/git/userjs/Tools/Tools.user.js
 // @require      css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/czbooksnet/czbooksnet.css
-// @supportURL   https://github.com/Paul-16098/vs_code/issues/
-// @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
-// @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/czbooksnet.user.js
-// @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/czbooksnet.user.js
+// @supportURL   https://github.com/Paul-16098/userjs/issues/
+// @homepageURL  https://github.com/Paul-16098/userjs/
 // ==/UserScript==
 let css1 = GM_getResourceText("css1");
 GM_addStyle(css1);

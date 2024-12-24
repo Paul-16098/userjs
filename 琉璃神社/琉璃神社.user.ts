@@ -12,8 +12,8 @@
 // @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 // #@require      file:///C:/Users/p/Documents/git/vs_code/js/userjs/Tools/Tools.user.js
 // @supportURL   https://github.com/Paul-16098/vs_code/issues/
-// @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE.js
-// @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE.js
+// @downloadURL  https://github.com/Paul-16098/userjs/raw/refs/heads/dev/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE.ts
+// @updateURL    https://github.com/Paul-16098/userjs/raw/refs/heads/dev/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE.ts
 // ==/UserScript==
 
 let q: string = document
