@@ -16,7 +16,7 @@
 // @license      MIT
 // @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 // #@require      file:///C:/Users/p/Documents/git/userjs/Tools/Tools.user.js
-// @require      css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/czbooksnet/czbooksnet.css
+// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/czbooksnet/czbooksnet.css
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/
 // ==/UserScript==
