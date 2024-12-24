@@ -1,8 +1,0 @@
-#/* ==UserConfig==
-公開接口:
-  ajaxHooker:
-    title: 公開ajaxHooker接口
-    description: 公開ajaxHooker接口
-    type: checkbox
-    default: false
-# ==/UserConfig== */

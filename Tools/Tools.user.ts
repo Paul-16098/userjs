@@ -17,7 +17,7 @@
 
 const _unsafeWindow = unsafeWindow ?? window;
 
-const IS_DEBUG_LOG: boolean = GM_getValue("debug.debug_log", false);
+const IS_DEBUG_LOG: boolean = GM_getValue("IS_DEBUG_LOG", false);
 
 // 設置和初始化 GM API 的函數
 function setGM() {
@@ -199,8 +199,8 @@ function setMenu(
 ) {
   // 顯示值的映射
   let trueShowMapping = showValueMapping ?? {
-    true: "true",
-    false: "false",
+    true: "開",
+    false: "關",
   };
   let showName: string = name.replaceAll("_", " ");
   let getValue: any = GM_getValue(name);
@@ -264,6 +264,7 @@ function newEval(stringCode: string, safety: boolean = true) {
   return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
 
+// #region i18n
 // 定義一個接口 langJson，用於描述一個多語言的 JSON 對象
 interface langJson {
   [lang: string]: {
@@ -310,3 +311,4 @@ class i18n {
     )}]}`;
   }
 }
+// #endregion i18n

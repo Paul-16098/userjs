@@ -16,7 +16,7 @@
 // @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
 // ==/UserScript==
 const _unsafeWindow = unsafeWindow ?? window;
-const IS_DEBUG_LOG = GM_getValue("debug.debug_log", false);
+const IS_DEBUG_LOG = GM_getValue("IS_DEBUG_LOG", false);
 // 設置和初始化 GM API 的函數
 function setGM() {
     let debug = console.debug;
@@ -176,8 +176,8 @@ function remove_ele(...args) {
 function setMenu(name, fn, showValueMapping) {
     // 顯示值的映射
     let trueShowMapping = showValueMapping ?? {
-        true: "true",
-        false: "false",
+        true: "開",
+        false: "關",
     };
     let showName = name.replaceAll("_", " ");
     let getValue = GM_getValue(name);
@@ -272,4 +272,5 @@ class i18n {
         return `{Translation not found for \`${key}\` in [${this.langList.join(", ")}]}`;
     }
 }
+// #endregion i18n
 //# sourceMappingURL=Tools.user.js.map
