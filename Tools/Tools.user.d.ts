@@ -5,4 +5,15 @@ declare function remove_ele(...args: Array<string>): unknown[];
 declare function setMenu(name: string, fn?: ((ev?: MouseEvent | KeyboardEvent) => void) | undefined, showValueMapping?: {
     [x: string]: string;
 } | undefined): number;
-declare function newEval(stringCode: string): any;
+declare function newEval(stringCode: string, safety?: boolean): any;
+interface langJson {
+    [lang: string]: {
+        [key: string]: string;
+    };
+}
+declare class i18n {
+    langJson: langJson;
+    langList: Array<string>;
+    constructor(langJson: langJson, lang: string | Array<string>);
+    get(key: string, ...args: Array<any>): string;
+}

@@ -1,0 +1,27 @@
+{
+  "@match": {
+    "scope": "javascript,typescript",
+    "prefix": "@match",
+    "body": "// @match        "
+  },
+  "@resource": {
+    "scope": "javascript,typescript",
+    "prefix": "@resource",
+    "body": "// @resource     "
+  },
+  "@require": {
+    "scope": "javascript,typescript",
+    "prefix": "@require",
+    "body": "// @require      "
+  },
+  "@description": {
+    "scope": "javascript,typescript",
+    "prefix": "@description",
+    "body": "// @description  "
+  },
+  "@grant": {
+    "scope": "javascript,typescript",
+    "prefix": "@grant",
+    "body": "// @grant        "
+  }
+}

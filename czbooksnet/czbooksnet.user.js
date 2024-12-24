@@ -14,7 +14,7 @@
 // @grant        GM_registerMenuCommand
 // @license      MIT
 // @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
-// #@require      file:///C:/Users/p/Documents/git/vs_code/js/userjs/Tools/Tools.user.js
+// #@require      file:///C:/Users/p/Documents/git/userjs/Tools/Tools.user.js
 // @supportURL   https://github.com/Paul-16098/vs_code/issues/
 // @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
 // @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/czbooksnet.user.js
