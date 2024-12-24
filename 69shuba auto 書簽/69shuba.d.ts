@@ -11,3 +11,5 @@ declare var bookinfo: {
   site: string;
   sortName: string;
 };
+
+declare function addbookcase(aid: any, cid: any): void;

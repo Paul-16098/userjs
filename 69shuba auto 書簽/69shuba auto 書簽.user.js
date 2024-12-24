@@ -194,7 +194,13 @@ if (data.Book.Is()) {
     }
     remove_ele(".mytitle", ".top_Scroll", "#pagefootermenu", "body > div.container > div > div.yueduad1", "#pageheadermenu", ".bottom-ad2", "body > div.container > div.yuedutuijian.light");
     if (AutoAddBookcase) {
-        document.querySelector("#a_addbookcase")?.click();
+        if (addbookcase.toString() ===
+            'function addbookcase(aid, cid) {\r\n\r\n    let data = {bid: aid, cid: cid};\r\n    $.post("https://www.69yuedu.net/modules/article/addbookcase.php", data, function (result) {\r\n        alert(result);\r\n    });\r\n}') {
+            addbookcase(data.Book.GetAid(), data.Book.GetCid());
+        }
+        else {
+            document.querySelector("#a_addbookcase")?.click();
+        }
     }
     else if (Debug) {
         console.log("auto_bookcase !== true");

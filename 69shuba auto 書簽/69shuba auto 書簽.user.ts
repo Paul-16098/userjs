@@ -209,7 +209,14 @@ if (data.Book.Is()) {
   );
 
   if (AutoAddBookcase) {
-    (document.querySelector("#a_addbookcase") as HTMLElement | null)?.click();
+    if (
+      addbookcase.toString() ===
+      'function addbookcase(aid, cid) {\r\n\r\n    let data = {bid: aid, cid: cid};\r\n    $.post("https://www.69yuedu.net/modules/article/addbookcase.php", data, function (result) {\r\n        alert(result);\r\n    });\r\n}'
+    ) {
+      addbookcase(data.Book.GetAid(), data.Book.GetCid());
+    } else {
+      (document.querySelector("#a_addbookcase") as HTMLElement | null)?.click();
+    }
   } else if (Debug) {
     console.log("auto_bookcase !== true");
   }
