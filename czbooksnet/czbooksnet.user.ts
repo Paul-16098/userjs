@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         czbooks.net
 // @namespace    pl816098
-// @version      1.1.6.2
+// @version      1.1.7.0
 // @description  自用
 // @author       pl816098
 // @match        https://czbooks.net/n/*/*
