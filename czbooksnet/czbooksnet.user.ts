@@ -11,31 +11,18 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_registerMenuCommand
+// @grant        GM_getResourceText
 // @license      MIT
 // @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 // #@require      file:///C:/Users/p/Documents/git/userjs/Tools/Tools.user.js
+// @require      css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/czbooksnet/czbooksnet.css
 // @supportURL   https://github.com/Paul-16098/vs_code/issues/
 // @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
 // @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/czbooksnet.user.js
 // @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/czbooksnet.user.js
 // ==/UserScript==
-
-GM_addStyle(`
-      .chapter-detail,
-      .content {
-        line-height: normal;
-      }
-      #sticky-parent {
-        width: auto;
-      }
-      #sticky-parent > .chapter-detail {
-        width: auto;
-      }
-      .content {
-        font-size: 17px;
-      }
-      
-      `);
+let css1 = GM_getResourceText("css1");
+GM_addStyle(css1);
 remove_ele(
   "body > div.header",
   "body > div.footer",
