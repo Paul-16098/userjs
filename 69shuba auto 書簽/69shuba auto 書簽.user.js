@@ -58,8 +58,8 @@
 // #@require      C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @license      MIT
-// @supportURL   https://github.com/Paul-16098/vs_code/issues/
-// @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
+// @supportURL   https://github.com/Paul-16098/userjs/issues/
+// @homepageURL  https://github.com/Paul-16098/userjs/README.md
 // ==/UserScript==
 const Debug = GM_getValue("Debug", false);
 const IsEndClose = GM_getValue("IsEndClose", true);
