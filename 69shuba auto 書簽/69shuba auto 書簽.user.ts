@@ -41,7 +41,8 @@
 // @match        https://69shu.biz/b/*.htm*
 // @match        https://69shu.biz/modules/article/bookcase.php*
 // #tag www.69yuedu.net
-// @match        https://www.69yuedu.net/r/*/*.html
+// @match        https://www.69yuedu.net/r/*/*.html*
+// @match        https://www.69yuedu.net/article/*.html*
 // @match        https://www.69yuedu.net/modules/article/bookcase.php*
 
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
@@ -95,33 +96,28 @@ const data = {
       }
     },
     pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
-    // /c/53475/35619708.html
-    // /txt/53475/35584194
-    // /r/mgiysntxtj/glhgfqtytpiatghb.html
+    /* 
+    /c/53475/35619708.html
+    /txt/53475/35584194
+    /r/mgiysntxtj/glhgfqtytpiatghb.html
+    */
     Is: function (href: string = window.location.href): boolean {
       let pathname: string = new URL(href).pathname;
       return this.pattern.test(pathname);
     },
   },
   Info: {
-    pattern: /^\/(book|b)\/[0-9]+\.htm(l)?$/m,
-    Is: function (href: string = window.location.href): boolean {
-      let pathname: string = new URL(href).pathname;
+    pattern: /^\/(book|b|article)\/([0-9]|[a-z])+\.htm(l)?$/m,
+    Is: function (pathname: string = window.location.pathname): boolean {
       return this.pattern.test(pathname);
     },
   },
   End: {
     Is: function (href: string = window.location.href): boolean {
-      if (new URL(href).searchParams.get("FormTitle") === "false") {
-        if (Debug) {
-          console.log("b#searchParams.end;s#f");
-        }
-        return false;
+      if (data.Info.Is()) {
+        let searchParams = new URL(href).searchParams;
+        return searchParams.get("FromBook") === "true";
       }
-      if (new URL(href).searchParams.get("FromBook") === "true") {
-        return data.Info.Is(href);
-      }
-      console.warn("err-2");
       return false;
     },
   },
@@ -129,24 +125,27 @@ const data = {
     let ele = document.querySelector(
       "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
     ) as HTMLAnchorElement | null;
-    if (ele) {
-      if (ele.href !== null) {
+    if (ele && ele.href !== null) {
+      return ele.href;
+    } else {
+      ele = document.querySelector(
+        "body > div.mainbox > div > div.page1 > a:nth-child(4)"
+      );
+      if (ele && ele.href !== null) {
         return ele.href;
       }
     }
   },
   IsNextEnd: function (): boolean {
-    if (data.End.Is(data.GetNextPageUrl())) {
-      return true;
-    }
-    if (data.IsBookshelf(data.GetNextPageUrl())) {
-      return false;
-    }
-    if (data.Book.Is(data.GetNextPageUrl())) {
-      return false;
-    }
-    if (Debug) {
-      console.warn("err-1");
+    if (this.Book.Is()) {
+      if (data.End.Is(data.GetNextPageUrl())) {
+        // next page is end
+        return true;
+      }
+      if (data.Info.Is(new URL(data.GetNextPageUrl() as string).pathname)) {
+        // next page is info
+        return true;
+      }
     }
     return false;
   },
@@ -198,6 +197,27 @@ if (data.Book.Is()) {
   if (Debug) {
     console.log("addStyle end");
   }
+  document.onkeydown = null;
+  addEventListener("keydown", function (e) {
+    if (!e.repeat) {
+      switch (e.key) {
+        case "ArrowRight": {
+          window.location.href = (
+            document.querySelector(
+              "body > div.mainbox > div > div.page1 > a:nth-child(4)"
+            ) as HTMLAnchorElement | null
+          )?.href as string;
+          break;
+        }
+        default: {
+          if (Debug) {
+            console.table({ e: e, key: e.key });
+          }
+          break;
+        }
+      }
+    }
+  });
   remove_ele(
     ".mytitle",
     ".top_Scroll",
@@ -283,6 +303,13 @@ if (data.Book.Is()) {
   ) as HTMLAnchorElement | null;
   if (ele) {
     ele.href += "?FromBook=true";
+  } else {
+    ele = document.querySelector(
+      "body > div.mainbox > div > div.page1 > a:nth-child(4)"
+    );
+    if (ele) {
+      ele.href += "?FromBook=true";
+    }
   }
 }
 if (data.Info.Is()) {
@@ -336,13 +363,6 @@ if (data.Book.Is() && data.IsNextEnd()) {
   )?.addEventListener("click", function () {
     if (Debug) {
       console.log("click");
-    }
-    if (AutoAddBookcase) {
-      (
-        document.querySelector("#a_addbookcase") as HTMLAnchorElement | null
-      )?.click();
-    } else if (Debug) {
-      console.log("auto_bookcase !== true");
     }
     if (IsEndClose) {
       window.close();

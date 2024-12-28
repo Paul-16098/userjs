@@ -14,7 +14,7 @@ declare const data: {
     };
     Info: {
         pattern: RegExp;
-        Is: (href?: string) => boolean;
+        Is: (pathname?: string) => boolean;
     };
     End: {
         Is: (href?: string) => boolean;
