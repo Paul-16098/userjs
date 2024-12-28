@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.4.6.0
+// @version      3.4.7.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -202,11 +202,19 @@ if (data.Book.Is()) {
     if (!e.repeat) {
       switch (e.key) {
         case "ArrowRight": {
-          window.location.href = (
+          let href = (
             document.querySelector(
               "body > div.mainbox > div > div.page1 > a:nth-child(4)"
             ) as HTMLAnchorElement | null
           )?.href as string;
+          if (!href) {
+            href = (
+              document.querySelector(
+                "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
+              ) as HTMLAnchorElement | null
+            )?.href as string;
+          }
+          window.location.href = href;
           break;
         }
         default: {
