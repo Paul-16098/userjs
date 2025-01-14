@@ -3,7 +3,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.11.0
+// @version      2.2.12.0
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -146,7 +146,7 @@ function setGM() {
 // 從 DOM 中移除指定的元素
 function removeElement(...args) {
     try {
-        if (args && args.length > 0) {
+        if (args) {
             args.forEach((args) => {
                 if (IS_DEBUG_LOG) {
                     console.log("args: ", args);
@@ -161,9 +161,6 @@ function removeElement(...args) {
                     console.debug(args, "is not a Html Element.");
                 }
             });
-        }
-        else {
-            throw Error("fn remove error, args is not a array or args.length =< 0");
         }
     }
     catch (e) {
