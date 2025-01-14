@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         czbooks.net
 // @namespace    pl816098
-// @version      1.1.8.0
+// @version      1.1.9.0
 // @description  自用
 // @author       pl816098
 // @match        https://czbooks.net/n/*/*
@@ -22,5 +22,5 @@
 // ==/UserScript==
 let css1 = GM_getResourceText("css1");
 GM_addStyle(css1);
-remove_ele("body > div.header", "body > div.footer", "body > div.main > div:nth-child(3)", "#go-to-top", "#sticky-parent > div.chapter-detail > div.notice");
+removeElement("body > div.header", "body > div.footer", "body > div.main > div:nth-child(3)", "#go-to-top", "#sticky-parent > div.chapter-detail > div.notice");
 //# sourceMappingURL=czbooksnet.user.js.map
