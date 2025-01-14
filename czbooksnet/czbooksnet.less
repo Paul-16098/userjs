@@ -1,0 +1,13 @@
+.chapter-detail {
+  line-height: normal;
+}
+#sticky-parent {
+  width: auto;
+  & > .chapter-detail {
+    width: auto;
+  }
+}
+.content {
+  font-size: 17px;
+  .chapter-detail();
+}

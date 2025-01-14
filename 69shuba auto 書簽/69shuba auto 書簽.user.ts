@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.4.6.0
+// @version      3.5.1.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -41,9 +41,9 @@
 // @match        https://69shu.biz/b/*.htm*
 // @match        https://69shu.biz/modules/article/bookcase.php*
 // #tag www.69yuedu.net
-// @match        https://www.69yuedu.net/r/*/*.html
+// @match        https://www.69yuedu.net/r/*/*.html*
+// @match        https://www.69yuedu.net/article/*.html*
 // @match        https://www.69yuedu.net/modules/article/bookcase.php*
-
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
 // @grant        GM_addStyle
@@ -62,425 +62,365 @@
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
 // ==/UserScript==
 
-const Debug: boolean = GM_getValue("Debug", false);
-const IsEndClose: boolean = GM_getValue("IsEndClose", true);
-const AutoAddBookcase: boolean = GM_getValue("AutoAddBookcase", true);
-const IsHookAlert: boolean = GM_getValue("IsHookAlert", true);
-const HookAlertBlockade: Array<Array<any>> = GM_getValue("HookAlertBlockade", [
-  ["添加成功"],
-  ["删除成功!"],
-]);
+interface Config {
+  Debug: boolean;
+  IsEndClose: boolean;
+  AutoAddBookcase: boolean;
+  IsHookAlert: boolean;
+  HookAlertBlockade: Array<Array<any>>;
+}
 
-const data = {
-  Has_bookinfo: function (): boolean {
-    return typeof bookinfo !== "undefined";
-  },
-  IsBookshelf: function (href: string = window.location.href): boolean {
-    let pathname: string = new URL(href).pathname;
-    return pathname === "/modules/article/bookcase.php";
-  },
-  Book: {
-    GetAid: function (href: string = window.location.href): string {
-      if (data.Has_bookinfo()) {
-        return bookinfo.articleid;
-      } else {
-        return href.split("/")[4];
-      }
-    },
-    GetCid: function (href = window.location.href): string {
-      if (data.Has_bookinfo()) {
-        return bookinfo.chapterid;
-      } else {
-        return href.split("/")[5];
-      }
-    },
-    pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
-    // /c/53475/35619708.html
-    // /txt/53475/35584194
-    // /r/mgiysntxtj/glhgfqtytpiatghb.html
-    Is: function (href: string = window.location.href): boolean {
-      let pathname: string = new URL(href).pathname;
-      return this.pattern.test(pathname);
-    },
-  },
-  Info: {
-    pattern: /^\/(book|b)\/[0-9]+\.htm(l)?$/m,
-    Is: function (href: string = window.location.href): boolean {
-      let pathname: string = new URL(href).pathname;
-      return this.pattern.test(pathname);
-    },
-  },
-  End: {
-    Is: function (href: string = window.location.href): boolean {
-      if (new URL(href).searchParams.get("FormTitle") === "false") {
-        if (Debug) {
-          console.log("b#searchParams.end;s#f");
-        }
-        return false;
-      }
-      if (new URL(href).searchParams.get("FromBook") === "true") {
-        return data.Info.Is(href);
-      }
-      console.warn("err-2");
-      return false;
-    },
-  },
-  GetNextPageUrl: function (): string | undefined {
-    let ele = document.querySelector(
-      "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
-    ) as HTMLAnchorElement | null;
-    if (ele) {
-      if (ele.href !== null) {
-        return ele.href;
-      }
-    }
-  },
-  IsNextEnd: function (): boolean {
-    if (data.End.Is(data.GetNextPageUrl())) {
-      return true;
-    }
-    if (data.IsBookshelf(data.GetNextPageUrl())) {
-      return false;
-    }
-    if (data.Book.Is(data.GetNextPageUrl())) {
-      return false;
-    }
-    if (Debug) {
-      console.warn("err-1");
-    }
-    return false;
-  },
-  IsBiz: function (host = location.host): boolean {
-    return host === "69shu.biz";
-  },
+interface BookData {
+  Updata: {
+    HTML_obj: Element;
+    url: {
+      value: string;
+      URLParams: {
+        obj: URLSearchParams;
+      };
+    };
+  };
+  Mark: {
+    HTML_obj: Element;
+    url: {
+      value: string;
+      URLParams: {
+        obj: URLSearchParams;
+      };
+    };
+  };
+  BookMate: {
+    BookName: string;
+    Book_HTML_obj: Element;
+    BookImgUrl: string;
+  };
+}
+
+const config: Config = {
+  Debug: GM_getValue("Debug", false),
+  IsEndClose: GM_getValue("IsEndClose", true),
+  AutoAddBookcase: GM_getValue("AutoAddBookcase", true),
+  IsHookAlert: GM_getValue("IsHookAlert", true),
+  HookAlertBlockade: GM_getValue("HookAlertBlockade", [
+    ["添加成功"],
+    ["刪除成功!"],
+  ]),
 };
 
-let ele: Array<string> = [];
-let run: boolean = false;
-if (data.Book.Is()) {
-  // #tag is_book
-  if (Debug) {
-    console.log("book");
-  }
-  run = true;
-  if (IsHookAlert) {
-    // #tag hook_alert
-    const _alert: Function = alert;
-    _unsafeWindow.alert = (...message: any) => {
-      let blockade: Array<Array<any>> = HookAlertBlockade;
-      let r: boolean = false;
-      let n: number = 0;
-      blockade.forEach((blockade_ele) => {
-        n++;
-        if (
-          JSON.stringify(message) === JSON.stringify(blockade_ele) ||
-          JSON.stringify(blockade_ele) === "*"
-        ) {
-          console.log("hook alert: ", message);
-          r = true;
+class BookManager {
+  private data: {
+    HasBookInfo: () => boolean;
+    IsBookshelf: (href?: string) => boolean;
+    Book: {
+      GetAid: (href?: string) => string;
+      GetCid: (href?: string) => string;
+      pattern: RegExp;
+      Is: (href?: string) => boolean;
+    };
+    Info: {
+      pattern: RegExp;
+      Is: (pathname?: string) => boolean;
+    };
+    End: {
+      Is: (href?: string) => boolean;
+    };
+    GetNextPageUrl: () => string | undefined;
+    IsNextEnd: () => boolean;
+    IsBiz: (host?: string) => boolean;
+  };
+
+  constructor() {
+    this.data = {
+      HasBookInfo: () => typeof bookinfo !== "undefined",
+      IsBookshelf: (href: string = window.location.href) => {
+        return new URL(href).pathname === "/modules/article/bookcase.php";
+      },
+      Book: {
+        GetAid: (href: string = window.location.href) => {
+          if (this.data.HasBookInfo()) {
+            return bookinfo.articleid;
+          }
+          return href.split("/")[4];
+        },
+        GetCid: (href: string = window.location.href) => {
+          if (this.data.HasBookInfo()) {
+            return bookinfo.chapterid;
+          }
+          return href.split("/")[5];
+        },
+        pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
+        Is: (href: string = window.location.href) => {
+          return this.data.Book.pattern.test(new URL(href).pathname);
+        },
+      },
+      Info: {
+        pattern: /^\/(book|b|article)\/([0-9]|[a-z])+\.htm(l)?$/m,
+        Is: (pathname: string = window.location.pathname) => {
+          return this.data.Info.pattern.test(pathname);
+        },
+      },
+      End: {
+        Is: (href: string = window.location.href) => {
+          if (this.data.Info.Is()) {
+            const searchParams = new URL(href).searchParams;
+            return searchParams.get("FromBook") === "true";
+          }
+          return false;
+        },
+      },
+      GetNextPageUrl: () => {
+        let ele = document.querySelector(
+          "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
+        ) as HTMLAnchorElement | null;
+        if (ele && ele.href !== null) {
+          return ele.href;
         }
-      });
-      if (r === false) {
-        if (Debug) {
-          console.log("alert: ", message);
+        ele = document.querySelector(
+          "body > div.mainbox > div > div.page1 > a:nth-child(4)"
+        ) as HTMLAnchorElement | null;
+        if (ele && ele.href !== null) {
+          return ele.href;
         }
-        _alert(...message);
-      }
+      },
+      IsNextEnd: () => {
+        if (this.data.Book.Is()) {
+          const nextUrl = this.data.GetNextPageUrl();
+          if (nextUrl) {
+            return (
+              this.data.End.Is(nextUrl) ||
+              this.data.Info.Is(new URL(nextUrl).pathname)
+            );
+          }
+        }
+        return false;
+      },
+      IsBiz: (host: string = location.host) => {
+        return host === "69shu.biz";
+      },
     };
   }
-  if (Debug) {
-    console.log("addStyle start");
-  }
-  // #tag addStyle
-  let css1 = GM_getResourceText("css1");
-  GM_addStyle(css1);
 
-  if (Debug) {
-    console.log("addStyle end");
-  }
-  remove_ele(
-    ".mytitle",
-    ".top_Scroll",
-    "#pagefootermenu",
-    "body > div.container > div > div.yueduad1",
-    "#pageheadermenu",
-    ".bottom-ad2",
-    "body > div.container > div.yuedutuijian.light"
-  );
-
-  if (AutoAddBookcase) {
-    if (
-      addbookcase.toString() ===
-      'function addbookcase(aid, cid) {\r\n\r\n    let data = {bid: aid, cid: cid};\r\n    $.post("https://www.69yuedu.net/modules/article/addbookcase.php", data, function (result) {\r\n        alert(result);\r\n    });\r\n}'
-    ) {
-      addbookcase(data.Book.GetAid(), data.Book.GetCid());
-    } else {
-      (document.querySelector("#a_addbookcase") as HTMLElement | null)?.click();
+  run() {
+    this.registerConfigMenu();
+    if (this.data.Book.Is()) {
+      this.handleBookPage();
+    } else if (this.data.Info.Is()) {
+      // Handle info page
+    } else if (this.data.End.Is()) {
+      if (config.IsEndClose) window.close();
+    } else if (this.data.IsBookshelf()) {
+      this.handleBookshelf();
     }
-  } else if (Debug) {
-    console.log("auto_bookcase !== true");
+    if (
+      config.Debug &&
+      !this.data.Book.Is() &&
+      !this.data.Info.Is() &&
+      !this.data.End.Is() &&
+      !this.data.IsBookshelf()
+    ) {
+      console.error("No matching URL pattern found");
+      console.table(this.debugInfo());
+    }
   }
-  let author: string = "undefined";
-  if ((typeof bookinfo === "undefined" || bookinfo) ?? false) {
-    author =
+
+  private handleBookPage() {
+    if (config.IsHookAlert) this.hookAlert();
+    this.addStyles();
+    this.modifyPageNavigation();
+    removeElement(
+      ".mytitle",
+      ".top_Scroll",
+      "#pagefootermenu",
+      "body > div.container > div > div.yueduad1",
+      "#pageheadermenu",
+      ".bottom-ad2",
+      "body > div.container > div.yuedutuijian.light"
+    );
+    if (config.AutoAddBookcase) this.addBookcase();
+    this.insertAuthorLink();
+  }
+
+  private hookAlert() {
+    const _alert: Function = alert;
+    unsafeWindow.alert = (...message: any) => {
+      if (
+        !config.HookAlertBlockade.some(
+          (blockade) =>
+            JSON.stringify(message) === JSON.stringify(blockade) ||
+            JSON.stringify(blockade) === "*"
+        )
+      ) {
+        _alert(...message);
+      }
+      if (config.Debug) console.log("Alert message:", message);
+    };
+  }
+
+  private addStyles() {
+    const css1 = GM_getResourceText("css1");
+    GM_addStyle(css1);
+    if (config.Debug) console.log("CSS added");
+  }
+
+  private modifyPageNavigation() {
+    document.onkeydown = null;
+    addEventListener("keydown", this.keydownHandler.bind(this));
+  }
+
+  private keydownHandler(e: KeyboardEvent) {
+    if (!e.repeat && e.key === "ArrowRight") {
+      const nextPageLink = this.data.GetNextPageUrl();
+      if (nextPageLink) {
+        window.location.href = nextPageLink;
+      }
+    }
+  }
+
+  private addBookcase() {
+    const aid = this.data.Book.GetAid();
+    const cid = this.data.Book.GetCid();
+    if (!addbookcase.toString().includes("Ajax.Tip")) {
+      addbookcase(aid, cid);
+    } else {
+      const addBookcaseLink = document.querySelector(
+        "#a_addbookcase"
+      ) as HTMLElement | null;
+      addBookcaseLink?.click();
+    }
+  }
+
+  private insertAuthorLink() {
+    const author =
       document
         .querySelector(
           "body > div.container > div.mybox > div.txtnav > div.txtinfo.hide720 > span:nth-child(2)"
         )
         ?.textContent?.trim()
-        .split(" ")[1] ?? "undefined"; // 網站原有的變量
-  }
-  let aElement = document.createElement("a");
-  aElement.href = `${window.location.origin}/modules/article/author.php?author=${author}`;
-  aElement.textContent = author;
-  aElement.style.color = "#007ead";
+        .split(" ")[1] ?? "undefined";
+    const authorLink = document.createElement("a");
+    authorLink.href = `${
+      window.location.origin
+    }/modules/article/author.php?author=${encodeURIComponent(author)}`;
+    authorLink.textContent = author;
+    authorLink.style.color = "#007ead";
 
-  // let divElement: HTMLDivElement = document.querySelector(
-  //   "#txtright"
-  // ) as HTMLDivElement;
-  // divElement.textContent = "";
-  // divElement.appendChild(aElement);
-
-  let title: HTMLDivElement = document.querySelector(
-    "body > div.container > div.mybox > div.tools"
-  ) as HTMLDivElement;
-  // 創建新的 <a> 元素
-  let link = document.createElement("a");
-
-  // 設置 <a> 元素的內容為 bookinfo.articlename
-  if (data.Has_bookinfo()) {
-    if (Debug) {
-      console.log("user bookinfo.articlename");
+    const titleDiv = document.querySelector(
+      "body > div.container > div.mybox > div.tools"
+    ) as HTMLDivElement;
+    if (titleDiv) {
+      const titleLink = document.createElement("a");
+      titleLink.innerHTML = this.data.HasBookInfo()
+        ? bookinfo.articlename ?? document.title.split("-")[0]
+        : document.title.split("-")[0];
+      titleLink.classList.add("userjs_add");
+      titleLink.id = "title";
+      titleLink.href = `${window.location.origin}/${
+        this.data.IsBiz() ? "b" : "book"
+      }/${this.data.Book.GetAid()}.${
+        this.data.IsBiz() ? "html" : "htm"
+      }?FormTitle=false`;
+      titleDiv.parentNode?.replaceChild(titleLink, titleDiv);
     }
-    link.innerHTML =
-      bookinfo.articlename ??
-      document.querySelector("head > title")!.innerHTML.split("-")[0];
-  } else {
-    if (Debug) {
-      console.log("from head>title get title");
-    }
-    link.innerHTML = document
-      .querySelector("head > title")!
-      .innerHTML.split("-")[0];
   }
 
-  // 添加 <a> 元素的類名為 "userjs_add"
-  link.classList.add("userjs_add");
+  private handleBookshelf() {
+    const bookData = this.collectBookData();
+    if (config.Debug) console.log("Bookshelf data collected", bookData);
+    this.registerMenuCommand(bookData);
+  }
 
-  // 設置 <a> 元素的 id 為 "title"
-  link.id = "title";
+  private collectBookData(): BookData[] {
+    const books: BookData[] = [];
+    document.querySelectorAll(".newbox2 h3 label").forEach((label) => {
+      const bookContainer = label.parentNode?.parentNode?.parentNode
+        ?.parentNode as Element;
+      const bookName =
+        bookContainer.querySelector("div > h3 > a > span")?.textContent ?? "";
+      const bookImgUrl =
+        (bookContainer.querySelector("a > img") as HTMLImageElement)?.src ?? "";
+      const bookMarkLink =
+        bookContainer
+          .querySelectorAll("div")[1]
+          .querySelectorAll("p")[0]
+          .querySelector("a")?.href ?? "";
+      const bookUpdateLink =
+        bookContainer
+          .querySelectorAll("div")[1]
+          .querySelectorAll("p")[1]
+          .querySelector("a")?.href ?? "";
 
-  // 設置 <a> 元素的 href
-  link.href = `${window.location.origin}/${
-    data.IsBiz() ? "b" : "book"
-  }/${data.Book.GetAid()}.${data.IsBiz() ? "html" : "htm"}?FormTitle=false`;
+      books.push({
+        Updata: {
+          HTML_obj: bookContainer
+            .querySelectorAll("div")[1]
+            .querySelectorAll("p")[1],
+          url: {
+            value: bookUpdateLink,
+            URLParams: {
+              obj: new URLSearchParams(bookUpdateLink),
+            },
+          },
+        },
+        Mark: {
+          HTML_obj: bookContainer
+            .querySelectorAll("div")[1]
+            .querySelectorAll("p")[0],
+          url: {
+            value: bookMarkLink,
+            URLParams: {
+              obj: new URLSearchParams(bookMarkLink),
+            },
+          },
+        },
+        BookMate: {
+          BookName: bookName,
+          Book_HTML_obj: bookContainer,
+          BookImgUrl: bookImgUrl,
+        },
+      });
+    });
+    return books;
+  }
 
-  // 將 <a> 元素插入到 title 的父元素中
-  title?.parentNode?.replaceChild(link, title);
+  private registerMenuCommand(bookData: BookData[]) {
+    GM_registerMenuCommand(
+      `${bookData.length === 0 ? "沒有" : `有${bookData.length}個`}更新`,
+      () => {
+        bookData.forEach((data) => {
+          GM_openInTab(data.Updata.url.value);
+        });
+      }
+    );
+  }
 
-  let ele = document.querySelector(
-    "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
-  ) as HTMLAnchorElement | null;
-  if (ele) {
-    ele.href += "?FromBook=true";
+  private debugInfo() {
+    return {
+      IsBook: this.data.Book.Is(),
+      IsInfo: this.data.Info.Is(),
+      IsEnd: this.data.End.Is(),
+      IsNextEnd: this.data.IsNextEnd(),
+      IsBookshelf: this.data.IsBookshelf(),
+      HasBookinfo: this.data.HasBookInfo(),
+      IsBiz: this.data.IsBiz(),
+      ...config,
+    };
   }
-}
-if (data.Info.Is()) {
-  // #tag is_info
-  if (Debug) {
-    console.log("info");
-  }
-  run = true;
-}
-if (data.End.Is()) {
-  // #tag is_end
-  if (Debug) {
-    console.log("end");
-  }
-  run = true;
-  if (IsEndClose) {
-    window.close();
-  }
-}
-if (data.Book.Is() && data.IsNextEnd()) {
-  // #tag is_next_end
-  if (Debug) {
-    console.log("next_is_end");
-  }
-  run = true;
-  document.addEventListener("keydown", function (e) {
-    if (!e.repeat) {
-      switch (true) {
-        case e.key === "ArrowRight": {
-          if (Debug) {
-            console.log('(e.key === "ArrowRight") === true');
-          }
-          if (IsEndClose) {
-            window.close();
-          }
-          break;
-        }
-        default: {
-          if (Debug) {
-            console.log("e: ", e);
-          }
-          break;
-        }
+  private registerConfigMenu() {
+    for (const key in config) {
+      const value = config[key as keyof Config];
+      if (typeof value == "boolean") {
+        setMenu(key);
       }
     }
-  });
-  (
-    document.querySelector(
-      "body > div.container > div.mybox > div.page1 > a:nth-child(4)"
-    ) as HTMLAnchorElement | null
-  )?.addEventListener("click", function () {
-    if (Debug) {
-      console.log("click");
-    }
-    if (AutoAddBookcase) {
-      (
-        document.querySelector("#a_addbookcase") as HTMLAnchorElement | null
-      )?.click();
-    } else if (Debug) {
-      console.log("auto_bookcase !== true");
-    }
-    if (IsEndClose) {
-      window.close();
-    }
-  });
-}
-if (data.IsBookshelf()) {
-  // #tag is_bookshelf
-  if (Debug) {
-    console.log("bookshelf");
   }
-  run = true;
-
-  interface BookData {
-    updata: {
-      HTML_obj: Element;
-      url: {
-        value: string;
-        URLParams: {
-          obj: URLSearchParams;
-        };
-      };
-    };
-    mark: {
-      HTML_obj: Element;
-      url: {
-        value: string;
-        URLParams: {
-          obj: URLSearchParams;
-        };
-      };
-    };
-    book_mate: {
-      book_name: string;
-      book_HTML_obj: Element;
-      book_ing_url: string;
-    };
-  }
-  let All_UpData_Url_Data: Array<BookData> = [];
-  let all_updata_label = document.querySelectorAll(".newbox2 h3 label");
-  if (Debug) {
-    console.group();
-  }
-  all_updata_label.forEach((up_data_label) => {
-    //#region book_mate
-    let book_HTML_obj: Element = up_data_label!.parentNode!.parentNode!
-      .parentNode!.parentNode as Element;
-    let book_name: string = book_HTML_obj.querySelector("div > h3 > a > span")!
-      .innerHTML as string;
-    let book_img_url: string = (
-      book_HTML_obj.querySelector("a > img") as HTMLImageElement
-    ).src;
-    //#endregion book_mate
-
-    //#region mark
-    let book_mark_HTML_obj: Element = up_data_label
-      .parentNode!.parentNode!.parentNode!.querySelectorAll("div")[1]
-      .querySelectorAll("p")[0];
-    let mark_url = book_mark_HTML_obj.querySelector("a")!.href;
-    let mark_url_obj: URLSearchParams = new URLSearchParams(mark_url);
-    //#endregion mark
-
-    //#region updata
-    let book_updata_HTML_obj: Element = up_data_label
-      .parentNode!.parentNode!.parentNode!.querySelectorAll("div")[1]
-      .querySelectorAll("p")[1];
-    let updata_url = book_updata_HTML_obj.querySelector("a")!.href;
-    let updata_url_obj: URLSearchParams = new URLSearchParams(updata_url);
-    //#endregion updata
-
-    let UpData_Url_Data: BookData = {
-      updata: {
-        HTML_obj: book_updata_HTML_obj,
-        url: {
-          value: updata_url,
-          URLParams: {
-            obj: updata_url_obj,
-          },
-        },
-      },
-      mark: {
-        HTML_obj: book_mark_HTML_obj,
-        url: {
-          value: mark_url,
-          URLParams: {
-            obj: mark_url_obj,
-          },
-        },
-      },
-      book_mate: {
-        book_name: book_name,
-        book_HTML_obj: book_HTML_obj,
-        book_ing_url: book_img_url,
-      },
-    };
-    All_UpData_Url_Data.push(UpData_Url_Data);
-    if (Debug) {
-      console.debug("Has updata", UpData_Url_Data);
-    }
-  });
-  if (Debug) {
-    console.groupEnd();
-  }
-
-  GM_registerMenuCommand(
-    `${
-      all_updata_label.length === 0
-        ? "沒有"
-        : `有${all_updata_label.length + "個"}`
-    }更新`,
-    () => {
-      All_UpData_Url_Data.forEach((UpData_Url_Data: BookData) => {
-        GM_openInTab(UpData_Url_Data.updata.url.value);
-      });
-    }
-  );
-}
-if (!run) {
-  console.error("no run", this);
-  console.table({
-    Is_Book: data.Book.Is(),
-    Is_Info: data.Info.Is(),
-    Is_End: data.End.Is(),
-    IsNextEnd: data.IsNextEnd(),
-    IsBookshelf: data.IsBookshelf(),
-    Has_bookinfo: data.Has_bookinfo(),
-    IsBiz: data.IsBiz(),
-    IsEndClose: IsEndClose,
-    AutoAddBookcase: AutoAddBookcase,
-    IsHookAlert: IsHookAlert,
-    HookAlertBlockade: HookAlertBlockade,
-    Debug: Debug,
-  });
 }
 
-//#region Menu
-setMenu("Debug");
-setMenu("AutoAddBookcase");
-setMenu("IsEndClose");
-setMenu("IsHookAlert");
-//#endregion Menu
+try {
+  const bookManager = new BookManager();
+  bookManager.run();
+} catch (error) {
+  console.error(error);
+  if (!config.Debug) {
+    alert(error);
+  }
+}

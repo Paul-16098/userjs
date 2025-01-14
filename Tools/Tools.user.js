@@ -3,7 +3,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.10.0
+// @version      2.2.12.0
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -16,7 +16,7 @@
 // @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
 // ==/UserScript==
 const _unsafeWindow = unsafeWindow ?? window;
-const IS_DEBUG_LOG = GM_getValue("debug.debug_log", false);
+const IS_DEBUG_LOG = GM_getValue("IS_DEBUG_LOG", false);
 // 設置和初始化 GM API 的函數
 function setGM() {
     let debug = console.debug;
@@ -144,9 +144,9 @@ function setGM() {
     }
 }
 // 從 DOM 中移除指定的元素
-function remove_ele(...args) {
+function removeElement(...args) {
     try {
-        if (args && args.length > 0) {
+        if (args) {
             args.forEach((args) => {
                 if (IS_DEBUG_LOG) {
                     console.log("args: ", args);
@@ -162,9 +162,6 @@ function remove_ele(...args) {
                 }
             });
         }
-        else {
-            throw Error("fn remove error, args is not a array or args.length =< 0");
-        }
     }
     catch (e) {
         console.error(e);
@@ -175,23 +172,27 @@ function remove_ele(...args) {
 // 設置菜單功能，允許註冊命令並處理顯示值的映射
 function setMenu(name, fn, showValueMapping) {
     // 顯示值的映射
-    let trueShowMapping = showValueMapping ?? {
-        true: "true",
-        false: "false",
+    const trueShowValueMapping = showValueMapping ?? {
+        true: "開",
+        false: "關",
     };
-    let showName = name.replaceAll("_", " ");
-    let getValue = GM_getValue(name);
-    let showValue = trueShowMapping[getValue];
-    let trueFn = fn ??
+    const showName = name.replaceAll("_", " ");
+    const getValue = GM_getValue(name);
+    const showValue = trueShowValueMapping[getValue] ?? getValue;
+    const trueFn = fn ??
         function (ev) {
             if (typeof getValue === "boolean") {
                 GM_setValue(name, !getValue);
                 window.location.reload();
             }
+            else {
+                alert("the type is not bool");
+                console.error("the type is not bool");
+            }
         };
     return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
-// 定義一個新的評估函數，用於執行傳入的字符串代碼
+// 定義一個新的函數，用於執行傳入的字符串代碼
 function newEval(stringCode, safety = true) {
     // 檢查是否包含不允許的關鍵字或代碼
     const blackList = [
@@ -272,4 +273,5 @@ class i18n {
         return `{Translation not found for \`${key}\` in [${this.langList.join(", ")}]}`;
     }
 }
+// #endregion i18n
 //# sourceMappingURL=Tools.user.js.map

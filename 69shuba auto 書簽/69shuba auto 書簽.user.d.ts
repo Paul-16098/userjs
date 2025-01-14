@@ -1,27 +1,50 @@
-declare const Debug: boolean;
-declare const IsEndClose: boolean;
-declare const AutoAddBookcase: boolean;
-declare const IsHookAlert: boolean;
-declare const HookAlertBlockade: Array<Array<any>>;
-declare const data: {
-    Has_bookinfo: () => boolean;
-    IsBookshelf: (href?: string) => boolean;
-    Book: {
-        GetAid: (href?: string) => string;
-        GetCid: (href?: string) => string;
-        pattern: RegExp;
-        Is: (href?: string) => boolean;
+interface Config {
+    Debug: boolean;
+    IsEndClose: boolean;
+    AutoAddBookcase: boolean;
+    IsHookAlert: boolean;
+    HookAlertBlockade: Array<Array<any>>;
+}
+interface BookData {
+    Updata: {
+        HTML_obj: Element;
+        url: {
+            value: string;
+            URLParams: {
+                obj: URLSearchParams;
+            };
+        };
     };
-    Info: {
-        pattern: RegExp;
-        Is: (href?: string) => boolean;
+    Mark: {
+        HTML_obj: Element;
+        url: {
+            value: string;
+            URLParams: {
+                obj: URLSearchParams;
+            };
+        };
     };
-    End: {
-        Is: (href?: string) => boolean;
+    BookMate: {
+        BookName: string;
+        Book_HTML_obj: Element;
+        BookImgUrl: string;
     };
-    GetNextPageUrl: () => string | undefined;
-    IsNextEnd: () => boolean;
-    IsBiz: (host?: string) => boolean;
-};
-declare let ele: Array<string>;
-declare let run: boolean;
+}
+declare const config: Config;
+declare class BookManager {
+    private data;
+    constructor();
+    run(): void;
+    private handleBookPage;
+    private hookAlert;
+    private addStyles;
+    private modifyPageNavigation;
+    private keydownHandler;
+    private addBookcase;
+    private insertAuthorLink;
+    private handleBookshelf;
+    private collectBookData;
+    private registerMenuCommand;
+    private debugInfo;
+    private registerConfigMenu;
+}

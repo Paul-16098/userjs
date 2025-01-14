@@ -2,7 +2,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.10.0
+// @version      2.2.12.0
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -17,7 +17,7 @@
 
 const _unsafeWindow = unsafeWindow ?? window;
 
-const IS_DEBUG_LOG: boolean = GM_getValue("debug.debug_log", false);
+const IS_DEBUG_LOG: boolean = GM_getValue("IS_DEBUG_LOG", false);
 
 // 設置和初始化 GM API 的函數
 function setGM() {
@@ -158,9 +158,9 @@ function setGM() {
 }
 
 // 從 DOM 中移除指定的元素
-function remove_ele(...args: Array<string>) {
+function removeElement(...args: Array<string>) {
   try {
-    if (args && args.length > 0) {
+    if (args) {
       args.forEach((args) => {
         if (IS_DEBUG_LOG) {
           console.log("args: ", args);
@@ -177,8 +177,6 @@ function remove_ele(...args: Array<string>) {
           console.debug(args, "is not a Html Element.");
         }
       });
-    } else {
-      throw Error("fn remove error, args is not a array or args.length =< 0");
     }
   } catch (e) {
     console.error(e);
@@ -198,25 +196,28 @@ function setMenu(
     | undefined
 ) {
   // 顯示值的映射
-  let trueShowMapping = showValueMapping ?? {
-    true: "true",
-    false: "false",
+  const trueShowValueMapping = showValueMapping ?? {
+    true: "開",
+    false: "關",
   };
-  let showName: string = name.replaceAll("_", " ");
-  let getValue: any = GM_getValue(name);
-  let showValue = trueShowMapping[getValue];
-  let trueFn =
+  const showName: string = name.replaceAll("_", " ");
+  const getValue: any = GM_getValue(name);
+  const showValue = trueShowValueMapping[getValue] ?? getValue;
+  const trueFn =
     fn ??
     function (ev: MouseEvent | KeyboardEvent) {
       if (typeof getValue === "boolean") {
         GM_setValue(name, !getValue);
         window.location.reload();
+      } else {
+        alert("the type is not bool");
+        console.error("the type is not bool");
       }
     };
   return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
 
-// 定義一個新的評估函數，用於執行傳入的字符串代碼
+// 定義一個新的函數，用於執行傳入的字符串代碼
 function newEval(stringCode: string, safety: boolean = true) {
   // 檢查是否包含不允許的關鍵字或代碼
   const blackList: Array<string | RegExp> = [
@@ -264,6 +265,7 @@ function newEval(stringCode: string, safety: boolean = true) {
   return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
 
+// #region i18n
 // 定義一個接口 langJson，用於描述一個多語言的 JSON 對象
 interface langJson {
   [lang: string]: {
@@ -310,3 +312,4 @@ class i18n {
     )}]}`;
   }
 }
+// #endregion i18n
