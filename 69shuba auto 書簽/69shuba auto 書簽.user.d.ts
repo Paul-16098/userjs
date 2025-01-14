@@ -7,24 +7,12 @@ interface Config {
 }
 interface BookData {
     Updata: {
-        HTML_obj: Element;
         url: {
             value: string;
-            URLParams: {
-                obj: URLSearchParams;
-            };
+            URLParams: URLSearchParams;
         };
     };
-    Mark: {
-        HTML_obj: Element;
-        url: {
-            value: string;
-            URLParams: {
-                obj: URLSearchParams;
-            };
-        };
-    };
-    BookMate: {
+    Mate: {
         BookName: string;
         Book_HTML_obj: Element;
         BookImgUrl: string;
@@ -48,3 +36,4 @@ declare class BookManager {
     private debugInfo;
     private registerConfigMenu;
 }
+declare const bookManager: BookManager;

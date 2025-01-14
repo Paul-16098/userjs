@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.1.0
+// @version      3.5.2.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -139,27 +139,35 @@ class BookManager {
         };
     }
     run() {
-        this.registerConfigMenu();
-        if (this.data.Book.Is()) {
-            this.handleBookPage();
+        try {
+            this.registerConfigMenu();
+            if (this.data.Book.Is()) {
+                this.handleBookPage();
+            }
+            else if (this.data.Info.Is()) {
+                // Handle info page
+            }
+            else if (this.data.End.Is()) {
+                if (config.IsEndClose)
+                    window.close();
+            }
+            else if (this.data.IsBookshelf()) {
+                this.handleBookshelf();
+            }
+            if (config.Debug &&
+                !this.data.Book.Is() &&
+                !this.data.Info.Is() &&
+                !this.data.End.Is() &&
+                !this.data.IsBookshelf()) {
+                console.error("No matching URL pattern found");
+                console.table(this.debugInfo());
+            }
         }
-        else if (this.data.Info.Is()) {
-            // Handle info page
-        }
-        else if (this.data.End.Is()) {
-            if (config.IsEndClose)
-                window.close();
-        }
-        else if (this.data.IsBookshelf()) {
-            this.handleBookshelf();
-        }
-        if (config.Debug &&
-            !this.data.Book.Is() &&
-            !this.data.Info.Is() &&
-            !this.data.End.Is() &&
-            !this.data.IsBookshelf()) {
-            console.error("No matching URL pattern found");
-            console.table(this.debugInfo());
+        catch (error) {
+            console.error(error);
+            if (!config.Debug) {
+                alert(error);
+            }
         }
     }
     handleBookPage() {
@@ -233,57 +241,59 @@ class BookManager {
             titleDiv.parentNode?.replaceChild(titleLink, titleDiv);
         }
     }
-    handleBookshelf() {
-        const bookData = this.collectBookData();
+    async handleBookshelf() {
+        const bookData = await this.collectBookData();
         if (config.Debug)
             console.log("Bookshelf data collected", bookData);
         this.registerMenuCommand(bookData);
     }
-    collectBookData() {
+    async collectBookData(retryCount = 0) {
         const books = [];
-        document.querySelectorAll(".newbox2 h3 label").forEach((label) => {
-            const bookContainer = label.parentNode?.parentNode?.parentNode
-                ?.parentNode;
-            const bookName = bookContainer.querySelector("div > h3 > a > span")?.textContent ?? "";
-            const bookImgUrl = bookContainer.querySelector("a > img")?.src ?? "";
-            const bookMarkLink = bookContainer
-                .querySelectorAll("div")[1]
-                .querySelectorAll("p")[0]
-                .querySelector("a")?.href ?? "";
-            const bookUpdateLink = bookContainer
-                .querySelectorAll("div")[1]
-                .querySelectorAll("p")[1]
-                .querySelector("a")?.href ?? "";
-            books.push({
+        const labels = document.querySelectorAll("[id^='book_']");
+        console.groupCollapsed("collectBookData");
+        if (labels.length === 0) {
+            if (retryCount <= 5) {
+                console.warn("No labels found, retrying in 5 seconds...");
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+                return this.collectBookData(retryCount + 1);
+            }
+            else {
+                console.error("Max retries reached. No labels found.");
+                return []; // 到達最大重試次數，返回空陣列
+            }
+        }
+        if (config.Debug) {
+            console.log(labels);
+        }
+        labels.forEach((label) => {
+            const bookContainer = label;
+            const bookUpdate = label.querySelector("div.newright > a.btn.btn-tp");
+            const bookUpdateLink = bookUpdate.href;
+            const BookName = label.querySelector("div.newnav > h3 > a > span").textContent;
+            const bookImg = label.querySelector("a > img");
+            const bookImgUrl = bookImg.src;
+            const push_data = {
                 Updata: {
-                    HTML_obj: bookContainer
-                        .querySelectorAll("div")[1]
-                        .querySelectorAll("p")[1],
                     url: {
                         value: bookUpdateLink,
-                        URLParams: {
-                            obj: new URLSearchParams(bookUpdateLink),
-                        },
+                        URLParams: new URLSearchParams(bookUpdateLink),
                     },
                 },
-                Mark: {
-                    HTML_obj: bookContainer
-                        .querySelectorAll("div")[1]
-                        .querySelectorAll("p")[0],
-                    url: {
-                        value: bookMarkLink,
-                        URLParams: {
-                            obj: new URLSearchParams(bookMarkLink),
-                        },
-                    },
-                },
-                BookMate: {
-                    BookName: bookName,
+                Mate: {
+                    BookName: BookName,
                     Book_HTML_obj: bookContainer,
                     BookImgUrl: bookImgUrl,
                 },
-            });
+            };
+            if (config.Debug) {
+                console.group(push_data.Mate.BookName);
+                console.log(push_data.Mate);
+                console.table(push_data.Updata);
+                console.groupEnd();
+            }
+            books.push(push_data);
         });
+        console.groupEnd();
         return books;
     }
     registerMenuCommand(bookData) {
@@ -314,14 +324,6 @@ class BookManager {
         }
     }
 }
-try {
-    const bookManager = new BookManager();
-    bookManager.run();
-}
-catch (error) {
-    console.error(error);
-    if (!config.Debug) {
-        alert(error);
-    }
-}
+const bookManager = new BookManager();
+bookManager.run();
 //# sourceMappingURL=69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.js.map
