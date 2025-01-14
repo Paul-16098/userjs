@@ -2,7 +2,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.10.0
+// @version      2.2.11.0
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -158,7 +158,7 @@ function setGM() {
 }
 
 // 從 DOM 中移除指定的元素
-function remove_ele(...args: Array<string>) {
+function removeElement(...args: Array<string>) {
   try {
     if (args && args.length > 0) {
       args.forEach((args) => {
@@ -198,25 +198,28 @@ function setMenu(
     | undefined
 ) {
   // 顯示值的映射
-  let trueShowMapping = showValueMapping ?? {
+  const trueShowValueMapping = showValueMapping ?? {
     true: "開",
     false: "關",
   };
-  let showName: string = name.replaceAll("_", " ");
-  let getValue: any = GM_getValue(name);
-  let showValue = trueShowMapping[getValue];
-  let trueFn =
+  const showName: string = name.replaceAll("_", " ");
+  const getValue: any = GM_getValue(name);
+  const showValue = trueShowValueMapping[getValue] ?? getValue;
+  const trueFn =
     fn ??
     function (ev: MouseEvent | KeyboardEvent) {
       if (typeof getValue === "boolean") {
         GM_setValue(name, !getValue);
         window.location.reload();
+      } else {
+        alert("the type is not bool");
+        console.error("the type is not bool");
       }
     };
   return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
 
-// 定義一個新的評估函數，用於執行傳入的字符串代碼
+// 定義一個新的函數，用於執行傳入的字符串代碼
 function newEval(stringCode: string, safety: boolean = true) {
   // 檢查是否包含不允許的關鍵字或代碼
   const blackList: Array<string | RegExp> = [
