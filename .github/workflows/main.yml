@@ -29,7 +29,14 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build
-        run: for dir in */; do tsc -p "$dir"; done
+        run: |
+          for dir in */; do
+            if [ -f "$dir/tsconfig.json" ]; then
+              tsc -p "$dir"
+            else
+              echo "Skipping $dir: tsconfig.json not found."
+            fi
+          done
       - name: Commit changes
         run: git commit -am "Update version"
       - name: Push changes
