@@ -37,8 +37,19 @@ jobs:
               echo "Skipping $dir: tsconfig.json not found."
             fi
           done
+
+      - name: Set up Git user
+        run: |
+          git config --global user.email "Actions@github.com"
+          git config --global user.name "GitHub Actions"
+
       - name: Commit changes
-        run: git commit -am "Update version"
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -am "Update version"
+          else
+            echo "No changes to commit."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Push changes
