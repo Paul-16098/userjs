@@ -39,5 +39,7 @@ jobs:
           done
       - name: Commit changes
         run: git commit -am "Update version"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Push changes
         run: git push
