@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.2.0
+// @version      3.5.3.0-edge10
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -62,6 +62,7 @@
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
 // ==/UserScript==
+// 配置初始化
 const config = {
     Debug: GM_getValue("Debug", false),
     IsEndClose: GM_getValue("IsEndClose", true),
@@ -73,93 +74,115 @@ const config = {
     ]),
 };
 class BookManager {
-    data;
-    constructor() {
-        this.data = {
-            HasBookInfo: () => typeof bookinfo !== "undefined",
-            IsBookshelf: (href = window.location.href) => {
-                return new URL(href).pathname === "/modules/article/bookcase.php";
-            },
-            Book: {
-                GetAid: (href = window.location.href) => {
-                    if (this.data.HasBookInfo()) {
-                        return bookinfo.articleid;
-                    }
-                    return href.split("/")[4];
-                },
-                GetCid: (href = window.location.href) => {
-                    if (this.data.HasBookInfo()) {
-                        return bookinfo.chapterid;
-                    }
-                    return href.split("/")[5];
-                },
-                pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
-                Is: (href = window.location.href) => {
-                    return this.data.Book.pattern.test(new URL(href).pathname);
-                },
-            },
-            Info: {
-                pattern: /^\/(book|b|article)\/([0-9]|[a-z])+\.htm(l)?$/m,
-                Is: (pathname = window.location.pathname) => {
-                    return this.data.Info.pattern.test(pathname);
-                },
-            },
-            End: {
-                Is: (href = window.location.href) => {
-                    if (this.data.Info.Is()) {
-                        const searchParams = new URL(href).searchParams;
-                        return searchParams.get("FromBook") === "true";
-                    }
-                    return false;
-                },
-            },
-            GetNextPageUrl: () => {
-                let ele = document.querySelector("body > div.container > div.mybox > div.page1 > a:nth-child(4)");
-                if (ele && ele.href !== null) {
-                    return ele.href;
+    data = {
+        // 判斷是否有書籍信息
+        HasBookInfo: () => typeof bookinfo !== "undefined",
+        // 判斷是否在書架頁面
+        IsBookshelf: (href = window.location.href) => {
+            return new URL(href).pathname === "/modules/article/bookcase.php";
+        },
+        // 書籍相關操作
+        Book: {
+            // 獲取書籍ID
+            GetAid: (href = window.location.href) => {
+                if (this.data.HasBookInfo()) {
+                    return bookinfo.articleid;
                 }
-                ele = document.querySelector("body > div.mainbox > div > div.page1 > a:nth-child(4)");
-                if (ele && ele.href !== null) {
-                    return ele.href;
-                }
+                return href.split("/")[4];
             },
-            IsNextEnd: () => {
-                if (this.data.Book.Is()) {
-                    const nextUrl = this.data.GetNextPageUrl();
-                    if (nextUrl) {
-                        return (this.data.End.Is(nextUrl) ||
-                            this.data.Info.Is(new URL(nextUrl).pathname));
-                    }
+            // 獲取章節ID
+            GetCid: (href = window.location.href) => {
+                if (this.data.HasBookInfo()) {
+                    return bookinfo.chapterid;
+                }
+                return href.split("/")[5];
+            },
+            // 書籍URL模式
+            pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
+            // 判斷是否為書籍頁面
+            Is: (href = window.location.href) => {
+                return this.data.Book.pattern.test(new URL(href).pathname);
+            },
+        },
+        // 書籍信息相關操作
+        Info: {
+            // 書籍信息URL模式
+            pattern: /^\/(book|b|article)\/([0-9]|[a-z])+\.htm(l)?$/m,
+            // 判斷是否為書籍信息頁面
+            Is: (pathname = window.location.pathname) => {
+                return this.data.Info.pattern.test(pathname);
+            },
+        },
+        // 結束頁面相關操作
+        End: {
+            // 判斷是否為結束頁面
+            Is: (href = window.location.href) => {
+                if (this.data.Info.Is()) {
+                    const searchParams = new URL(href).searchParams;
+                    return searchParams.get("FromBook") === "true";
                 }
                 return false;
             },
-            IsBiz: (host = location.host) => {
-                return host === "69shu.biz";
-            },
-        };
-    }
-    run() {
+        },
+        // 獲取下一頁URL
+        GetNextPageUrl: () => {
+            let ele = document.querySelector("body > div.container > div.mybox > div.page1 > a:nth-child(4)");
+            if (ele && ele.href !== null) {
+                return ele.href;
+            }
+            ele = document.querySelector("body > div.mainbox > div > div.page1 > a:nth-child(4)");
+            if (ele && ele.href !== null) {
+                return ele.href;
+            }
+        },
+        // 判斷下一頁是否為結束頁面
+        IsNextEnd: () => {
+            if (this.data.Book.Is()) {
+                const nextUrl = this.data.GetNextPageUrl();
+                if (nextUrl) {
+                    return (this.data.End.Is(nextUrl) ||
+                        this.data.Info.Is(new URL(nextUrl).pathname));
+                }
+            }
+            return false;
+        },
+        // 判斷是否為69shu.biz域名
+        IsBiz: (host = location.host) => {
+            return host === "69shu.biz";
+        },
+    };
+    constructor() {
         try {
             this.registerConfigMenu();
             if (this.data.Book.Is()) {
+                if (config.Debug)
+                    console.log("Book page detected");
                 this.handleBookPage();
             }
-            else if (this.data.Info.Is()) {
-                // Handle info page
+            if (this.data.Info.Is()) {
+                if (config.Debug)
+                    console.log("Book info page detected");
+                document.querySelector("body > div.container > ul > li.col-8 > div:nth-child(2) > ul > li:nth-child(2) > a").click();
             }
-            else if (this.data.End.Is()) {
+            if (this.data.End.Is()) {
+                if (config.Debug)
+                    console.log("End page detected");
                 if (config.IsEndClose)
                     window.close();
             }
-            else if (this.data.IsBookshelf()) {
+            if (this.data.IsBookshelf()) {
+                if (config.Debug)
+                    console.log("Bookshelf page detected");
                 this.handleBookshelf();
             }
-            if (config.Debug &&
-                !this.data.Book.Is() &&
+            if (!this.data.Book.Is() &&
                 !this.data.Info.Is() &&
                 !this.data.End.Is() &&
                 !this.data.IsBookshelf()) {
-                console.error("No matching URL pattern found");
+                console.table(this.debugInfo());
+                alert("No matching URL pattern found");
+            }
+            else if (config.Debug) {
                 console.table(this.debugInfo());
             }
         }
@@ -170,6 +193,7 @@ class BookManager {
             }
         }
     }
+    // 處理書籍頁面
     handleBookPage() {
         if (config.IsHookAlert)
             this.hookAlert();
@@ -179,7 +203,12 @@ class BookManager {
         if (config.AutoAddBookcase)
             this.addBookcase();
         this.insertAuthorLink();
+        const nextPageEle = document.querySelector("body > div.mainbox > div > div.page1 > a:nth-child(4)");
+        let href = new URL(nextPageEle.href);
+        href.searchParams.set("FromBook", "true");
+        nextPageEle.href = href.toString();
     }
+    // 攔截alert函數
     hookAlert() {
         const _alert = alert;
         unsafeWindow.alert = (...message) => {
@@ -191,24 +220,30 @@ class BookManager {
                 console.log("Alert message:", message);
         };
     }
+    // 添加樣式
     addStyles() {
         const css1 = GM_getResourceText("css1");
         GM_addStyle(css1);
         if (config.Debug)
             console.log("CSS added");
     }
+    // 修改頁面導航
     modifyPageNavigation() {
         document.onkeydown = null;
         addEventListener("keydown", this.keydownHandler.bind(this));
     }
+    // 處理鍵盤事件
     keydownHandler(e) {
         if (!e.repeat && e.key === "ArrowRight") {
             const nextPageLink = this.data.GetNextPageUrl();
             if (nextPageLink) {
-                window.location.href = nextPageLink;
+                let href = new URL(nextPageLink);
+                href.searchParams.set("FromBook", "true");
+                window.location.href = href.toString();
             }
         }
     }
+    // 添加書籍到書架
     addBookcase() {
         const aid = this.data.Book.GetAid();
         const cid = this.data.Book.GetCid();
@@ -220,6 +255,7 @@ class BookManager {
             addBookcaseLink?.click();
         }
     }
+    // 插入作者鏈接
     insertAuthorLink() {
         const author = document
             .querySelector("body > div.container > div.mybox > div.txtnav > div.txtinfo.hide720 > span:nth-child(2)")
@@ -237,16 +273,18 @@ class BookManager {
                 : document.title.split("-")[0];
             titleLink.classList.add("userjs_add");
             titleLink.id = "title";
-            titleLink.href = `${window.location.origin}/${this.data.IsBiz() ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz() ? "html" : "htm"}?FormTitle=false`;
+            titleLink.href = `${window.location.origin}/${this.data.IsBiz() ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz() ? "html" : "htm"}`;
             titleDiv.parentNode?.replaceChild(titleLink, titleDiv);
         }
     }
+    // 處理書架頁面
     async handleBookshelf() {
         const bookData = await this.collectBookData();
         if (config.Debug)
             console.log("Bookshelf data collected", bookData);
         this.registerMenuCommand(bookData);
     }
+    // 收集書籍數據
     async collectBookData(retryCount = 0) {
         const books = [];
         const labels = document.querySelectorAll("[id^='book_']");
@@ -296,6 +334,7 @@ class BookManager {
         console.groupEnd();
         return books;
     }
+    // 註冊菜單命令
     registerMenuCommand(bookData) {
         GM_registerMenuCommand(`${bookData.length === 0 ? "沒有" : `有${bookData.length}個`}更新`, () => {
             bookData.forEach((data) => {
@@ -303,6 +342,7 @@ class BookManager {
             });
         });
     }
+    // 調試信息
     debugInfo() {
         return {
             IsBook: this.data.Book.Is(),
@@ -315,6 +355,7 @@ class BookManager {
             ...config,
         };
     }
+    // 註冊配置菜單
     registerConfigMenu() {
         for (const key in config) {
             const value = config[key];
@@ -324,6 +365,6 @@ class BookManager {
         }
     }
 }
+// 初始化書籍管理器
 const bookManager = new BookManager();
-bookManager.run();
 //# sourceMappingURL=69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.js.map

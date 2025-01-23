@@ -22,7 +22,6 @@ declare const config: Config;
 declare class BookManager {
     private data;
     constructor();
-    run(): void;
     private handleBookPage;
     private hookAlert;
     private addStyles;
