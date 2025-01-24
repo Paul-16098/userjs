@@ -234,10 +234,25 @@ function newEval(stringCode, safety = true) {
     // 返回執行傳入字符串代碼的結果
     return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
-// 國際化類，用於處理多語言文本
 class i18n {
-    langJson; // 存儲語言映射的對象
-    langList = []; // 語言列表
+    /**
+     * 儲存語言映射的物件。
+     *
+     * @type {langJson}
+     */
+    langJson;
+    /**
+     * 語言代碼列表。
+     *
+     * @type {Array<string>}
+     */
+    langList = [];
+    /**
+     * 創建一個I18N實例。
+     *
+     * @param {langJson} langJson  -語言映射。
+     * @param {(string | Array<string>)} lang  -語言代碼或語言代碼列表。
+     */
     constructor(langJson, lang) {
         // 構造函數，接受語言和語言映射
         this.langJson = langJson;
@@ -250,7 +265,13 @@ class i18n {
             this.langList.push(lang);
         }
     }
-    // 根據鍵獲取對應的語言文本
+    /**
+     * 根據提供的key和可選參數檢索本地化字符串。
+     *
+     * @param key  -所需局部字符串的key。
+     * @param args  -可選的參數以替換本地化字符串中的佔位符。
+     * @returns 帶有佔位符的本地化字符串用提供的參數代替，或者一條表示未找到翻譯的消息。
+     */
     get(key, ...args) {
         for (const lang of this.langList) {
             // 遍歷語言列表

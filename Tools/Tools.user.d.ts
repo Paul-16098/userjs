@@ -6,14 +6,54 @@ declare function setMenu(name: string, fn?: ((ev?: MouseEvent | KeyboardEvent) =
     [x: string]: string;
 } | undefined): number;
 declare function newEval(stringCode: string, safety?: boolean): any;
+/**
+ * 代表包含語言翻譯的JSON對象。
+ *
+ * 該對像以語言代碼作為頂級key進行構造，每個語言代碼映射到另一個對象，其中鍵是翻譯鍵，值是翻譯字符串。
+ *
+ * @example
+ * const translations: langJson = {
+ *   "en": {
+ *     "greeting": "Hello",
+ *     "farewell": "Goodbye"
+ *   },
+ *   "es": {
+ *     "greeting": "Hola",
+ *     "farewell": "Adiós"
+ *   }
+ * };
+ */
 interface langJson {
     [lang: string]: {
         [key: string]: string;
     };
 }
 declare class i18n {
+    /**
+     * 儲存語言映射的物件。
+     *
+     * @type {langJson}
+     */
     langJson: langJson;
+    /**
+     * 語言代碼列表。
+     *
+     * @type {Array<string>}
+     */
     langList: Array<string>;
+    /**
+     * 創建一個I18N實例。
+     *
+     * @param {langJson} langJson  -語言映射。
+     * @param {(string | Array<string>)} lang  -語言代碼或語言代碼列表。
+     */
     constructor(langJson: langJson, lang: string | Array<string>);
+    /**
+     * 根據提供的key和可選參數檢索本地化字符串。
+     *
+     * @param key  -所需局部字符串的key。
+     * @param args  -可選的參數以替換本地化字符串中的佔位符。
+     * @returns 帶有佔位符的本地化字符串用提供的參數代替，或者一條表示未找到翻譯的消息。
+     */
     get(key: string, ...args: Array<any>): string;
 }

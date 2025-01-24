@@ -266,16 +266,50 @@ function newEval(stringCode: string, safety: boolean = true) {
 }
 
 // #region i18n
-// 定義一個接口 langJson，用於描述一個多語言的 JSON 對象
+/**
+ * 代表包含語言翻譯的JSON對象。
+ *
+ * 該對像以語言代碼作為頂級key進行構造，每個語言代碼映射到另一個對象，其中鍵是翻譯鍵，值是翻譯字符串。
+ *
+ * @example
+ * const translations: langJson = {
+ *   "en": {
+ *     "greeting": "Hello",
+ *     "farewell": "Goodbye"
+ *   },
+ *   "es": {
+ *     "greeting": "Hola",
+ *     "farewell": "Adiós"
+ *   }
+ * };
+ */
 interface langJson {
   [lang: string]: {
     [key: string]: string;
   };
 }
-// 國際化類，用於處理多語言文本
+
 class i18n {
-  langJson: langJson; // 存儲語言映射的對象
-  langList: Array<string> = []; // 語言列表
+  /**
+   * 儲存語言映射的物件。
+   *
+   * @type {langJson}
+   */
+  langJson: langJson;
+
+  /**
+   * 語言代碼列表。
+   *
+   * @type {Array<string>}
+   */
+  langList: Array<string> = [];
+
+  /**
+   * 創建一個I18N實例。
+   *
+   * @param {langJson} langJson  -語言映射。
+   * @param {(string | Array<string>)} lang  -語言代碼或語言代碼列表。
+   */
   constructor(langJson: langJson, lang: string | Array<string>) {
     // 構造函數，接受語言和語言映射
     this.langJson = langJson;
@@ -287,7 +321,14 @@ class i18n {
       this.langList.push(lang);
     }
   }
-  // 根據鍵獲取對應的語言文本
+
+  /**
+   * 根據提供的key和可選參數檢索本地化字符串。
+   *
+   * @param key  -所需局部字符串的key。
+   * @param args  -可選的參數以替換本地化字符串中的佔位符。
+   * @returns 帶有佔位符的本地化字符串用提供的參數代替，或者一條表示未找到翻譯的消息。
+   */
   get(key: string, ...args: Array<any>): string {
     for (const lang of this.langList) {
       // 遍歷語言列表
