@@ -33,13 +33,14 @@ jobs:
         run: npm install
       - name: Build
         run: |
-          for dir in */; do
-            if [ -f "$dir/tsconfig.json" ]; then
-              tsc -p "$dir"
-            else
-              echo "Skipping $dir: tsconfig.json not found."
-            fi
-          done
+          npm run build
+          # for dir in */; do
+          #   if [ -f "$dir/tsconfig.json" ]; then
+          #     tsc -p "$dir"
+          #   else
+          #     echo "Skipping $dir: tsconfig.json not found."
+          #   fi
+          # done
 
       - name: Set up Git user
         run: |
