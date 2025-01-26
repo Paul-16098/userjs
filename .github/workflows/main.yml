@@ -23,7 +23,7 @@ jobs:
           python-version: "3.13"
 
       - name: Update version
-        run: python update_version.py
+        run: python update_version.py>>$GITHUB_OUTPUT
 
       - name: Install Node.js
         uses: actions/setup-node@main
@@ -35,9 +35,9 @@ jobs:
         run: |
           for dir in */; do
             if [ -f "$dir/tsconfig.json" ]; then
-              tsc -p "$dir"
+              tsc -p "$dir">>$GITHUB_OUTPUT
             else
-              echo "Skipping $dir: tsconfig.json not found."
+              echo "Skipping $dir: tsconfig.json not found.">>$GITHUB_OUTPUT
             fi
           done
 
@@ -51,7 +51,7 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             git commit -am "Update version"
           else
-            echo "No changes to commit."
+            echo "No changes to commit.">>$GITHUB_OUTPUT
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

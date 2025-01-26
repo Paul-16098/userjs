@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.4.1
+// @version      3.5.5.0-bate2
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -541,7 +541,7 @@ class BookManager {
   private async collectBookData(retryCount: number = 0): Promise<BookData[]> {
     const books: Array<BookData> = [];
     const labels = document.querySelectorAll("[id^='book_']");
-    console.groupCollapsed("collectBookData");
+    if (config.Debug) console.groupCollapsed("collectBookData");
     if (labels.length === 0) {
       if (retryCount <= 5) {
         console.warn("No labels found, retrying in 5 seconds...");
@@ -558,41 +558,60 @@ class BookManager {
     labels.forEach((label) => {
       const bookContainer = label;
 
-      const bookUpdate = label.querySelector(
-        "div.newright > a.btn.btn-tp"
-      ) as HTMLAnchorElement;
-      const bookUpdateLink = bookUpdate.href;
+      const _ = hasUpData();
+      if (_) {
+        const { bookContinueLink, BookName, bookImgUrl } = _;
 
-      const BookName = (
-        label.querySelector("div.newnav > h3 > a > span") as HTMLSpanElement
-      ).textContent as string;
-
-      const bookImg = label.querySelector("a > img") as HTMLImageElement;
-      const bookImgUrl = bookImg.src;
-
-      const push_data: BookData = {
-        Updata: {
-          url: {
-            value: bookUpdateLink,
-            URLParams: new URLSearchParams(bookUpdateLink),
+        const push_data: BookData = {
+          Updata: {
+            url: {
+              value: bookContinueLink,
+              URLParams: new URLSearchParams(bookContinueLink),
+            },
           },
-        },
-        Mate: {
-          BookName: BookName,
-          Book_HTML_obj: bookContainer,
-          BookImgUrl: bookImgUrl,
-        },
-      };
-      if (config.Debug) {
-        console.group(push_data.Mate.BookName);
-        console.log(push_data.Mate);
-        console.table(push_data.Updata);
-        console.groupEnd();
+          Mate: {
+            BookName: BookName,
+            Book_HTML_obj: bookContainer,
+            BookImgUrl: bookImgUrl,
+          },
+        };
+        if (config.Debug) {
+          console.group(push_data.Mate.BookName);
+          console.log(push_data.Mate);
+          console.table(push_data.Updata);
+          console.groupEnd();
+        }
+
+        books.push(push_data);
       }
 
-      books.push(push_data);
+      function hasUpData() {
+        if (
+          Array.from(label.querySelectorAll("label")).find(
+            (label2) => label2.textContent === "更新"
+          )
+        ) {
+          // if (location.origin === "https://www.69yuedu.net") {
+          // } else {
+          const bookContinueEle = label.querySelector(
+            "div.newright > a.btn.btn-tp"
+          ) as HTMLAnchorElement;
+          const bookContinueLink = bookContinueEle.href;
+
+          const BookName = (
+            label.querySelector("div.newnav > h3 > a > span") as HTMLSpanElement
+          ).textContent as string;
+
+          const bookImgEle = label.querySelector("a > img") as HTMLImageElement;
+          const bookImgUrl = bookImgEle.src;
+          // }
+          return { bookContinueLink, BookName, bookImgUrl };
+        } else {
+          return false;
+        }
+      }
     });
-    console.groupEnd();
+    if (config.Debug) console.groupEnd();
     return books;
   }
 
