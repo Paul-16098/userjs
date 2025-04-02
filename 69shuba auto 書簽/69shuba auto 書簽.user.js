@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.5.0
+// @version      3.5.6.0-bate1
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -45,6 +45,10 @@
 // @match        https://www.69yuedu.net/r/*/*.html*
 // @match        https://www.69yuedu.net/article/*.html*
 // @match        https://www.69yuedu.net/modules/article/bookcase.php*
+// #tag www.69shuba.com
+// @match        https://www.69shuba.com/txt/*/*
+// @match        https://www.69shuba.com/modules/article/bookcase.php*
+// @match        https://www.69shuba.com/book/*.htm
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
 // @grant        GM_addStyle
