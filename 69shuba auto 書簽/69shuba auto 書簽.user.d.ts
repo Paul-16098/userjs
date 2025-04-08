@@ -4,6 +4,7 @@ interface Config {
     AutoAddBookcase: boolean;
     IsHookAlert: boolean;
     HookAlertBlockade: Array<Array<any>>;
+    Search: string;
 }
 interface BookData {
     Updata: {

@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.6.0
+// @version      3.5.7.0-beta1
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -76,6 +76,7 @@ const config = {
         ["添加成功"],
         ["刪除成功!"],
     ]),
+    Search: GM_getValue("Search", "q"),
 };
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
@@ -463,6 +464,11 @@ class BookManager {
      * @private
      */
     async handleBookshelf() {
+        const search = new URLSearchParams(location.search).get(config.Search);
+        if (search) {
+            document.querySelector("body > header > div > form > div > div.inputbox > input[type=text]").value = search;
+            document.querySelector("body > header > div > form").submit();
+        }
         const bookData = await this.collectBookData();
         if (config.Debug)
             console.log("Bookshelf data collected", bookData);
@@ -502,9 +508,24 @@ class BookManager {
         }
         labels.forEach((label) => {
             const bookContainer = label;
-            const _ = hasUpData();
-            if (_) {
-                const { bookContinueLink, BookName, bookImgUrl } = _;
+            const tmp = (function () {
+                if (Array.from(label.querySelectorAll("label")).find((label2) => label2.textContent === "更新")) {
+                    // if (location.origin === "https://www.69yuedu.net") {
+                    // } else {
+                    const bookContinueEle = label.querySelector("div.newright > a.btn.btn-tp");
+                    const bookContinueLink = bookContinueEle.href;
+                    const BookName = label.querySelector("div.newnav > h3 > a > span").textContent;
+                    const bookImgEle = label.querySelector("a > img");
+                    const bookImgUrl = bookImgEle.src;
+                    // }
+                    return { bookContinueLink, BookName, bookImgUrl };
+                }
+                else {
+                    return false;
+                }
+            })();
+            if (tmp) {
+                const { bookContinueLink, BookName, bookImgUrl } = tmp;
                 const push_data = {
                     Updata: {
                         url: {
@@ -525,22 +546,6 @@ class BookManager {
                     console.groupEnd();
                 }
                 books.push(push_data);
-            }
-            function hasUpData() {
-                if (Array.from(label.querySelectorAll("label")).find((label2) => label2.textContent === "更新")) {
-                    // if (location.origin === "https://www.69yuedu.net") {
-                    // } else {
-                    const bookContinueEle = label.querySelector("div.newright > a.btn.btn-tp");
-                    const bookContinueLink = bookContinueEle.href;
-                    const BookName = label.querySelector("div.newnav > h3 > a > span").textContent;
-                    const bookImgEle = label.querySelector("a > img");
-                    const bookImgUrl = bookImgEle.src;
-                    // }
-                    return { bookContinueLink, BookName, bookImgUrl };
-                }
-                else {
-                    return false;
-                }
             }
         });
         if (config.Debug)
