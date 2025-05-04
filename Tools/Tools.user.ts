@@ -198,9 +198,9 @@ function setMenu(
 ) {
   // 顯示值的映射
   const trueShowValueMapping: { [x: string]: string } = {
-    ...(showValueMapping ?? {}),
     true: "開",
     false: "關",
+    ...(showValueMapping ?? {})
   };
   let support = false;
   const showName: string = name.replaceAll("_", " ");
