@@ -180,7 +180,7 @@ function setMenu(name, fn, showValueMapping) {
     let support = false;
     const showName = name.replaceAll("_", " ");
     const getValue = GM_getValue(name);
-    let showValue = "No a vailable";
+    let showValue = "No support";
     if (typeof getValue === "boolean") {
         support = true;
         showValue = getValue.toString();
