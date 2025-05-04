@@ -205,7 +205,7 @@ function setMenu(
   let support = false;
   const showName: string = name.replaceAll("_", " ");
   const getValue: any = GM_getValue(name);
-  let showValue: string = "No a vailable";
+  let showValue: string = "No support";
   if (typeof getValue === "boolean") {
     support = true;
     showValue = getValue.toString();
