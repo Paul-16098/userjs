@@ -2,6 +2,7 @@ interface Config {
     Debug: boolean;
     IsEndClose: boolean;
     AutoAddBookcase: boolean;
+    AutoAddBookcaseBlockade: Array<string>;
     IsHookAlert: boolean;
     HookAlertBlockade: Array<Array<any>>;
     Search: string;
@@ -15,7 +16,7 @@ interface BookData {
     };
     Mate: {
         BookName: string;
-        Book_HTML_obj: Element;
+        BookHtmlObj: Element;
         BookImgUrl: string;
     };
 }
@@ -113,7 +114,15 @@ declare const config: Config;
  * @returns {void}
  */
 declare class BookManager {
+    SELECTORS: {
+        nextPage: string[];
+        authorInfo: string;
+        titleDiv: string;
+        searchInput: string;
+        searchForm: string;
+    };
     private data;
+    getNextPageElement(): HTMLAnchorElement | null;
     /**
      * 初始化類別的新實例。
      *
@@ -142,6 +151,8 @@ declare class BookManager {
      * @returns {void}
      */
     private handleBookPage;
+    private autoAddToBookcase;
+    private updateNextPageLink;
     /**
      * 將掛接到全局 `alert` 函數中, 以有條件阻止或日誌警報消息。
      *
@@ -201,6 +212,8 @@ declare class BookManager {
      * 標題文字是根據圖書資訊的存在而決定的。
      */
     private insertAuthorLink;
+    private createAuthorLink;
+    private createTitleLink;
     /**
      * 透過收集書籍資料並註冊選單命令來處理書架。
      *
@@ -208,6 +221,7 @@ declare class BookManager {
      * @private
      */
     private handleBookshelf;
+    private performSearch;
     /**
      * 透過查詢 ID 以 `book_` 開頭的元素, 從 DOM 收集圖書資料。
      * 如果未找到標籤, 則會重試最多 5 次, 每次重試之間有 5 秒的延遲。

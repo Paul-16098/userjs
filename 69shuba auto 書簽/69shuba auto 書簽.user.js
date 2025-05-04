@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.7.0-beta1
+// @version      3.5.7.0-beta2
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -60,7 +60,7 @@
 // @grant        GM_getResourceText
 // @run-at       document-idle
 // @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
-// #@require      C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
+// #@require      file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
@@ -71,6 +71,7 @@ const config = {
     Debug: GM_getValue("Debug", false),
     IsEndClose: GM_getValue("IsEndClose", true),
     AutoAddBookcase: GM_getValue("AutoAddBookcase", true),
+    AutoAddBookcaseBlockade: GM_getValue("AutoAddBookcaseBlockade", []),
     IsHookAlert: GM_getValue("IsHookAlert", true),
     HookAlertBlockade: GM_getValue("HookAlertBlockade", [
         ["添加成功"],
@@ -171,6 +172,17 @@ const config = {
  * @returns {void}
  */
 class BookManager {
+    // 常量提取
+    SELECTORS = {
+        nextPage: [
+            "body > div.container > div.mybox > div.page1 > a:nth-child(4)",
+            "body > div.mainbox > div > div.page1 > a:nth-child(4)",
+        ],
+        authorInfo: "body > div.container > div.mybox > div.txtnav > div.txtinfo.hide720 > span:nth-child(2)",
+        titleDiv: "body > div.container > div.mybox > div.tools",
+        searchInput: "body > header > div > form > div > div.inputbox > input[type=text]",
+        searchForm: "body > header > div > form",
+    };
     data = {
         // 判斷是否有書籍信息
         HasBookInfo: () => typeof bookinfo !== "undefined",
@@ -223,14 +235,8 @@ class BookManager {
         },
         // 獲取下一頁URL
         GetNextPageUrl: () => {
-            let ele = document.querySelector("body > div.container > div.mybox > div.page1 > a:nth-child(4)");
-            if (ele && ele.href !== null) {
-                return ele.href;
-            }
-            ele = document.querySelector("body > div.mainbox > div > div.page1 > a:nth-child(4)");
-            if (ele && ele.href !== null) {
-                return ele.href;
-            }
+            const nextPageEle = this.getNextPageElement();
+            return nextPageEle?.href;
         },
         // 判斷下一頁是否為結束頁面
         IsNextEnd: () => {
@@ -248,6 +254,14 @@ class BookManager {
             return host === "69shu.biz";
         },
     };
+    getNextPageElement() {
+        for (const selector of this.SELECTORS.nextPage) {
+            const element = document.querySelector(selector);
+            if (element && element.href)
+                return element;
+        }
+        return Array.from(document.querySelectorAll("a")).find((link) => link.textContent === "下一章");
+    }
     /**
      * 初始化類別的新實例。
      *
@@ -263,11 +277,17 @@ class BookManager {
     constructor() {
         try {
             this.registerConfigMenu();
+            // #tag search
+            const search = new URLSearchParams(location.search).get(config.Search);
+            if (search)
+                this.performSearch(search);
+            // #tag Book
             if (this.data.Book.Is()) {
                 if (config.Debug)
                     console.log("Book page detected");
                 this.handleBookPage();
             }
+            // #tag Info
             if (this.data.Info.Is()) {
                 if (config.Debug)
                     console.log("Book info page detected");
@@ -276,17 +296,20 @@ class BookManager {
                     Ele.click();
                 }
             }
+            // #tag BookEnd
             if (this.data.End.Is()) {
                 if (config.Debug)
                     console.log("End page detected");
                 if (config.IsEndClose)
                     window.close();
             }
+            // #tag Bookshelf
             if (this.data.IsBookshelf()) {
                 if (config.Debug)
                     console.log("Bookshelf page detected");
                 this.handleBookshelf();
             }
+            // if not match any pattern
             if (!this.data.Book.Is() &&
                 !this.data.Info.Is() &&
                 !this.data.End.Is() &&
@@ -326,15 +349,26 @@ class BookManager {
         this.modifyPageNavigation();
         removeElement(".mytitle", ".top_Scroll", "#pagefootermenu", "body > div.container > div > div.yueduad1", "#pageheadermenu", ".bottom-ad2", "body > div.container > div.yuedutuijian.light");
         if (config.AutoAddBookcase)
-            this.addBookcase();
+            this.autoAddToBookcase();
         this.insertAuthorLink();
-        let nextPageEle = document.querySelector("body > div.mainbox > div > div.page1 > a:nth-child(4)");
-        if (!nextPageEle) {
-            nextPageEle = Array.from(document.querySelectorAll("a")).find((link) => link.textContent === "下一章");
+        this.updateNextPageLink();
+    }
+    autoAddToBookcase() {
+        const aid = this.data.Book.GetAid();
+        if (!config.AutoAddBookcaseBlockade.includes(aid)) {
+            this.addBookcase();
         }
-        let href = new URL(nextPageEle.href);
-        href.searchParams.set("FromBook", "true");
-        nextPageEle.href = href.toString();
+        else {
+            console.log("Book is in the blockade list, not auto adding to bookcase.");
+        }
+    }
+    updateNextPageLink() {
+        const nextPageEle = this.getNextPageElement();
+        if (nextPageEle) {
+            const href = new URL(nextPageEle.href);
+            href.searchParams.set("FromBook", "true");
+            nextPageEle.href = href.toString();
+        }
     }
     /**
      * 將掛接到全局 `alert` 函數中, 以有條件阻止或日誌警報消息。
@@ -438,24 +472,32 @@ class BookManager {
      */
     insertAuthorLink() {
         const author = document
-            .querySelector("body > div.container > div.mybox > div.txtnav > div.txtinfo.hide720 > span:nth-child(2)")
+            .querySelector(this.SELECTORS.authorInfo)
             ?.textContent?.trim()
             .split(" ")[1] ?? "undefined";
+        const authorLink = this.createAuthorLink(author);
+        const titleDiv = document.querySelector(this.SELECTORS.titleDiv);
+        if (titleDiv) {
+            const titleLink = this.createTitleLink();
+            titleDiv.parentNode?.replaceChild(titleLink, titleDiv);
+        }
+    }
+    createAuthorLink(author) {
         const authorLink = document.createElement("a");
         authorLink.href = `${window.location.origin}/modules/article/author.php?author=${encodeURIComponent(author)}`;
         authorLink.textContent = author;
         authorLink.style.color = "#007ead";
-        const titleDiv = document.querySelector("body > div.container > div.mybox > div.tools");
-        if (titleDiv) {
-            const titleLink = document.createElement("a");
-            titleLink.innerHTML = this.data.HasBookInfo()
-                ? bookinfo.articlename ?? document.title.split("-")[0]
-                : document.title.split("-")[0];
-            titleLink.classList.add("userjs_add");
-            titleLink.id = "title";
-            titleLink.href = `${window.location.origin}/${this.data.IsBiz() ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz() ? "html" : "htm"}`;
-            titleDiv.parentNode?.replaceChild(titleLink, titleDiv);
-        }
+        return authorLink;
+    }
+    createTitleLink() {
+        const titleLink = document.createElement("a");
+        titleLink.innerHTML = this.data.HasBookInfo()
+            ? bookinfo.articlename ?? document.title.split("-")[0]
+            : document.title.split("-")[0];
+        titleLink.classList.add("userjs_add");
+        titleLink.id = "title";
+        titleLink.href = `${window.location.origin}/${this.data.IsBiz() ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz() ? "html" : "htm"}`;
+        return titleLink;
     }
     /**
      * 透過收集書籍資料並註冊選單命令來處理書架。
@@ -464,15 +506,18 @@ class BookManager {
      * @private
      */
     async handleBookshelf() {
-        const search = new URLSearchParams(location.search).get(config.Search);
-        if (search) {
-            document.querySelector("body > header > div > form > div > div.inputbox > input[type=text]").value = search;
-            document.querySelector("body > header > div > form").submit();
-        }
         const bookData = await this.collectBookData();
         if (config.Debug)
             console.log("Bookshelf data collected", bookData);
         this.registerMenuCommand(bookData);
+    }
+    performSearch(search) {
+        const searchInput = document.querySelector(this.SELECTORS.searchInput);
+        const searchForm = document.querySelector(this.SELECTORS.searchForm);
+        if (searchInput && searchForm) {
+            searchInput.value = search;
+            searchForm.submit();
+        }
     }
     /**
      * 透過查詢 ID 以 `book_` 開頭的元素, 從 DOM 收集圖書資料。
@@ -535,7 +580,7 @@ class BookManager {
                     },
                     Mate: {
                         BookName: BookName,
-                        Book_HTML_obj: bookContainer,
+                        BookHtmlObj: bookContainer,
                         BookImgUrl: bookImgUrl,
                     },
                 };
@@ -576,10 +621,7 @@ class BookManager {
     // 註冊配置菜單
     registerConfigMenu() {
         for (const key in config) {
-            const value = config[key];
-            if (typeof value == "boolean") {
-                setMenu(key);
-            }
+            setMenu(key);
         }
     }
 }

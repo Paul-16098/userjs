@@ -2,7 +2,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.12.0
+// @version      2.2.12.0-bate1
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -185,10 +185,11 @@ function removeElement(...args: Array<string>) {
   return [true, args];
 }
 
+type setMenuFn = (ev?: MouseEvent | KeyboardEvent) => void;
 // 設置菜單功能，允許註冊命令並處理顯示值的映射
 function setMenu(
   name: string,
-  fn?: ((ev?: MouseEvent | KeyboardEvent) => void) | undefined,
+  fn?: setMenuFn | undefined,
   showValueMapping?:
     | {
         [x: string]: string;
@@ -196,24 +197,36 @@ function setMenu(
     | undefined
 ) {
   // 顯示值的映射
-  const trueShowValueMapping = showValueMapping ?? {
+  const trueShowValueMapping: { [x: string]: string } = {
+    ...(showValueMapping ?? {}),
     true: "開",
     false: "關",
   };
+  let support = false;
   const showName: string = name.replaceAll("_", " ");
   const getValue: any = GM_getValue(name);
-  const showValue = trueShowValueMapping[getValue] ?? getValue;
+  let showValue: string = "No a vailable";
+  if (typeof getValue === "boolean") {
+    support = true;
+    showValue = getValue.toString();
+  }
+  showValue = trueShowValueMapping[getValue] ?? showValue;
+
   const trueFn =
     fn ??
-    function (ev: MouseEvent | KeyboardEvent) {
-      if (typeof getValue === "boolean") {
-        GM_setValue(name, !getValue);
-        window.location.reload();
-      } else {
-        alert("the type is not bool");
-        console.error("the type is not bool");
-      }
-    };
+    (support
+      ? function (ev: MouseEvent | KeyboardEvent) {
+          if (typeof getValue === "boolean") {
+            GM_setValue(name, !getValue);
+            window.location.reload();
+          }
+        }
+      : () => {
+          let t = "the type is not supported: " + typeof getValue;
+          // alert(t);
+          console.error(t);
+        });
+
   return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
 
@@ -272,6 +285,7 @@ function newEval(stringCode: string, safety: boolean = true) {
  * 該對像以語言代碼作為頂級key進行構造，每個語言代碼映射到另一個對象，其中鍵是翻譯鍵，值是翻譯字符串。
  *
  * @example
+ * ```typescript
  * const translations: langJson = {
  *   "en": {
  *     "greeting": "Hello",
@@ -282,6 +296,7 @@ function newEval(stringCode: string, safety: boolean = true) {
  *     "farewell": "Adiós"
  *   }
  * };
+ * ```
  */
 interface langJson {
   [lang: string]: {

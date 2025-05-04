@@ -3,7 +3,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.12.0
+// @version      2.2.12.0-bate1
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -172,24 +172,33 @@ function removeElement(...args) {
 // 設置菜單功能，允許註冊命令並處理顯示值的映射
 function setMenu(name, fn, showValueMapping) {
     // 顯示值的映射
-    const trueShowValueMapping = showValueMapping ?? {
+    const trueShowValueMapping = {
+        ...(showValueMapping ?? {}),
         true: "開",
         false: "關",
     };
+    let support = false;
     const showName = name.replaceAll("_", " ");
     const getValue = GM_getValue(name);
-    const showValue = trueShowValueMapping[getValue] ?? getValue;
+    let showValue = "No a vailable";
+    if (typeof getValue === "boolean") {
+        support = true;
+        showValue = getValue.toString();
+    }
+    showValue = trueShowValueMapping[getValue] ?? showValue;
     const trueFn = fn ??
-        function (ev) {
-            if (typeof getValue === "boolean") {
-                GM_setValue(name, !getValue);
-                window.location.reload();
+        (support
+            ? function (ev) {
+                if (typeof getValue === "boolean") {
+                    GM_setValue(name, !getValue);
+                    window.location.reload();
+                }
             }
-            else {
-                alert("the type is not bool");
-                console.error("the type is not bool");
-            }
-        };
+            : () => {
+                let t = "the type is not supported: " + typeof getValue;
+                // alert(t);
+                console.error(t);
+            });
     return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
 // 定義一個新的函數，用於執行傳入的字符串代碼

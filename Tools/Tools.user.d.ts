@@ -2,7 +2,8 @@ declare const _unsafeWindow: Window & Omit<typeof globalThis, "GM_addElement" | 
 declare const IS_DEBUG_LOG: boolean;
 declare function setGM(): void;
 declare function removeElement(...args: Array<string>): unknown[];
-declare function setMenu(name: string, fn?: ((ev?: MouseEvent | KeyboardEvent) => void) | undefined, showValueMapping?: {
+type setMenuFn = (ev?: MouseEvent | KeyboardEvent) => void;
+declare function setMenu(name: string, fn?: setMenuFn | undefined, showValueMapping?: {
     [x: string]: string;
 } | undefined): number;
 declare function newEval(stringCode: string, safety?: boolean): any;
@@ -12,6 +13,7 @@ declare function newEval(stringCode: string, safety?: boolean): any;
  * 該對像以語言代碼作為頂級key進行構造，每個語言代碼映射到另一個對象，其中鍵是翻譯鍵，值是翻譯字符串。
  *
  * @example
+ * ```typescript
  * const translations: langJson = {
  *   "en": {
  *     "greeting": "Hello",
@@ -22,6 +24,7 @@ declare function newEval(stringCode: string, safety?: boolean): any;
  *     "farewell": "Adiós"
  *   }
  * };
+ * ```
  */
 interface langJson {
     [lang: string]: {
