@@ -173,9 +173,9 @@ function removeElement(...args) {
 function setMenu(name, fn, showValueMapping) {
     // 顯示值的映射
     const trueShowValueMapping = {
-        ...(showValueMapping ?? {}),
         true: "開",
         false: "關",
+        ...(showValueMapping ?? {})
     };
     let support = false;
     const showName = name.replaceAll("_", " ");
