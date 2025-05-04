@@ -5,7 +5,7 @@ import re
 def replace_version(ver: re.Match[str]) -> str:
     # print(ver.groups())
     new_ver = ver.group(1)
-    new_ver = re.sub(r"-bate\d+", "", new_ver)
+    new_ver = re.sub(r"-beta\d+", "", new_ver)
     return f"// @version      {new_ver}"
 
 
@@ -16,7 +16,7 @@ for file in glob("./*/*.user.ts"):
             txt = f.read()
 
         # 使用正则表达式替换版本号
-        new_txt = re.sub(pattern=r"// @version\s+((\d+\.?)+(-bate\d+)?)",
+        new_txt = re.sub(pattern=r"// @version\s+((\d+\.?)+(-beta\d+)?)",
                          repl=replace_version, string=txt)
 
         # 写回文件
