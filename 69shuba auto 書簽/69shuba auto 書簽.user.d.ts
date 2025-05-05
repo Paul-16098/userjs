@@ -1,3 +1,7 @@
+declare enum Language {
+    en = "en",
+    zh = "zh"
+}
 interface Config {
     Debug: boolean;
     IsEndClose: boolean;
@@ -5,8 +9,9 @@ interface Config {
     AutoAddBookcaseBlockade: Array<string>;
     IsHookAlert: boolean;
     HookAlertBlockade: Array<Array<any>>;
-    Search: string;
+    Language: Language;
 }
+declare const i18nData: typeof i18n.prototype.langJson;
 interface BookData {
     Updata: {
         url: {
@@ -21,6 +26,7 @@ interface BookData {
     };
 }
 declare const config: Config;
+declare const i18nInstance: i18n;
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
  * 它包括偵測圖書頁面、圖書資訊頁面、結束頁面和書架頁面的功能。

@@ -2,7 +2,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.12.0
+// @version      2.2.13.0-beta1
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -190,27 +190,27 @@ type setMenuFn = (ev?: MouseEvent | KeyboardEvent) => void;
 function setMenu(
   name: string,
   fn?: setMenuFn | undefined,
-  showValueMapping?:
+  showMapping?:
     | {
         [x: string]: string;
       }
     | undefined
 ) {
   // 顯示值的映射
-  const trueShowValueMapping: { [x: string]: string } = {
+  const trueShowMapping: { [x: string]: string } = {
     true: "開",
     false: "關",
-    ...(showValueMapping ?? {})
+    ...(showMapping ?? {}),
   };
   let support = false;
-  const showName: string = name.replaceAll("_", " ");
+  let showName: string = trueShowMapping[name] ?? name.replaceAll("_", " ");
   const getValue: any = GM_getValue(name);
   let showValue: string = "No support";
   if (typeof getValue === "boolean") {
     support = true;
     showValue = getValue.toString();
   }
-  showValue = trueShowValueMapping[getValue] ?? showValue;
+  showValue = trueShowMapping[getValue] ?? showValue;
 
   const trueFn =
     fn ??
@@ -279,38 +279,32 @@ function newEval(stringCode: string, safety: boolean = true) {
 }
 
 // #region i18n
-/**
- * 代表包含語言翻譯的JSON對象。
- *
- * 該對像以語言代碼作為頂級key進行構造，每個語言代碼映射到另一個對象，其中鍵是翻譯鍵，值是翻譯字符串。
- *
- * @example
- * ```typescript
- * const translations: langJson = {
- *   "en": {
- *     "greeting": "Hello",
- *     "farewell": "Goodbye"
- *   },
- *   "es": {
- *     "greeting": "Hola",
- *     "farewell": "Adiós"
- *   }
- * };
- * ```
- */
-interface langJson {
-  [lang: string]: {
-    [key: string]: string;
-  };
-}
 
 class i18n {
   /**
-   * 儲存語言映射的物件。
+   * 代表包含語言翻譯的JSON對象。
    *
-   * @type {langJson}
+   * 該對像以語言代碼作為頂級key進行構造，每個語言代碼映射到另一個對象，其中鍵是翻譯鍵，值是翻譯字符串。
+   *
+   * @example
+   * ```typescript
+   * const translations: langJson = {
+   *   "en": {
+   *     "greeting": "Hello",
+   *     "farewell": "Goodbye"
+   *   },
+   *   "es": {
+   *     "greeting": "Hola",
+   *     "farewell": "Adiós"
+   *   }
+   * };
+   * ```
    */
-  langJson: langJson;
+  public langJson: {
+    [lang: string]: {
+      [key: string]: string;
+    };
+  };
 
   /**
    * 語言代碼列表。
@@ -325,7 +319,7 @@ class i18n {
    * @param {langJson} langJson  -語言映射。
    * @param {(string | Array<string>)} lang  -語言代碼或語言代碼列表。
    */
-  constructor(langJson: langJson, lang: string | Array<string>) {
+  constructor(langJson: typeof this.langJson, lang: string | Array<string>) {
     // 構造函數，接受語言和語言映射
     this.langJson = langJson;
     if (lang instanceof Array) {
@@ -344,7 +338,10 @@ class i18n {
    * @param args  -可選的參數以替換本地化字符串中的佔位符。
    * @returns 帶有佔位符的本地化字符串用提供的參數代替，或者一條表示未找到翻譯的消息。
    */
-  get(key: string, ...args: Array<any>): string {
+  public get(
+    key: keyof (typeof this.langJson)[keyof typeof this.langJson],
+    ...args: Array<any>
+  ): string {
     for (const lang of this.langList) {
       // 遍歷語言列表
       if (this.langJson[lang] && this.langJson[lang][key]) {
@@ -363,9 +360,9 @@ class i18n {
         return text;
       }
     }
-    return `{Translation not found for \`${key}\` in [${this.langList.join(
-      ", "
-    )}]}`;
+    console.warn(`Translation missing for key: "${key}"`); // 警告缺少的翻譯
+    return String(key); // 如果沒有找到對應的翻譯，返回key本身
   }
+  public t = this.get; // 簡化方法名稱，方便使用
 }
 // #endregion i18n

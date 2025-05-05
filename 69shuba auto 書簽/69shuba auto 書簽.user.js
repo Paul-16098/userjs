@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.7.0
+// @version      3.5.8.0-beta1
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -59,13 +59,38 @@
 // @grant        GM_openInTab
 // @grant        GM_getResourceText
 // @run-at       document-idle
-// @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
-// #@require      file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
+// #@require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+// @require      file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
 // ==/UserScript==
+// 配置接口
+var Language;
+(function (Language) {
+    Language["en"] = "en";
+    Language["zh"] = "zh";
+})(Language || (Language = {}));
+// i18n 設定
+const i18nData = {
+    en: {
+        noMatchingPattern: "No matching URL pattern found",
+        errorOccurred: "An error occurred: ",
+        noLabelsFound: "No labels found, retrying in 5 seconds...",
+        maxRetriesReached: "Max retries reached. No labels found.",
+        noUpdates: "No updates",
+        updatesAvailable: " updates available",
+    },
+    zh: {
+        noMatchingPattern: "未找到匹配的 URL 模式",
+        errorOccurred: "發生了一些錯誤: ",
+        noLabelsFound: "未找到標籤，5 秒後重試...",
+        maxRetriesReached: "已達到最大重試次數。未找到標籤。",
+        noUpdates: "沒有更新",
+        updatesAvailable: "個更新",
+    },
+};
 // 配置初始化
 const config = {
     Debug: GM_getValue("Debug", false),
@@ -77,8 +102,9 @@ const config = {
         ["添加成功"],
         ["刪除成功!"],
     ]),
-    Search: GM_getValue("Search", "q"),
+    Language: GM_getValue("Language", Language.zh),
 };
+const i18nInstance = new i18n(i18nData, config.Language);
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
  * 它包括偵測圖書頁面、圖書資訊頁面、結束頁面和書架頁面的功能。
@@ -278,7 +304,7 @@ class BookManager {
         try {
             this.registerConfigMenu();
             // #tag search
-            const search = new URLSearchParams(location.search).get(config.Search);
+            const search = new URLSearchParams(location.search).get("q");
             if (search)
                 this.performSearch(search);
             // #tag Book
@@ -314,17 +340,16 @@ class BookManager {
                 !this.data.Info.Is() &&
                 !this.data.End.Is() &&
                 !this.data.IsBookshelf()) {
-                console.table(this.debugInfo());
-                alert("No matching URL pattern found");
-            }
-            else if (config.Debug) {
-                console.table(this.debugInfo());
+                console.debug(this.debugInfo());
+                if (!config.Debug) {
+                    alert(i18nInstance.t("noMatchingPattern"));
+                }
             }
         }
         catch (error) {
             console.error(error);
             if (!config.Debug) {
-                alert(error);
+                alert(`${i18nInstance.t("errorOccurred")}${String(error)}`);
             }
         }
     }
@@ -539,12 +564,12 @@ class BookManager {
             console.groupCollapsed("collectBookData");
         if (labels.length === 0) {
             if (retryCount <= 5) {
-                console.warn("No labels found, retrying in 5 seconds...");
+                console.warn(i18nInstance.t("noLabelsFound"));
                 await new Promise((resolve) => setTimeout(resolve, 5000));
                 return this.collectBookData(retryCount + 1);
             }
             else {
-                console.error("Max retries reached. No labels found.");
+                console.error(i18nInstance.t("maxRetriesReached"));
                 return []; // 到達最大重試次數, 返回空陣列
             }
         }
@@ -599,7 +624,9 @@ class BookManager {
     }
     // 註冊菜單命令
     registerMenuCommand(bookData) {
-        GM_registerMenuCommand(`${bookData.length === 0 ? "沒有" : `有${bookData.length}個`}更新`, () => {
+        GM_registerMenuCommand(`${bookData.length === 0
+            ? i18nInstance.t("noUpdates")
+            : `${bookData.length}${i18nInstance.t("updatesAvailable")}`}`, () => {
             bookData.forEach((data) => {
                 GM_openInTab(data.Updata.url.value);
             });
@@ -621,7 +648,29 @@ class BookManager {
     // 註冊配置菜單
     registerConfigMenu() {
         for (const key in config) {
-            setMenu(key);
+            const value = config[key];
+            let menu = undefined;
+            if (Object.values(Language).includes(value)) {
+                menu = () => {
+                    Object.values(Language).forEach((lang) => {
+                        if (lang !== value) {
+                            GM_setValue("Language", lang);
+                            location.reload();
+                        }
+                    });
+                };
+            }
+            setMenu(key, menu, {
+                zh: "中文",
+                en: "english",
+                Debug: "偵錯",
+                AutoAddBookcase: "自動添加書櫃",
+                AutoAddBookcaseBlockade: "自動添加書櫃封鎖",
+                Language: "語言",
+                IsEndClose: "結束後關閉",
+                IsHookAlert: "掛鉤Alert",
+                HookAlertBlockade: "掛鉤Alert封鎖",
+            });
         }
     }
 }

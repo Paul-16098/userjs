@@ -3,7 +3,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.12.0
+// @version      2.2.13.0-beta1
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -170,22 +170,22 @@ function removeElement(...args) {
     return [true, args];
 }
 // 設置菜單功能，允許註冊命令並處理顯示值的映射
-function setMenu(name, fn, showValueMapping) {
+function setMenu(name, fn, showMapping) {
     // 顯示值的映射
-    const trueShowValueMapping = {
+    const trueShowMapping = {
         true: "開",
         false: "關",
-        ...(showValueMapping ?? {})
+        ...(showMapping ?? {}),
     };
     let support = false;
-    const showName = name.replaceAll("_", " ");
+    let showName = trueShowMapping[name] ?? name.replaceAll("_", " ");
     const getValue = GM_getValue(name);
     let showValue = "No support";
     if (typeof getValue === "boolean") {
         support = true;
         showValue = getValue.toString();
     }
-    showValue = trueShowValueMapping[getValue] ?? showValue;
+    showValue = trueShowMapping[getValue] ?? showValue;
     const trueFn = fn ??
         (support
             ? function (ev) {
@@ -243,11 +243,26 @@ function newEval(stringCode, safety = true) {
     // 返回執行傳入字符串代碼的結果
     return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
+// #region i18n
 class i18n {
     /**
-     * 儲存語言映射的物件。
+     * 代表包含語言翻譯的JSON對象。
      *
-     * @type {langJson}
+     * 該對像以語言代碼作為頂級key進行構造，每個語言代碼映射到另一個對象，其中鍵是翻譯鍵，值是翻譯字符串。
+     *
+     * @example
+     * ```typescript
+     * const translations: langJson = {
+     *   "en": {
+     *     "greeting": "Hello",
+     *     "farewell": "Goodbye"
+     *   },
+     *   "es": {
+     *     "greeting": "Hola",
+     *     "farewell": "Adiós"
+     *   }
+     * };
+     * ```
      */
     langJson;
     /**
@@ -300,8 +315,10 @@ class i18n {
                 return text;
             }
         }
-        return `{Translation not found for \`${key}\` in [${this.langList.join(", ")}]}`;
+        console.warn(`Translation missing for key: "${key}"`); // 警告缺少的翻譯
+        return String(key); // 如果沒有找到對應的翻譯，返回key本身
     }
+    t = this.get; // 簡化方法名稱，方便使用
 }
 // #endregion i18n
 //# sourceMappingURL=Tools.user.js.map
