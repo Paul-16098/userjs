@@ -23,5 +23,15 @@
     "scope": "javascript,typescript",
     "prefix": "@grant",
     "body": "// @grant        "
+  },
+  "@name": {
+    "scope": "javascript,typescript",
+    "prefix": "@name",
+    "body": "// @name         "
+  },
+  "@namespace": {
+    "scope": "javascript,typescript",
+    "prefix": "@namespace",
+    "body": "// @namespace    "
   }
 }

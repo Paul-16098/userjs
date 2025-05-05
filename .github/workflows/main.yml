@@ -1,0 +1,59 @@
+name: Build ts
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "*/*.user.ts"
+  pull_request:
+    types: [closed]
+    paths:
+      - "*/*.user.ts"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-python@main
+        with:
+          python-version: "3.13"
+
+      - name: Update version
+        run: python update_version.py
+
+      - name: Install Node.js
+        uses: actions/setup-node@main
+        with:
+          node-version: "23"
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: |
+          for dir in */; do
+            if [ -f "$dir/tsconfig.json" ]; then
+              tsc -p "$dir"
+            else
+              echo "Skipping $dir: tsconfig.json not found."
+            fi
+          done
+
+      - name: Set up Git user
+        run: |
+          git config --global user.email "Actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Commit changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -am "Update version"
+          else
+            echo "No changes to commit."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changes
+        run: git push
