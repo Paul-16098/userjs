@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         czbooks.net
 // @namespace    pl816098
-// @version      1.1.9.0
+// @version      1.1.10.0-beta1
 // @description  自用
 // @author       pl816098
 // @match        https://czbooks.net/n/*/*
@@ -28,3 +28,20 @@ removeElement(
   "#go-to-top",
   "#sticky-parent > div.chapter-detail > div.notice"
 );
+const isDarkMode =
+  window.matchMedia &&
+  window.matchMedia("(prefers-color-scheme: dark)").matches;
+if (isDarkMode) {
+  changeBackground("default");
+} else {
+  changeBackground("white");
+}
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (e) => {
+    if (e.matches) {
+      changeBackground("default");
+    } else {
+      changeBackground("white");
+    }
+  });
