@@ -31,6 +31,27 @@ removeElement(
 const isDarkMode =
   window.matchMedia &&
   window.matchMedia("(prefers-color-scheme: dark)").matches;
+  // @ts-expect-error
+let changeBackground: (params: "default" | "white") => void = (params) => {
+  switch (params) {
+    case "default": {
+      (
+        document.querySelector(
+          "#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a"
+        ) as HTMLAnchorElement
+      ).click();
+      break;
+    }
+    case "white": {
+      (
+        document.querySelector(
+          "#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a"
+        ) as HTMLAnchorElement
+      ).click();
+      break;
+    }
+  }
+};
 if (isDarkMode) {
   changeBackground("default");
 } else {

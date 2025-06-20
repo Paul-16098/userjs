@@ -22,23 +22,49 @@
 // ==/UserScript==
 let css1 = GM_getResourceText("css1");
 GM_addStyle(css1);
-removeElement("body > div.header", "body > div.footer", "body > div.main > div:nth-child(3)", "#go-to-top", "#sticky-parent > div.chapter-detail > div.notice");
-const isDarkMode = window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
+removeElement(
+  "body > div.header",
+  "body > div.footer",
+  "body > div.main > div:nth-child(3)",
+  "#go-to-top",
+  "#sticky-parent > div.chapter-detail > div.notice"
+);
+const isDarkMode =
+  window.matchMedia &&
+  window.matchMedia("(prefers-color-scheme: dark)").matches;
+// @ts-expect-error
+let changeBackground = (params) => {
+  switch (params) {
+    case "default": {
+      document
+        .querySelector(
+          "#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a"
+        )
+        .click();
+      break;
+    }
+    case "white": {
+      document
+        .querySelector(
+          "#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a"
+        )
+        .click();
+      break;
+    }
+  }
+};
 if (isDarkMode) {
-    changeBackground("default");
-}
-else {
-    changeBackground("white");
+  changeBackground("default");
+} else {
+  changeBackground("white");
 }
 window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", (e) => {
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (e) => {
     if (e.matches) {
-        changeBackground("default");
+      changeBackground("default");
+    } else {
+      changeBackground("white");
     }
-    else {
-        changeBackground("white");
-    }
-});
+  });
 //# sourceMappingURL=czbooksnet.user.js.map

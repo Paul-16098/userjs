@@ -1,1 +1,1 @@
-declare let changeBackground: (mode: string) => void;
+declare let changeBackground: ((mode: string) => void) | undefined;
