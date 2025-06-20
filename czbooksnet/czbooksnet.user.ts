@@ -31,8 +31,8 @@ removeElement(
 const isDarkMode =
   window.matchMedia &&
   window.matchMedia("(prefers-color-scheme: dark)").matches;
-  // @ts-expect-error
-let changeBackground: (params: "default" | "white") => void = (params) => {
+
+function changeBackground(params: "default" | "white") {
   switch (params) {
     case "default": {
       (
@@ -51,7 +51,8 @@ let changeBackground: (params: "default" | "white") => void = (params) => {
       break;
     }
   }
-};
+}
+
 if (isDarkMode) {
   changeBackground("default");
 } else {
