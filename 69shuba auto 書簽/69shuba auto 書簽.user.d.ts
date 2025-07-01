@@ -2,15 +2,35 @@ declare enum Language {
     en = "en",
     zh = "zh"
 }
-interface Config {
+/**
+ * 用戶配置類，負責管理腳本的各項設置，並註冊菜單。
+ */
+declare class Config {
+    /** 是否開啟偵錯模式 */
     Debug: boolean;
+    /** 結束頁是否自動關閉 */
     IsEndClose: boolean;
+    /** 是否自動加入書櫃 */
     AutoAddBookcase: boolean;
+    /** 自動加入書櫃的封鎖名單（書ID陣列） */
     AutoAddBookcaseBlockade: Array<string>;
+    /** 是否攔截alert */
     IsHookAlert: boolean;
+    /** 攔截alert的訊息封鎖名單 */
     HookAlertBlockade: Array<Array<any>>;
+    /** 語言設定 */
     Language: Language;
+    constructor();
+    /**
+     * 註冊所有配置項的菜單
+     */
+    private registerConfigMenu;
+    /**
+     * 將當前配置寫入GM存儲
+     */
+    private set;
 }
+declare const config: Config;
 declare const i18nData: typeof i18n.prototype.langJson;
 interface BookData {
     Updata: {
@@ -25,7 +45,6 @@ interface BookData {
         BookImgUrl: string;
     };
 }
-declare const config: Config;
 declare const i18nInstance: i18n;
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
@@ -120,6 +139,7 @@ declare const i18nInstance: i18n;
  * @returns {void}
  */
 declare class BookManager {
+    /** 常用選擇器集合 */
     SELECTORS: {
         nextPage: string[];
         authorInfo: string;
@@ -127,123 +147,81 @@ declare class BookManager {
         searchInput: string;
         searchForm: string;
     };
+    /**
+     * 各種頁面判斷與數據獲取方法集合
+     */
     private data;
+    /**
+     * 取得下一頁的a元素
+     */
     getNextPageElement(): HTMLAnchorElement | null;
     /**
-     * 初始化類別的新實例。
-     *
-     * 此構造函數執行以下操作：
-     * - 註冊配置選單。
-     * - 檢查目前頁面是否為圖書頁面、圖書資訊頁面、結束頁面或書架頁面, 並相應地處理每種情況。
-     * - 如果設定了 `config.Debug` 標誌, 則記錄偵錯資訊。
-     * - 如果找不到符合的 URL 模式, 則提醒使用者。
-     * - 擷取並記錄執行期間發生的任何錯誤。
-     *
-     * @throws 如果發生錯誤且未設定 `config.Debug` , 將提醒使用者。
+     * 構造函數，根據當前頁面自動分派對應處理
      */
     constructor();
     /**
-     * 通過執行各種修改和增強來處理書頁。
-     *
-     *  - 如果啟用了 `config.IsHookAlert` , 則不顯示`alert`。
-     *  - 將自定義樣式添加到頁面上。
-     *  - 修改頁面導航元素。
-     *  - 從頁面上刪除指定的元素。
-     *  - 如果啟用了自動添加書架配置, 則將書添加到書架中。
-     *  - 插入指向作者頁面的鏈接。
-     *  - 更新下一頁鏈接以包含一個查詢參數, 該參數指示本書導航。
-     *
-     * @private
-     * @returns {void}
+     * 書頁自動化處理：樣式、導航、元素移除、書櫃、作者連結、下一頁鏈接
      */
     private handleBookPage;
+    /**
+     * 自動加入書櫃（如未在封鎖名單）
+     */
     private autoAddToBookcase;
+    /**
+     * 更新下一頁鏈接，附加FromBook參數
+     */
     private updateNextPageLink;
     /**
-     * 將掛接到全局 `alert` 函數中, 以有條件阻止或日誌警報消息。
-     *
-     * 此功能用自定義實現替換默認的 `alert` 函數, 該函數可根據 `config.HookAlertBlockade` 數組中定義的封鎖列表檢查每個警報消息。
-     * 如果該消息與任何封鎖匹配（或者將封鎖設置為`*`）, 則該警報將被封鎖。
-     * 否則, 該警報會照常顯示。
-     *
-     * 此外, 如果啟用了偵錯（`config.Debug`）, 警報訊息將記錄到控制枱。
-     *
-     * @private
-     * @function hookAlert
-     * @returns {void}
+     * 攔截全局alert，根據封鎖名單過濾
      */
     private hookAlert;
     /**
-     * 透過從指定資源檢索 CSS 內容並將其註入到頁面中, 將自訂樣式新增至文件。如果在設定中啟用了偵錯, 則會向控制枱記錄一則訊息, 指示 CSS 已新增。
-     *
-     * @private
-     * @returns {void}
+     * 注入自定義CSS樣式
      */
     private addStyles;
     /**
-     * 透過刪除任何現有的 `onkeydown` 事件處理程序並新增使用 `keydownHandler` 方法的新 `keydown` 事件偵聽器來修改頁面導覽。
-     *
-     * @private
+     * 移除原有onkeydown，註冊自定義鍵盤導航
      */
     private modifyPageNavigation;
     /**
-     * 按下 `Arrowright` 鍵時, 處理鍵盤事件, 用於導航到下一頁。
-     *
-     * @param e - 鍵盤事件對象。
-     *
-     * 此方法執行以下操作：
-     *  -檢查是否按下 `Arrowright` 鍵, 並且事件不是重複。
-     *  -使用`this.data.GetNextPageUrl()`檢索下一頁的URL。
-     *  -如果找到下一頁URL, 它將附加查詢參數`frombook = true`到URL並導航到它。
-     *  -如果下一頁已結束並且設定了 `config.IsEndClose` 標誌, 則會關閉視窗。
+     * 處理右鍵導航與結束自動關閉
      */
     private keydownHandler;
     /**
-     * 將目前書籍加入書櫃。
-     *
-     * 此方法從數據對像中檢索了本書的AID和CID, 並試圖將書添加到書架中。
-     * 如果`addbookCase`函數不包含字符串“ ajax.tip”, 則用AID和CID調用`addBookCase`。
-     * 否則, 它會模擬使用ID `A_ADDBOOKCASE` 的單擊元素, 以將書添加到書櫃中。
-     *
-     * @private
+     * 加入書櫃（根據不同站點呼叫不同API或模擬點擊）
      */
     private addBookcase;
     /**
-     * 插入作者連結並用新連結取代標題 div。
-     * 此方法執行以下操作：
-     * 1. 從指定的 DOM 元素中檢索作者姓名。
-     * 2. 建立連結到作者頁面的錨元素並設定其文字內容和樣式。
-     * 3. 找到標題 div 並將其替換為包含書名的新錨元素。
-     * 新標題連結的 href 是根據該書是否是商業書籍構建的。
-     * 標題文字是根據圖書資訊的存在而決定的。
+     * 替換標題div為帶有作者連結的新元素
      */
     private insertAuthorLink;
+    /**
+     * 建立作者頁面連結元素
+     */
     private createAuthorLink;
+    /**
+     * 建立書名連結元素
+     */
     private createTitleLink;
     /**
-     * 透過收集書籍資料並註冊選單命令來處理書架。
-     *
-     * @returns {Promise<void>} 當書架處理完成時, 這個承諾就得到解決。
-     * @private
+     * 書架頁面：收集書籍資料並註冊菜單
      */
     private handleBookshelf;
+    /**
+     * 搜尋功能：自動填入並提交表單
+     */
     private performSearch;
     /**
-     * 透過查詢 ID 以 `book_` 開頭的元素, 從 DOM 收集圖書資料。
-     * 如果未找到標籤, 則會重試最多 5 次, 每次重試之間有 5 秒的延遲。
-     *
-     * @param {number} [retryCount=0] - 目前重試次數。
-     * @returns {Promise<BookData[]>} - 解決一系列收集的書籍數據的承諾。
-     *
-     * @remarks
-     * - 如果達到最大重試次數而沒有找到任何標籤, 則傳回空數組。
-     * - 如果啟用`config.Debug`, 則會將其他偵錯資訊記錄到控制枱。
-     *
-     * @private
+     * 遞迴收集書架書籍資料，最多重試5次
      */
     private collectBookData;
+    /**
+     * 註冊菜單命令，點擊可批量打開所有更新書籍
+     */
     private registerMenuCommand;
+    /**
+     * 輸出調試資訊
+     */
     private debugInfo;
-    private registerConfigMenu;
 }
 declare const bookManager: BookManager;
