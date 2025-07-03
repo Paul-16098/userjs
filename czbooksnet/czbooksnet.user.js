@@ -14,8 +14,11 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_getResourceText
 // @license      MIT
-// @require      https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
-// #@require      file:///C:/Users/p/Documents/git/userjs/Tools/Tools.user.js
+//#if debug
+// #@require file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
+//#else
+// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+//#endif
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/czbooksnet/czbooksnet.css
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/
