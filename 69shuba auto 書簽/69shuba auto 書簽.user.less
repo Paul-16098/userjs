@@ -24,3 +24,23 @@ body > div.mainbox {
     padding: 0px;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  body > div.container > div.mybox {
+    background: #252525;
+    color: #d6d6d6;
+  }
+  body > div.container > div.mybox > div.page1 {
+    border: 0;
+    background: #252525;
+    a:hover {
+      background: #3d3737;
+    }
+  }
+  #title {
+    color: #d6d6d6;
+  }
+  #container > div.mybox > div.page1 > a {
+    background: #3d3737;
+  }
+}

@@ -3,7 +3,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.13.0
+// @version      2.2.14.0
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -15,9 +15,14 @@
 // @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
 // @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
 // ==/UserScript==
+// 避免重複宣告 _unsafeWindow
 const _unsafeWindow = unsafeWindow ?? window;
 const IS_DEBUG_LOG = GM_getValue("IS_DEBUG_LOG", false);
-// 設置和初始化 GM API 的函數
+/**
+ * 初始化 GM API 代理，兼容不同腳本管理器環境。
+ * 會自動偵測可用的 GM_* API，並設置對應的變數。
+ * 若無法取得則提供降級方案。
+ */
 function setGM() {
     let debug = console.debug;
     {
@@ -143,7 +148,11 @@ function setGM() {
         }
     }
 }
-// 從 DOM 中移除指定的元素
+/**
+ * 從 DOM 中移除指定選擇器的所有元素。
+ * @param args - CSS 選擇器字串陣列
+ * @returns [true, args] 或 [false, args, error]
+ */
 function removeElement(...args) {
     try {
         if (args) {
@@ -169,8 +178,21 @@ function removeElement(...args) {
     }
     return [true, args];
 }
-// 設置菜單功能，允許註冊命令並處理顯示值的映射
-function setMenu(name, fn, showMapping) {
+/**
+ * 註冊一個用戶菜單命令，支援布林值自動切換與自定義顯示。
+ *
+ * @param name - 設定名稱（同時作為 GM 存儲 key）
+ * @param fn - (可選) 點擊時執行的函數，若為布林值預設為切換並重載
+ * @param def - (可選) 預設值
+ * @param showMapping - (可選) 顯示映射表
+ * @returns 菜單命令ID
+ *
+ * @remarks
+ * - 如果值為 `name` 是未定義的，且提供了 `def`，則將 `def` 設置為初始值。
+ * - 對於布林值，菜單會顯示切換選項，並在變更時重新加載頁面。
+ * - 對於不支持的類型，當選擇菜單項時會記錄錯誤。
+ */
+function setMenu(name, fn, def, showMapping) {
     // 顯示值的映射
     const trueShowMapping = {
         true: "開",
@@ -179,8 +201,14 @@ function setMenu(name, fn, showMapping) {
     };
     let support = false;
     let showName = trueShowMapping[name] ?? name.replaceAll("_", " ");
-    const getValue = GM_getValue(name);
+    let getValue = GM_getValue(name);
     let showValue = "No support";
+    if (getValue === undefined && def !== undefined) {
+        // 如果沒有值，則使用默認值
+        GM_setValue(name, def);
+        getValue = def;
+        console.debug(`setMenu: ${name} set default value: ${def}`);
+    }
     if (typeof getValue === "boolean") {
         support = true;
         showValue = getValue.toString();
@@ -201,7 +229,13 @@ function setMenu(name, fn, showMapping) {
             });
     return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
-// 定義一個新的函數，用於執行傳入的字符串代碼
+/**
+ * 安全執行傳入的字串代碼，支援黑名單過濾。
+ * @param stringCode - 要執行的代碼
+ * @param safety - 是否啟用安全過濾
+ * @returns 執行結果
+ * @throws 若包含黑名單關鍵字則丟出錯誤
+ */
 function newEval(stringCode, safety = true) {
     // 檢查是否包含不允許的關鍵字或代碼
     const blackList = [
@@ -244,38 +278,18 @@ function newEval(stringCode, safety = true) {
     return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
 // #region i18n
+/**
+ * 多語系(i18n)工具類，支援多語言字典與動態參數替換。
+ */
 class i18n {
-    /**
-     * 代表包含語言翻譯的JSON對象。
-     *
-     * 該對像以語言代碼作為頂級key進行構造，每個語言代碼映射到另一個對象，其中鍵是翻譯鍵，值是翻譯字符串。
-     *
-     * @example
-     * ```typescript
-     * const translations: langJson = {
-     *   "en": {
-     *     "greeting": "Hello",
-     *     "farewell": "Goodbye"
-     *   },
-     *   "es": {
-     *     "greeting": "Hola",
-     *     "farewell": "Adiós"
-     *   }
-     * };
-     * ```
-     */
+    /** 語言字典資料 */
     langJson;
-    /**
-     * 語言代碼列表。
-     *
-     * @type {Array<string>}
-     */
+    /** 語言優先順序列表 */
     langList = [];
     /**
-     * 創建一個I18N實例。
-     *
-     * @param {langJson} langJson  -語言映射。
-     * @param {(string | Array<string>)} lang  -語言代碼或語言代碼列表。
+     * 建構子
+     * @param langJson - 語言字典
+     * @param lang - 語言代碼或語言代碼陣列
      */
     constructor(langJson, lang) {
         // 構造函數，接受語言和語言映射
@@ -290,11 +304,10 @@ class i18n {
         }
     }
     /**
-     * 根據提供的key和可選參數檢索本地化字符串。
-     *
-     * @param key  -所需局部字符串的key。
-     * @param args  -可選的參數以替換本地化字符串中的佔位符。
-     * @returns 帶有佔位符的本地化字符串用提供的參數代替，或者一條表示未找到翻譯的消息。
+     * 取得本地化字串，支援參數替換。
+     * @param key - 字典鍵值
+     * @param args - 參數
+     * @returns 對應語言的字串，若無則回傳key
      */
     get(key, ...args) {
         for (const lang of this.langList) {
@@ -318,7 +331,10 @@ class i18n {
         console.warn(`Translation missing for key: "${key}"`); // 警告缺少的翻譯
         return String(key); // 如果沒有找到對應的翻譯，返回key本身
     }
-    t = this.get; // 簡化方法名稱，方便使用
+    /**
+     * 別名，等同 get
+     */
+    t = this.get;
 }
 // #endregion i18n
 //# sourceMappingURL=Tools.user.js.map
