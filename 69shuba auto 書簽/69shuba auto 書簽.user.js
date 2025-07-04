@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.9.1
+// @version      3.5.9.1-beta
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -51,6 +51,8 @@
 // @match        https://www.69shuba.com/book/*.htm
 // #tag twkan.com
 // @match        https://twkan.com/txt/*/*
+// @match        https://twkan.com/bookcase*
+// @match        https://twkan.com/book/*.html
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
 // @grant        GM_addStyle
@@ -62,9 +64,9 @@
 // @grant        GM_getResourceText
 // @run-at       document-idle
 //#if debug
-// #@require file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
+// @require file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
 //#else
-// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+// #@require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @license      MIT
@@ -95,6 +97,7 @@ class Config {
     HookAlertBlockade = GM_getValue("HookAlertBlockade", [
         ["添加成功"],
         ["刪除成功!"],
+        ["恭喜您，该章节已经加入到您的书签！"],
     ]);
     /** 語言設定 */
     Language = GM_getValue("Language", Language.zh);
@@ -281,7 +284,12 @@ class BookManager {
         HasBookInfo: () => typeof bookinfo !== "undefined",
         // 判斷是否在書架頁面
         IsBookshelf: (href = window.location.href) => {
-            return new URL(href).pathname === "/modules/article/bookcase.php";
+            if (this.data.IsTwkan()) {
+                return new URL(href).pathname === "/bookcase";
+            }
+            else {
+                return new URL(href).pathname === "/modules/article/bookcase.php";
+            }
         },
         // 書籍相關操作
         Book: {
@@ -345,6 +353,9 @@ class BookManager {
         // 判斷是否為69shu.biz域名
         IsBiz: (host = location.host) => {
             return host === "69shu.biz";
+        },
+        IsTwkan: (host = location.host) => {
+            return host === "twkan.com";
         },
     };
     /**
@@ -548,7 +559,7 @@ class BookManager {
             : document.title.split("-")[0];
         titleLink.classList.add("userjs_add");
         titleLink.id = "title";
-        titleLink.href = `${window.location.origin}/${this.data.IsBiz() ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz() ? "html" : "htm"}`;
+        titleLink.href = `${window.location.origin}/${this.data.IsBiz() ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz() || this.data.IsTwkan() ? "html" : "htm"}`;
         return titleLink;
     }
     /**
