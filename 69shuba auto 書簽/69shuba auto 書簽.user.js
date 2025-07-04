@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.9.1-beta
+// @version      3.5.9.1
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -64,9 +64,9 @@
 // @grant        GM_getResourceText
 // @run-at       document-idle
 //#if debug
-// @require file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
+// #@require file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
 //#else
-// #@require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @license      MIT
