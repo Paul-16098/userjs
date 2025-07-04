@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.10.0
+// @version      3.5.11.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -478,16 +478,20 @@ class BookManager {
     if (config.AutoAddBookcase) this.autoAddToBookcase();
     this.insertAuthorLink();
     this.updateNextPageLink();
-    const replace_json = JSON.parse(GM_getResourceText("replace_json"));
-    if (config.Debug) {
-      console.log("replace_json: ", replace_json);
-    }
-    for (const key in replace_json) {
-      if (Object.prototype.hasOwnProperty.call(replace_json, key)) {
-        const element = replace_json[key];
-        (document.querySelector("#txtcontent") as HTMLDivElement).innerText = (
-          document.querySelector("#txtcontent") as HTMLDivElement
-        )?.innerText.replaceAll(key, element);
+    if (this.data.IsTwkan()) {
+      const replace_json = JSON.parse(GM_getResourceText("replace_json"));
+      if (config.Debug) {
+        console.log("replace_json: ", replace_json);
+      }
+
+      for (const key in replace_json) {
+        if (Object.prototype.hasOwnProperty.call(replace_json, key)) {
+          const element = replace_json[key];
+          (document.querySelector("#txtcontent") as HTMLDivElement).innerText =
+            (
+              document.querySelector("#txtcontent") as HTMLDivElement
+            )?.innerText.replaceAll(key, element);
+        }
       }
     }
   }
