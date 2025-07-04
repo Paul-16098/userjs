@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.9.1
+// @version      3.5.10.0-beta
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -68,7 +68,9 @@
 //#else
 // @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
+
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
+// @resource     replace_json https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/replace.json
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
@@ -476,6 +478,18 @@ class BookManager {
     if (config.AutoAddBookcase) this.autoAddToBookcase();
     this.insertAuthorLink();
     this.updateNextPageLink();
+    const replace_json = JSON.parse(GM_getResourceText("replace_json"));
+    if (config.Debug) {
+      console.log("replace_json: ", replace_json);
+    }
+    for (const key in replace_json) {
+      if (Object.prototype.hasOwnProperty.call(replace_json, key)) {
+        const element = replace_json[key];
+        (document.querySelector("#txtcontent") as HTMLDivElement).innerText = (
+          document.querySelector("#txtcontent") as HTMLDivElement
+        )?.innerText.replaceAll(key, element);
+      }
+    }
   }
 
   /**
