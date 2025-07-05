@@ -46,6 +46,7 @@ interface BookData {
     };
 }
 declare const i18nInstance: i18n;
+declare const t: (key: keyof (typeof this.langJson)[keyof typeof this.langJson], ...args: Array<any>) => string;
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
  * 它包括偵測圖書頁面、圖書資訊頁面、結束頁面和書架頁面的功能。

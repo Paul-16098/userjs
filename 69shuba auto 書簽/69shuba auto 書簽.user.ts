@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.11.0
+// @version      3.5.12.0-beta
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -197,6 +197,7 @@ interface BookData {
 }
 
 const i18nInstance = new i18n(i18nData, config.Language);
+const t = i18nInstance.t;
 
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
@@ -358,6 +359,17 @@ class BookManager {
           const searchParams = new URL(href).searchParams;
           return searchParams.get("FromBook") === "true";
         }
+        if (this.data.IsTwkan()) {
+          let h = new URL(href);
+          if (
+            /txt\/[0-9]+\/end\.html/.test(h.pathname) &&
+            h.searchParams.get("FromBook") === "true"
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        }
         return false;
       },
     },
@@ -409,10 +421,19 @@ class BookManager {
    */
   constructor() {
     try {
+      if (config.Debug) {
+        console.debug(this.debugInfo());
+      }
+
       // #tag search
       const search = new URLSearchParams(location.search).get("q");
       if (search) this.performSearch(search);
 
+      // #tag BookEnd
+      if (this.data.End.Is()) {
+        if (config.Debug) console.log("End page detected");
+        if (config.IsEndClose) window.close();
+      }
       // #tag Book
       if (this.data.Book.Is()) {
         if (config.Debug) console.log("Book page detected");
@@ -428,11 +449,6 @@ class BookManager {
           Ele.click();
         }
       }
-      // #tag BookEnd
-      if (this.data.End.Is()) {
-        if (config.Debug) console.log("End page detected");
-        if (config.IsEndClose) window.close();
-      }
       // #tag Bookshelf
       if (this.data.IsBookshelf()) {
         if (config.Debug) console.log("Bookshelf page detected");
@@ -446,15 +462,14 @@ class BookManager {
         !this.data.End.Is() &&
         !this.data.IsBookshelf()
       ) {
-        console.debug(this.debugInfo());
         if (!config.Debug) {
-          alert(i18nInstance.t("noMatchingPattern"));
+          alert(t("noMatchingPattern"));
         }
       }
     } catch (error) {
       console.error(error);
       if (!config.Debug) {
-        alert(`${i18nInstance.t("errorOccurred")}${String(error)}`);
+        alert(`${t("errorOccurred")}${String(error)}`);
       }
     }
   }
@@ -675,11 +690,11 @@ class BookManager {
     if (config.Debug) console.groupCollapsed("collectBookData");
     if (labels.length === 0) {
       if (retryCount <= 5) {
-        console.warn(i18nInstance.t("noLabelsFound"));
+        console.warn(t("noLabelsFound"));
         await new Promise((resolve) => setTimeout(resolve, 5000));
         return this.collectBookData(retryCount + 1);
       } else {
-        console.error(i18nInstance.t("maxRetriesReached"));
+        console.error(t("maxRetriesReached"));
         return []; // 到達最大重試次數, 返回空陣列
       }
     }
@@ -751,8 +766,8 @@ class BookManager {
     GM_registerMenuCommand(
       `${
         bookData.length === 0
-          ? i18nInstance.t("noUpdates")
-          : `${bookData.length}${i18nInstance.t("updatesAvailable")}`
+          ? t("noUpdates")
+          : `${bookData.length}${t("updatesAvailable")}`
       }`,
       () => {
         bookData.forEach((data) => {
@@ -774,6 +789,7 @@ class BookManager {
       IsBookshelf: this.data.IsBookshelf(),
       HasBookinfo: this.data.HasBookInfo(),
       IsBiz: this.data.IsBiz(),
+      IsTwkan: this.data.IsTwkan(),
       ...config,
     };
   }
