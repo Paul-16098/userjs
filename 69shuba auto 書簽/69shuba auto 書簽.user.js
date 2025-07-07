@@ -463,7 +463,9 @@ class BookManager {
                 .replaceAll("𝚝𝚠𝚔𝚊𝚗.𝚌𝚘𝚖", "twkan.com")
                 .replaceAll("𝔱𝔴𝔨𝔞𝔫.𝔠𝔬𝔪", "twkan.com")
                 .replaceAll("𝘁𝘄𝗸𝗮𝗻.𝗰𝗼𝗺", "twkan.com")
-                .replaceAll("𝓉𝓌𝓀𝒶𝓃.𝒸ℴ𝓂", "twkan.com");
+                .replaceAll("𝓉𝓌𝓀𝒶𝓃.𝒸ℴ𝓂", "twkan.com")
+                .replaceAll("🆃🆆🅺🅰🅽.🅲🅾🅼", "twkan.com")
+                .replaceAll("𝕥𝕨𝕜𝕒𝕟.𝕔𝕠𝕞", "twkan.com");
             for (const key in replace_json) {
                 if (Object.prototype.hasOwnProperty.call(replace_json, key)) {
                     const element = replace_json[key];
