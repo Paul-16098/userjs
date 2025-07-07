@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.12.0
+// @version      3.5.12.1
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -457,6 +457,13 @@ class BookManager {
             if (config.Debug) {
                 console.log("replace_json: ", replace_json);
             }
+            document.querySelector("#txtcontent").innerText = document.querySelector("#txtcontent")?.innerText
+                .replaceAll("ⓣⓦⓚⓐⓝ.ⓒⓞⓜ", "twkan.com")
+                .replaceAll("🅣🅦🅚🅐🅝.🅒🅞🅜", "twkan.com")
+                .replaceAll("𝚝𝚠𝚔𝚊𝚗.𝚌𝚘𝚖", "twkan.com")
+                .replaceAll("𝔱𝔴𝔨𝔞𝔫.𝔠𝔬𝔪", "twkan.com")
+                .replaceAll("𝘁𝘄𝗸𝗮𝗻.𝗰𝗼𝗺", "twkan.com")
+                .replaceAll("𝓉𝓌𝓀𝒶𝓃.𝒸ℴ𝓂", "twkan.com");
             for (const key in replace_json) {
                 if (Object.prototype.hasOwnProperty.call(replace_json, key)) {
                     const element = replace_json[key];
