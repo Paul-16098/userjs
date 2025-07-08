@@ -453,7 +453,24 @@ class BookManager {
         this.insertAuthorLink();
         this.updateNextPageLink();
         if (this.data.IsTwkan()) {
-            const replace_json = JSON.parse(GM_getResourceText("replace_json"));
+            const raw_replace_json = GM_getResourceText("replace_json");
+            let replace_json = {};
+            try {
+                replace_json = JSON.parse(raw_replace_json);
+            }
+            catch (error) {
+                if (error instanceof SyntaxError) {
+                    if (config.Debug) {
+                        console.log(error);
+                    }
+                    else {
+                        alert(error);
+                    }
+                }
+                else {
+                    throw error;
+                }
+            }
             if (config.Debug) {
                 console.log("replace_json: ", replace_json);
             }
