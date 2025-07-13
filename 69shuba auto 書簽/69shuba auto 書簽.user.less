@@ -26,21 +26,36 @@ body > div.mainbox {
 }
 
 @media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #252525;
+    --abg: #3d3737;
+    --ac: #d6d6d6;
+  }
   body > div.container > div.mybox {
-    background: #252525;
-    color: #d6d6d6;
+    background: var(--bg);
+    color: var(--ac);
   }
   body > div.container > div.mybox > div.page1 {
     border: 0;
-    background: #252525;
+    background: var(--bg);
     a:hover {
-      background: #3d3737;
+      background: var(--abg);
     }
   }
   #title {
-    color: #d6d6d6;
+    color: var(--ac);
   }
   #container > div.mybox > div.page1 > a {
-    background: #3d3737;
+    background: var(--abg);
+  }
+  #baocuo {
+    background: var(--bg);
+  }
+  #container > div.page1 {
+    background: var(--bg);
+    border: 0;
+    a {
+      color: var(--abg);
+    }
   }
 }
