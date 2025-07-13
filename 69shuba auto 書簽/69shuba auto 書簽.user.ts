@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.12.1
+// @version      3.5.13.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -310,10 +310,10 @@ class BookManager {
    */
   private data = {
     // 判斷是否有書籍信息
-    HasBookInfo: () => typeof bookinfo !== "undefined",
+    HasBookInfo: typeof bookinfo !== "undefined",
     // 判斷是否在書架頁面
-    IsBookshelf: (href: string = window.location.href) => {
-      if (this.data.IsTwkan()) {
+    IsBookshelf: (href: string = location.href) => {
+      if (this.data.IsTwkan) {
         return new URL(href).pathname === "/bookcase";
       } else {
         return new URL(href).pathname === "/modules/article/bookcase.php";
@@ -323,14 +323,14 @@ class BookManager {
     Book: {
       // 獲取書籍ID
       GetAid: (href: string = window.location.href) => {
-        if (this.data.HasBookInfo()) {
+        if (this.data.HasBookInfo) {
           return bookinfo.articleid;
         }
         return href.split("/")[4];
       },
       // 獲取章節ID
       GetCid: (href: string = window.location.href) => {
-        if (this.data.HasBookInfo()) {
+        if (this.data.HasBookInfo) {
           return bookinfo.chapterid;
         }
         return href.split("/")[5];
@@ -359,7 +359,7 @@ class BookManager {
           const searchParams = new URL(href).searchParams;
           return searchParams.get("FromBook") === "true";
         }
-        if (this.data.IsTwkan()) {
+        if (this.data.IsTwkan) {
           let h = new URL(href);
           if (
             /txt\/[0-9]+\/end\.html/.test(h.pathname) &&
@@ -392,12 +392,9 @@ class BookManager {
       return false;
     },
     // 判斷是否為69shu.biz域名
-    IsBiz: (host: string = location.host) => {
-      return host === "69shu.biz";
-    },
-    IsTwkan: (host: string = location.host) => {
-      return host === "twkan.com";
-    },
+    IsBiz: location.host === "69shu.biz",
+    // 判斷是否為twkan.com域名
+    IsTwkan: location.host === "twkan.com",
   };
 
   /**
@@ -490,10 +487,13 @@ class BookManager {
       ".bottom-ad2",
       "body > div.container > div.yuedutuijian.light"
     );
+    if (this.data.IsTwkan) {
+      removeElement("#container > br");
+    }
     if (config.AutoAddBookcase) this.autoAddToBookcase();
     this.insertAuthorLink();
     this.updateNextPageLink();
-    if (this.data.IsTwkan()) {
+    if (this.data.IsTwkan) {
       const raw_replace_json = GM_getResourceText("replace_json");
       let replace_json: {
         [key: string]: string;
@@ -659,15 +659,15 @@ class BookManager {
    */
   private createTitleLink(): HTMLAnchorElement {
     const titleLink = document.createElement("a");
-    titleLink.innerHTML = this.data.HasBookInfo()
+    titleLink.innerHTML = this.data.HasBookInfo
       ? bookinfo.articlename ?? document.title.split("-")[0]
       : document.title.split("-")[0];
     titleLink.classList.add("userjs_add");
     titleLink.id = "title";
     titleLink.href = `${window.location.origin}/${
-      this.data.IsBiz() ? "b" : "book"
+      this.data.IsBiz ? "b" : "book"
     }/${this.data.Book.GetAid()}.${
-      this.data.IsBiz() || this.data.IsTwkan() ? "html" : "htm"
+      this.data.IsBiz || this.data.IsTwkan ? "html" : "htm"
     }`;
     return titleLink;
   }
@@ -803,9 +803,9 @@ class BookManager {
       IsEnd: this.data.End.Is(),
       IsNextEnd: this.data.IsNextEnd(),
       IsBookshelf: this.data.IsBookshelf(),
-      HasBookinfo: this.data.HasBookInfo(),
-      IsBiz: this.data.IsBiz(),
-      IsTwkan: this.data.IsTwkan(),
+      HasBookinfo: this.data.HasBookInfo,
+      IsBiz: this.data.IsBiz,
+      IsTwkan: this.data.IsTwkan,
       ...config,
     };
   }

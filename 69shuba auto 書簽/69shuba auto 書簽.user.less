@@ -38,8 +38,11 @@ body > div.mainbox {
   body > div.container > div.mybox > div.page1 {
     border: 0;
     background: var(--bg);
-    a:hover {
-      background: var(--abg);
+    a {
+    //   color: var(--ac);
+      :hover {
+        background: var(--abg);
+      }
     }
   }
   #title {
@@ -55,7 +58,10 @@ body > div.mainbox {
     background: var(--bg);
     border: 0;
     a {
-      color: var(--abg);
+      background: var(--ac);
+      :hover {
+        background: var(--abg);
+      }
     }
   }
 }
