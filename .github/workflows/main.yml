@@ -5,10 +5,12 @@ on:
   push:
     paths:
       - "*/*.user.ts"
+      - "*/*.tsconfig.json"
   pull_request:
     types: [closed]
     paths:
       - "*/*.user.ts"
+      - "*/*.tsconfig.json"
 
 permissions:
   contents: write
