@@ -26,6 +26,8 @@ jobs:
 
       - name: Update version
         run: python update_version.py
+      - name: Update task
+        run: python swcrc2taskjson.py
 
       - name: Install Node.js
         uses: actions/setup-node@main
@@ -36,7 +38,17 @@ jobs:
             npm install --omit dev
             npm list
       - name: Build
-        run: npx swc "." --no-swcrc -C minify=true -C jsc.parser.syntax='typescript' -C jsc.target='esnext' -C jsc.minify.format.comments='all' -C module.type='commonjs' -C module.strictMode=true -C sourceMaps=true --out-dir '.'  --only '**/*.user.ts'
+        run: |
+            'import json
+            from typing import Any
+
+            with open("./.vscode/tasks.json", "r") as f:
+                tasks: dict[str, Any] = json.load(f)
+
+            print("npx " + " ".join(tasks["tasks"][0]["args"]))'>r.py
+            python r.py | eval
+            rm r.py
+
 
       - name: Set up Git user
         run: |
