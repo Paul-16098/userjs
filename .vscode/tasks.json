@@ -1,0 +1,67 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "group": "build",
+      "label": "swc: build",
+      "command": "npx",
+      "args": [
+        "swc",
+        "\".\"",
+        "--no-swcrc",
+        "-C",
+        "minify=true",
+        "-C",
+        "jsc.parser.syntax='typescript'",
+        "-C",
+        "jsc.target='esnext'",
+        "-C",
+        "jsc.minify.format.comments='some'",
+        "-C",
+        "module.type='commonjs'",
+        "-C",
+        "module.strictMode=true",
+        "-C",
+        "sourceMaps=true",
+        "--out-dir",
+        "'.'",
+        "",
+        "--only",
+        "'**/*.user.ts'"
+      ]
+    },
+    {
+      "type": "shell",
+      "group": "build",
+      "label": "swc: watch",
+      "command": "npx",
+      "args": [
+        "swc",
+        "\".\"",
+        "--no-swcrc",
+        "-C",
+        "minify=true",
+        "-C",
+        "jsc.parser.syntax='typescript'",
+        "-C",
+        "jsc.target='esnext'",
+        "-C",
+        "jsc.minify.format.comments='some'",
+        "-C",
+        "module.type='commonjs'",
+        "-C",
+        "module.strictMode=true",
+        "-C",
+        "sourceMaps=true",
+        "--out-dir",
+        "'.'",
+        "",
+        "--only",
+        "'**/*.user.ts'",
+        "-w"
+      ],
+      "isBackground": true
+    }
+  ]
+}

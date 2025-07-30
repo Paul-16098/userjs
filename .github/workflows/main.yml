@@ -32,16 +32,9 @@ jobs:
         with:
           node-version: "23"
       - name: Install dependencies
-        run: npm install
+        run: npm install --omit dev
       - name: Build
-        run: |
-          for dir in */; do
-            if [ -f "$dir/tsconfig.json" ]; then
-              tsc -p "$dir"
-            else
-              echo "Skipping $dir: tsconfig.json not found."
-            fi
-          done
+        run: npx swc "." --no-swcrc -C minify=true -C jsc.parser.syntax='typescript' -C jsc.target='esnext' -C jsc.minify.format.comments='all' -C module.type='commonjs' -C module.strictMode=true -C sourceMaps=true --out-dir '.'  --only '**/*.user.ts'
 
       - name: Set up Git user
         run: |
