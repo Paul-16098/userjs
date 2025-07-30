@@ -35,8 +35,8 @@ jobs:
           node-version: "23"
       - name: Install dependencies
         run: |
-            npm install --omit dev
-            npm list
+            npm install
+            npm i -D @swc/cli @swc/core
       - name: Build
         run: |
             'import json
