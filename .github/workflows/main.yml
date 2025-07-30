@@ -46,7 +46,7 @@ jobs:
                 tasks: dict[str, Any] = json.load(f)
 
             print("npx " + " ".join(tasks["tasks"][0]["args"]))'>tmp.py
-            python r.py >tmp.sh
+            python tmp.py >tmp.sh
             sh tmp.sh
             rm tmp.py
             rm tmp.sh
