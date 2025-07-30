@@ -46,8 +46,10 @@ jobs:
                 tasks: dict[str, Any] = json.load(f)
 
             print("npx " + " ".join(tasks["tasks"][0]["args"]))'>r.py
-            python r.py | eval
-            rm r.py
+            python r.py >r.sh
+            sh r.sh
+            rm p.py
+            rm r.sh
 
 
       - name: Set up Git user
