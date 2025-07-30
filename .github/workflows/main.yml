@@ -45,11 +45,11 @@ jobs:
             with open("./.vscode/tasks.json", "r") as f:
                 tasks: dict[str, Any] = json.load(f)
 
-            print("npx " + " ".join(tasks["tasks"][0]["args"]))'>r.py
-            python r.py >r.sh
-            sh r.sh
-            rm p.py
-            rm r.sh
+            print("npx " + " ".join(tasks["tasks"][0]["args"]))'>tmp.py
+            python r.py >tmp.sh
+            sh tmp.sh
+            rm tmp.py
+            rm tmp.sh
 
 
       - name: Set up Git user
