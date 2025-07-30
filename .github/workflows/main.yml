@@ -39,7 +39,7 @@ jobs:
             npm i -D @swc/cli @swc/core
       - name: Build
         run: |
-            'import json
+            echo 'import json
             from typing import Any
 
             with open("./.vscode/tasks.json", "r") as f:
