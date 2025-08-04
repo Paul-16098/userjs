@@ -10,6 +10,9 @@
       "format": {
         "comments": "all"
       }
+    },
+    "experimental": {
+      "plugins": []
     }
   },
   "module": {

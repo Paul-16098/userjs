@@ -23,13 +23,16 @@
         "-C",
         "jsc.minify.format.comments='all'",
         "-C",
+        "jsc.experimental.plugins=[]",
+        "-C",
         "module.type='commonjs'",
         "-C",
         "module.strictMode=true",
         "-C",
         "sourceMaps=true",
         ""
-      ]
+      ],
+      "isBuildCommand": true
     },
     {
       "type": "process",
@@ -53,6 +56,8 @@
         "-C",
         "jsc.minify.format.comments='all'",
         "-C",
+        "jsc.experimental.plugins=[]",
+        "-C",
         "module.type='commonjs'",
         "-C",
         "module.strictMode=true",
@@ -65,12 +70,13 @@
     },
     {
       "type": "process",
-      "command": "python.exe",
+      "command": "python",
       "args": [
         "swcrc2taskjson.py"
       ],
       "problemMatcher": "$python",
-      "label": "swcrc to taskjson"
+      "label": "swcrc to taskjson",
+      "group": "build"
     }
   ]
 }

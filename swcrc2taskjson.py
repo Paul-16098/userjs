@@ -17,6 +17,7 @@ t = {
             "label": "swc: build",
             "command": "npx",
             "args": [],
+            "isBuildCommand": True,
         },
         {
             "type": "process",
@@ -28,10 +29,11 @@ t = {
         },
         {
             "type": "process",
-            "command": "python.exe",
+            "command": "python",
             "args": [__file__.split("\\")[-1]],
             "problemMatcher": "$python",
             "label": "swcrc to taskjson",
+            "group": "build",
         },
     ],
 }
