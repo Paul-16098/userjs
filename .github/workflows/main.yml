@@ -6,11 +6,15 @@ on:
     paths:
       - "*/*.user.ts"
       - "*/*.tsconfig.json"
+      - "./swcrc"
+      - ".github/workflows/main.yml"
   pull_request:
     types: [closed]
     paths:
       - "*/*.user.ts"
       - "*/*.tsconfig.json"
+      - "./swcrc"
+      - ".github/workflows/main.yml"
 
 permissions:
   contents: write
@@ -35,22 +39,21 @@ jobs:
           node-version: "23"
       - name: Install dependencies
         run: |
-            npm install
-            npm i -D @swc/cli @swc/core
+          npm install
+          npm i -D @swc/cli @swc/core
       - name: Build
         run: |
-            echo 'import json
-            from typing import Any
+          echo 'import json
+          from typing import Any
 
-            with open("./.vscode/tasks.json", "r") as f:
-                tasks: dict[str, Any] = json.load(f)
+          with open("./.vscode/tasks.json", "r") as f:
+              tasks: dict[str, Any] = json.load(f)
 
-            print("npx " + " ".join(tasks["tasks"][0]["args"]))'>tmp.py
-            python tmp.py >tmp.sh
-            sh tmp.sh
-            rm tmp.py
-            rm tmp.sh
-
+          print("npx " + " ".join(tasks["tasks"][0]["args"]))'>tmp.py
+          python tmp.py >tmp.sh
+          sh tmp.sh
+          rm tmp.py
+          rm tmp.sh
 
       - name: Set up Git user
         run: |
