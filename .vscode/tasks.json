@@ -72,7 +72,7 @@
       "type": "process",
       "command": "python",
       "args": [
-        "swcrc2taskjson.py"
+        "/home/runner/work/userjs/userjs/swcrc2taskjson.py"
       ],
       "problemMatcher": "$python",
       "label": "swcrc to taskjson",
