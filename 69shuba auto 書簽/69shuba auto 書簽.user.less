@@ -6,41 +6,63 @@
 }
 
 .container {
-  margin: 0px !important;
-  min-height: 0px !important;
+  margin: 0 !important;
+  min-height: 0 !important;
   width: 100% !important;
   max-width: none !important;
 }
 
 .mybox {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
 body > div.mainbox {
-  margin: 0px;
+  margin: 0;
   max-width: none;
   .maincont {
-    padding: 0px;
+    padding: 0;
   }
 }
 
 @media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #252525;
+    --abg: #3d3737;
+    --ac: #d6d6d6;
+  }
   body > div.container > div.mybox {
-    background: #252525;
-    color: #d6d6d6;
+    background: var(--bg);
+    color: var(--ac);
   }
   body > div.container > div.mybox > div.page1 {
     border: 0;
-    background: #252525;
-    a:hover {
-      background: #3d3737;
+    background: var(--bg);
+    a {
+      /*color: var(--ac);*/
+      :hover {
+        background: var(--abg);
+      }
     }
   }
   #title {
-    color: #d6d6d6;
+    color: var(--ac);
   }
   #container > div.mybox > div.page1 > a {
-    background: #3d3737;
+    background: var(--abg);
+  }
+  #baocuo {
+    background: var(--bg);
+  }
+  #container > div.page1 {
+    background: var(--bg);
+    border: 0;
+    a {
+      background: var(--abg);
+      color: var(--ac);
+    }
+  }
+  #baocuo > li {
+    color: var(--ac);
   }
 }

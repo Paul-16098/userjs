@@ -1,0 +1,24 @@
+{
+  "$schema": "https://swc.rs/schema.json",
+  "minify": true,
+  "jsc": {
+    "parser": {
+      "syntax": "typescript"
+    },
+    "target": "esnext",
+    "minify": {
+      "format": {
+        "comments": "all"
+      }
+    },
+    "experimental": {
+      "plugins": []
+    }
+  },
+  "module": {
+    "type": "commonjs",
+    "strictMode": true
+  },
+  "sourceMaps": true,
+  "plugin": {}
+}

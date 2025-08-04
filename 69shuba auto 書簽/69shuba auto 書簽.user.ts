@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.11.0
+// @version      3.5.13.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -197,6 +197,7 @@ interface BookData {
 }
 
 const i18nInstance = new i18n(i18nData, config.Language);
+const t = i18nInstance.t;
 
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
@@ -309,10 +310,10 @@ class BookManager {
    */
   private data = {
     // 判斷是否有書籍信息
-    HasBookInfo: () => typeof bookinfo !== "undefined",
+    HasBookInfo: typeof bookinfo !== "undefined",
     // 判斷是否在書架頁面
-    IsBookshelf: (href: string = window.location.href) => {
-      if (this.data.IsTwkan()) {
+    IsBookshelf: (href: string = location.href) => {
+      if (this.data.IsTwkan) {
         return new URL(href).pathname === "/bookcase";
       } else {
         return new URL(href).pathname === "/modules/article/bookcase.php";
@@ -322,14 +323,14 @@ class BookManager {
     Book: {
       // 獲取書籍ID
       GetAid: (href: string = window.location.href) => {
-        if (this.data.HasBookInfo()) {
+        if (this.data.HasBookInfo) {
           return bookinfo.articleid;
         }
         return href.split("/")[4];
       },
       // 獲取章節ID
       GetCid: (href: string = window.location.href) => {
-        if (this.data.HasBookInfo()) {
+        if (this.data.HasBookInfo) {
           return bookinfo.chapterid;
         }
         return href.split("/")[5];
@@ -358,6 +359,17 @@ class BookManager {
           const searchParams = new URL(href).searchParams;
           return searchParams.get("FromBook") === "true";
         }
+        if (this.data.IsTwkan) {
+          let h = new URL(href);
+          if (
+            /txt\/[0-9]+\/end\.html/.test(h.pathname) &&
+            h.searchParams.get("FromBook") === "true"
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        }
         return false;
       },
     },
@@ -380,12 +392,9 @@ class BookManager {
       return false;
     },
     // 判斷是否為69shu.biz域名
-    IsBiz: (host: string = location.host) => {
-      return host === "69shu.biz";
-    },
-    IsTwkan: (host: string = location.host) => {
-      return host === "twkan.com";
-    },
+    IsBiz: location.host === "69shu.biz",
+    // 判斷是否為twkan.com域名
+    IsTwkan: location.host === "twkan.com",
   };
 
   /**
@@ -409,10 +418,19 @@ class BookManager {
    */
   constructor() {
     try {
+      if (config.Debug) {
+        console.debug(this.debugInfo());
+      }
+
       // #tag search
       const search = new URLSearchParams(location.search).get("q");
       if (search) this.performSearch(search);
 
+      // #tag BookEnd
+      if (this.data.End.Is()) {
+        if (config.Debug) console.log("End page detected");
+        if (config.IsEndClose) window.close();
+      }
       // #tag Book
       if (this.data.Book.Is()) {
         if (config.Debug) console.log("Book page detected");
@@ -428,11 +446,6 @@ class BookManager {
           Ele.click();
         }
       }
-      // #tag BookEnd
-      if (this.data.End.Is()) {
-        if (config.Debug) console.log("End page detected");
-        if (config.IsEndClose) window.close();
-      }
       // #tag Bookshelf
       if (this.data.IsBookshelf()) {
         if (config.Debug) console.log("Bookshelf page detected");
@@ -446,15 +459,14 @@ class BookManager {
         !this.data.End.Is() &&
         !this.data.IsBookshelf()
       ) {
-        console.debug(this.debugInfo());
         if (!config.Debug) {
-          alert(i18nInstance.t("noMatchingPattern"));
+          alert(t("noMatchingPattern"));
         }
       }
     } catch (error) {
       console.error(error);
       if (!config.Debug) {
-        alert(`${i18nInstance.t("errorOccurred")}${String(error)}`);
+        alert(`${t("errorOccurred")}${String(error)}`);
       }
     }
   }
@@ -475,11 +487,30 @@ class BookManager {
       ".bottom-ad2",
       "body > div.container > div.yuedutuijian.light"
     );
+    if (this.data.IsTwkan) {
+      removeElement("#container > br");
+    }
     if (config.AutoAddBookcase) this.autoAddToBookcase();
     this.insertAuthorLink();
     this.updateNextPageLink();
-    if (this.data.IsTwkan()) {
-      const replace_json = JSON.parse(GM_getResourceText("replace_json"));
+    if (this.data.IsTwkan) {
+      const raw_replace_json = GM_getResourceText("replace_json");
+      let replace_json: {
+        [key: string]: string;
+      } = {};
+      try {
+        replace_json = JSON.parse(raw_replace_json);
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          if (config.Debug) {
+            console.log(error);
+          } else {
+            alert(error);
+          }
+        } else {
+          throw error;
+        }
+      }
       if (config.Debug) {
         console.log("replace_json: ", replace_json);
       }
@@ -628,15 +659,15 @@ class BookManager {
    */
   private createTitleLink(): HTMLAnchorElement {
     const titleLink = document.createElement("a");
-    titleLink.innerHTML = this.data.HasBookInfo()
+    titleLink.innerHTML = this.data.HasBookInfo
       ? bookinfo.articlename ?? document.title.split("-")[0]
       : document.title.split("-")[0];
     titleLink.classList.add("userjs_add");
     titleLink.id = "title";
     titleLink.href = `${window.location.origin}/${
-      this.data.IsBiz() ? "b" : "book"
+      this.data.IsBiz ? "b" : "book"
     }/${this.data.Book.GetAid()}.${
-      this.data.IsBiz() || this.data.IsTwkan() ? "html" : "htm"
+      this.data.IsBiz || this.data.IsTwkan ? "html" : "htm"
     }`;
     return titleLink;
   }
@@ -675,11 +706,11 @@ class BookManager {
     if (config.Debug) console.groupCollapsed("collectBookData");
     if (labels.length === 0) {
       if (retryCount <= 5) {
-        console.warn(i18nInstance.t("noLabelsFound"));
+        console.warn(t("noLabelsFound"));
         await new Promise((resolve) => setTimeout(resolve, 5000));
         return this.collectBookData(retryCount + 1);
       } else {
-        console.error(i18nInstance.t("maxRetriesReached"));
+        console.error(t("maxRetriesReached"));
         return []; // 到達最大重試次數, 返回空陣列
       }
     }
@@ -751,8 +782,8 @@ class BookManager {
     GM_registerMenuCommand(
       `${
         bookData.length === 0
-          ? i18nInstance.t("noUpdates")
-          : `${bookData.length}${i18nInstance.t("updatesAvailable")}`
+          ? t("noUpdates")
+          : `${bookData.length}${t("updatesAvailable")}`
       }`,
       () => {
         bookData.forEach((data) => {
@@ -772,8 +803,9 @@ class BookManager {
       IsEnd: this.data.End.Is(),
       IsNextEnd: this.data.IsNextEnd(),
       IsBookshelf: this.data.IsBookshelf(),
-      HasBookinfo: this.data.HasBookInfo(),
-      IsBiz: this.data.IsBiz(),
+      HasBookinfo: this.data.HasBookInfo,
+      IsBiz: this.data.IsBiz,
+      IsTwkan: this.data.IsTwkan,
       ...config,
     };
   }

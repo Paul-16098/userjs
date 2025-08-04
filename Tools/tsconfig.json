@@ -7,12 +7,14 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "sourceMap": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext", "ES7", "DOM"],
     "target": "ESNext",
     "module": "commonjs",
     "outDir": ".",
     "strict": true,
-    "declaration": true
+    "declaration": true,
+    "noImplicitAny": true,
+    "incremental": true
   },
   "exclude": ["node_modules", "**/node_modules/*"]
 }

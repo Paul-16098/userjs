@@ -1,8 +1,12 @@
 from glob import glob
+import json
 import re
 
-# 條件對應表，控制條件編譯的開關
-CONDITIONS: dict[str, bool] = {"debug": False, "True": True, "False": False}
+with open("./F.json", "rt", encoding="utf-8") as f:
+    F: dict[str, bool] = json.load(f)
+    # 條件對應表，控制條件編譯的開關
+    CONDITIONS: dict[str, bool] = {"True": True, "False": False}
+    CONDITIONS.update(F)
 
 
 def clean_version_tag(text: str) -> str:
@@ -22,6 +26,12 @@ def process_require_blocks(text: str) -> str:
     處理條件 @require 區塊，根據 CONDITIONS 決定是否啟用
     """
 
+    def enabled(data: str) -> str:
+        return data.replace("#@", "@")
+
+    def disabled(data: str) -> str:
+        return data.replace(" @", " #@")
+
     def repl(match: re.Match[str]) -> str:
         directive, cond, url = match.group(1), match.group(2).strip(), match.group(3)
         if directive == "if":
@@ -36,9 +46,9 @@ def process_require_blocks(text: str) -> str:
         else:
             return match.group(0)
 
-    pattern = (
-        r"//#(if|else|endif)\s*(.*?)\n//\s?#?@require\s+(file://[^\s]+|https://[^\s]+)"
-    )
+    # directive & cond
+    directive_pattern = r"//#(if|else|endif)\s*(.*?)"
+    pattern = directive_pattern + r"\n//\s?#?@require\s+(file://[^\s]+|https://[^\s]+)"
     return re.sub(pattern, repl, text)
 
 
@@ -61,6 +71,7 @@ def main():
     """
     主流程：批次處理所有 .user.ts 檔案
     """
+
     for file in glob("./*/*.user.ts"):
         try:
             changed = update_user_ts_file(file)

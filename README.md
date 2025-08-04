@@ -19,11 +19,23 @@
 
 ---
 
+<!--
+
+## {name}
+
+自用
+
+[安裝](./{name}/name.user.js?raw=true)
+
+---
+
+-->
+
 ## tools
 
 自用
 
-[安裝](./Tools/Tools.user.js)
+[安裝](./Tools/Tools.user.js?raw=true)
 
 ---
 
@@ -31,7 +43,7 @@
 
 自用
 
-[安裝](./69shuba%20auto%20書簽/69shuba%20auto%20書簽.user.js)
+[安裝](./69shuba%20auto%20書簽/69shuba%20auto%20書簽.user.js?raw=true)
 
 ---
 
@@ -39,7 +51,7 @@
 
 自用
 
-[安裝](./czbooksnet/czbooksnet.user.js)
+[安裝](./czbooksnet/czbooksnet.user.js?raw=true)
 
 ---
 
@@ -47,4 +59,4 @@
 
 自用
 
-[安裝](./ixdzs8tw/ixdzs8tw.user.js)
+[安裝](./ixdzs8tw/ixdzs8tw.user.js?raw=true)
