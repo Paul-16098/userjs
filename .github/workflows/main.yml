@@ -1,18 +1,20 @@
 name: Build ts
 
-define: &watch_paths
-  - "*/*.user.ts"
-  - "*/*.tsconfig.json"
-  - "./swcrc"
-  - ".github/workflows/main.yml"
-
 on:
   workflow_dispatch:
   push:
-    paths: *watch_paths
+    paths:
+      - "*/*.user.ts"
+      - "*/*.tsconfig.json"
+      - "./swcrc"
+      - ".github/workflows/main.yml"
   pull_request:
     types: [closed]
-    paths: *watch_paths
+    paths:
+      - "*/*.user.ts"
+      - "*/*.tsconfig.json"
+      - "./swcrc"
+      - ".github/workflows/main.yml"
 
 permissions:
   contents: write
