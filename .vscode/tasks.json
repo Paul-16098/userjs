@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "shell",
+      "type": "process",
       "group": "build",
       "label": "swc: build",
       "command": "npx",
@@ -10,7 +10,11 @@
         "swc",
         "\".\"",
         "--no-swcrc",
-        "-C",
+        "--out-dir",
+        "\".\"",
+        "",
+        "--only",
+        "\"**/*.user.ts\"-C",
         "minify=true",
         "-C",
         "jsc.parser.syntax='typescript'",
@@ -24,15 +28,11 @@
         "module.strictMode=true",
         "-C",
         "sourceMaps=true",
-        "--out-dir",
-        "'.'",
-        "",
-        "--only",
-        "'**/*.user.ts'"
+        ""
       ]
     },
     {
-      "type": "shell",
+      "type": "process",
       "group": "build",
       "label": "swc: watch",
       "command": "npx",
@@ -40,7 +40,11 @@
         "swc",
         "\".\"",
         "--no-swcrc",
-        "-C",
+        "--out-dir",
+        "\".\"",
+        "",
+        "--only",
+        "\"**/*.user.ts\"-C",
         "minify=true",
         "-C",
         "jsc.parser.syntax='typescript'",
@@ -54,14 +58,19 @@
         "module.strictMode=true",
         "-C",
         "sourceMaps=true",
-        "--out-dir",
-        "'.'",
         "",
-        "--only",
-        "'**/*.user.ts'",
         "-w"
       ],
       "isBackground": true
+    },
+    {
+      "type": "process",
+      "command": "python.exe",
+      "args": [
+        "swcrc2taskjson.py"
+      ],
+      "problemMatcher": "$python",
+      "label": "swcrc to taskjson"
     }
   ]
 }

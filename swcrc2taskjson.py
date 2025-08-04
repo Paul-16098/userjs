@@ -4,7 +4,7 @@ from typing import Any
 with open("./.swcrc", "r") as f:
     swcrc: dict[str, Any] = json.load(f)
 
-arg = 'npx swc "." --no-swcrc '
+arg = 'npx swc "." --no-swcrc --out-dir "."  --only "**/*.user.ts"'
 # print(swcrc)
 
 
@@ -12,19 +12,26 @@ t = {
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "shell",
+            "type": "process",
             "group": "build",
             "label": "swc: build",
             "command": "npx",
             "args": [],
         },
         {
-            "type": "shell",
+            "type": "process",
             "group": "build",
             "label": "swc: watch",
             "command": "npx",
             "args": [],
             "isBackground": True,
+        },
+        {
+            "type": "process",
+            "command": "python.exe",
+            "args": [__file__.split("\\")[-1]],
+            "problemMatcher": "$python",
+            "label": "swcrc to taskjson",
         },
     ],
 }
@@ -53,7 +60,7 @@ def p_arg(d: dict) -> str:
 
 
 arg += p_arg(swcrc)
-arg += "--out-dir '.'  --only '**/*.user.ts'"
+
 # print(arg)
 argl = arg.split(" ")
 argl.pop(0)  # remove npx
