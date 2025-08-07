@@ -14,11 +14,7 @@ def clean_version_tag(text: str) -> str:
     移除 @version 標籤中的 -beta 標記，只保留主版本號
     """
 
-    def repl(match: re.Match[str]) -> str:
-        version = re.sub(r"-beta\d*", "", match.group(1))
-        return f"// @version      {version}"
-
-    return re.sub(r"// @version\s+((\d+\.?)+(-beta\d*)?)", repl, text)
+    return re.sub(r"// @version\s+((\d+\.?)+)(-beta\d*)?", r"// @version      \1", text)
 
 
 def process_require_blocks(text: str) -> str:
