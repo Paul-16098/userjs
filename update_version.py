@@ -70,8 +70,7 @@ def main():
 
     for file in glob("./*/*.user.ts"):
         try:
-            changed = update_user_ts_file(file)
-            if changed:
+            if update_user_ts_file(file):
                 print(f"Updated: {file}")
         except Exception as e:
             print(f"Error processing file {file}: {e}")

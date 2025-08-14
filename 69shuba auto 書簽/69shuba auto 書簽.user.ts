@@ -464,10 +464,10 @@ class BookManager {
         }
       }
     } catch (error) {
-      console.error(error);
       if (!config.Debug) {
         alert(`${t("errorOccurred")}${String(error)}`);
       }
+      throw error;
     }
   }
 
@@ -626,12 +626,16 @@ class BookManager {
    * 替換標題div為帶有作者連結的新元素
    */
   private insertAuthorLink(): void {
-    const author =
-      document
-        .querySelector(this.SELECTORS.authorInfo)
-        ?.textContent?.trim()
-        .split(" ")[1] ?? "undefined";
-    const authorLink = this.createAuthorLink(author);
+    let author = "?";
+    if (!bookinfo) {
+      author =
+        document
+          .querySelector(this.SELECTORS.authorInfo)
+          ?.textContent?.trim()
+          .split(" ")[1] ?? "undefined";
+    } else {
+      author = bookinfo.author;
+    }
     const titleDiv = document.querySelector(
       this.SELECTORS.titleDiv
     ) as HTMLDivElement;
@@ -639,6 +643,15 @@ class BookManager {
       const titleLink = this.createTitleLink();
       titleDiv.parentNode?.replaceChild(titleLink, titleDiv);
     }
+    const authorLink = this.createAuthorLink(author);
+    let oal = document.querySelector(
+      "#container > div.mybox > div > div.txtinfo.hide720 > span:nth-child(2)"
+    );
+    document
+      .querySelector(
+        "#container > div.mybox > div.txtnav > div.txtinfo.hide720"
+      )
+      ?.replaceChild(authorLink, oal);
   }
 
   /**
@@ -646,10 +659,14 @@ class BookManager {
    */
   private createAuthorLink(author: string): HTMLAnchorElement {
     const authorLink = document.createElement("a");
-    authorLink.href = `${
-      window.location.origin
-    }/modules/article/author.php?author=${encodeURIComponent(author)}`;
-    authorLink.textContent = author;
+    if (this.data.IsTwkan) {
+      authorLink.href = `https://twkan.com/author/${author}.html`;
+    } else {
+      authorLink.href = `${
+        window.location.origin
+      }/modules/article/author.php?author=${encodeURIComponent(author)}`;
+    }
+    authorLink.textContent = "作者： " + author;
     authorLink.style.color = "#007ead";
     return authorLink;
   }
