@@ -14,9 +14,6 @@
 // @grant        window.close
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/ixdzs8tw/ixdzs8tw.user.css
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
-// @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
-// @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/ixdzs8tw.user.js
-// @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/ixdzs8tw.user.js
 // ==/UserScript==
 
 let ele = [];
