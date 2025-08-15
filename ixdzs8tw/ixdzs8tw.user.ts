@@ -6,10 +6,13 @@
 // @author       paul
 // @match        https://ixdzs8.com/read/*/*.html
 // @match        https://ixdzs8.com/read/*/
+// @match        https://ixdzs.hk/read/*/*.html
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=ixdzs8.tw
 // @license      MIT
 // @grant        GM_addStyle
+// @grant        GM_getResourceText
 // @grant        window.close
+// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/ixdzs8tw/ixdzs8tw.user.css
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
 // @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/ixdzs8tw.user.js
@@ -71,14 +74,7 @@ if (pattern.book.is(url)) {
       document.querySelector(ele)!.remove();
     }
   });
-  GM_addStyle(`
-    .page-content{
-max-width: none;
-padding: 10px 15px;
-transform: translateX(0px);
-background: #ffffff!important;
-}
-`);
+  GM_addStyle(GM_getResourceText("css1"));
 }
 if (pattern.end.is(url) || pattern.end.is(next_page_url)) {
   // console.log("end")
