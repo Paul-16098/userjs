@@ -322,7 +322,7 @@ class i18n {
     };
   };
   /** 語言優先順序列表 */
-  langList: Array<string> = [];
+  public langList: Array<string> = [];
 
   /**
    * 建構子
@@ -338,6 +338,8 @@ class i18n {
     } else if (typeof lang === "string") {
       // 如果傳入的是單個語言
       this.langList.push(lang);
+    } else {
+      throw Error("i18n:constructor:parameter:lang: not allow type");
     }
   }
 

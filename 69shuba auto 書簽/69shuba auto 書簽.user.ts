@@ -196,9 +196,6 @@ interface BookData {
   };
 }
 
-const i18nInstance = new i18n(i18nData, config.Language);
-const t = i18nInstance.t;
-
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
  * 它包括偵測圖書頁面、圖書資訊頁面、結束頁面和書架頁面的功能。
@@ -396,6 +393,8 @@ class BookManager {
     // 判斷是否為twkan.com域名
     IsTwkan: location.host === "twkan.com",
   };
+  i18nInstance: i18n;
+  t: typeof this.i18nInstance.t;
 
   /**
    * 取得下一頁的a元素
@@ -417,6 +416,9 @@ class BookManager {
    * 構造函數，根據當前頁面自動分派對應處理
    */
   constructor() {
+    this.i18nInstance = new i18n(i18nData, config.Language.toString());
+    this.t = this.i18nInstance.t;
+
     try {
       if (config.Debug) {
         console.debug(this.debugInfo());
@@ -460,12 +462,12 @@ class BookManager {
         !this.data.IsBookshelf()
       ) {
         if (!config.Debug) {
-          alert(t("noMatchingPattern"));
+          alert(this.t("noMatchingPattern"));
         }
       }
     } catch (error) {
       if (!config.Debug) {
-        alert(`${t("errorOccurred")}${String(error)}`);
+        alert(`${this.t("errorOccurred")}${String(error)}`);
       }
       throw error;
     }
@@ -647,6 +649,10 @@ class BookManager {
     let oal = document.querySelector(
       "#container > div.mybox > div > div.txtinfo.hide720 > span:nth-child(2)"
     );
+    if (oal === null) {
+      console.warn("insertAuthorLink:oal=null");
+      return void 0;
+    }
     document
       .querySelector(
         "#container > div.mybox > div.txtnav > div.txtinfo.hide720"
@@ -723,11 +729,11 @@ class BookManager {
     if (config.Debug) console.groupCollapsed("collectBookData");
     if (labels.length === 0) {
       if (retryCount <= 5) {
-        console.warn(t("noLabelsFound"));
+        console.warn(this.t("noLabelsFound"));
         await new Promise((resolve) => setTimeout(resolve, 5000));
         return this.collectBookData(retryCount + 1);
       } else {
-        console.error(t("maxRetriesReached"));
+        console.error(this.t("maxRetriesReached"));
         return []; // 到達最大重試次數, 返回空陣列
       }
     }
@@ -799,8 +805,8 @@ class BookManager {
     GM_registerMenuCommand(
       `${
         bookData.length === 0
-          ? t("noUpdates")
-          : `${bookData.length}${t("updatesAvailable")}`
+          ? this.t("noUpdates")
+          : `${bookData.length}${this.t("updatesAvailable")}`
       }`,
       () => {
         bookData.forEach((data) => {
