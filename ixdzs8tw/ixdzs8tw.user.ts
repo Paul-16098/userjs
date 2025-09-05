@@ -27,40 +27,26 @@ let next_page_url = (
 
 let pattern = {
   book: {
-    pattern:
-      /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/(?!end)p[0-9]*\.html)$/gm,
-    is: (url: string) => {
-      if (pattern.book.pattern.test(url)) {
-        return true;
-      } else {
-        return false;
-      }
+    pattern: /^\/read\/[0-9]+\/(?!end)p[0-9]*\.html$/gm,
+    is: (url: string = location.pathname) => {
+      return pattern.book.pattern.test(url);
     },
   },
   info: {
-    pattern: /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/)$/gm,
-    is: (url: string) => {
-      if (pattern.info.pattern.test(url)) {
-        return true;
-      } else {
-        return false;
-      }
+    pattern: /^\/read\/[0-9]+\/$/gm,
+    is: (url: string = location.pathname) => {
+      return pattern.info.pattern.test(url);
     },
   },
   end: {
-    pattern:
-      /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/end\.html)$/gm,
-    is: (url: string) => {
-      if (pattern.end.pattern.test(url)) {
-        return true;
-      } else {
-        return false;
-      }
+    pattern: /^\/read\/[0-9]+\/end\.html$/gm,
+    is: (url: string = location.pathname) => {
+      return pattern.end.pattern.test(url);
     },
   },
 };
 
-if (pattern.book.is(url)) {
+if (pattern.book.is()) {
   ele = [
     "#page-id3",
     "#page-toolbar",
@@ -73,7 +59,7 @@ if (pattern.book.is(url)) {
   });
   GM_addStyle(GM_getResourceText("css1"));
 }
-if (pattern.end.is(url) || pattern.end.is(next_page_url)) {
+if (pattern.end.is() || pattern.end.is(new URL(next_page_url).pathname)) {
   // console.log("end")
   if (pattern.end.is(next_page_url)) {
     document.addEventListener("keydown", function (e) {
@@ -92,10 +78,10 @@ if (pattern.end.is(url) || pattern.end.is(next_page_url)) {
       }
     });
   }
-  if (pattern.end.is(url)) {
+  if (pattern.end.is()) {
     window.close();
   }
 }
-if (pattern.info.is(url)) {
+if (pattern.info.is()) {
   (document.querySelector("#intro") as HTMLElement).click();
 }
