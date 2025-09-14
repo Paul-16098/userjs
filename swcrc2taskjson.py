@@ -66,8 +66,8 @@ arg += p_arg(swcrc)
 # print(arg)
 argl = arg.split(" ")
 argl.pop(0)  # remove npx
-t["tasks"][0]["args"] = argl  # pyright: ignore[reportIndexIssue]
-t["tasks"][1]["args"] = argl.copy()  # pyright: ignore[reportIndexIssue]
-t["tasks"][1]["args"].append("-w")  # pyright: ignore[reportArgumentType]
+t["tasks"][0]["args"] = argl # type: ignore
+t["tasks"][1]["args"] = argl.copy() # type: ignore
+t["tasks"][1]["args"].append("-w") # type: ignore
 with open("./.vscode/tasks.json", "w") as f:
     json.dump(t, f, indent=2, ensure_ascii=False)
