@@ -56,20 +56,20 @@ if (!changeBackground || typeof changeBackground !== "function") {
     switch (params) {
       case "default": {
         // 點擊預設主題按鈕
-        (
-          document.querySelector(
+        document
+          .querySelector<HTMLAnchorElement>(
             "#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a"
-          ) as HTMLAnchorElement
-        ).click();
+          )
+          ?.click();
         break;
       }
       case "white": {
         // 點擊白色主題按鈕
-        (
-          document.querySelector(
+        document
+          .querySelector<HTMLAnchorElement>(
             "#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a"
-          ) as HTMLAnchorElement
-        ).click();
+          )
+          ?.click();
         break;
       }
     }

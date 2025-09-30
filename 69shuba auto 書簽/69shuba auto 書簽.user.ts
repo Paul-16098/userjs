@@ -111,7 +111,6 @@ class Config {
   constructor() {
     this.set();
     this.registerConfigMenu();
-    return this;
   }
   /**
    * 註冊所有配置項的菜單
@@ -162,7 +161,7 @@ class Config {
 const config: Config = new Config();
 
 // i18n 設定
-const i18nData: typeof i18n.prototype.langJson = {
+const i18nData: typeof I18n.prototype.langJson = {
   en: {
     noMatchingPattern: "No matching URL pattern found",
     errorOccurred: "An error occurred: ",
@@ -305,7 +304,7 @@ class BookManager {
   /**
    * 各種頁面判斷與數據獲取方法集合
    */
-  private data = {
+  private readonly data = {
     // 判斷是否有書籍信息
     HasBookInfo: typeof bookinfo !== "undefined",
     // 判斷是否在書架頁面
@@ -333,7 +332,7 @@ class BookManager {
         return href.split("/")[5];
       },
       // 書籍URL模式
-      pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
+      pattern: /^\/(txt|c|r)\/(\d|[a-z])+\/(\d|[a-z])+(\.html)?$/m,
       // 判斷是否為書籍頁面
       Is: (href: string = window.location.href) => {
         return this.data.Book.pattern.test(new URL(href).pathname);
@@ -342,7 +341,7 @@ class BookManager {
     // 書籍信息相關操作
     Info: {
       // 書籍信息URL模式
-      pattern: /^\/(book|b|article)\/([0-9]|[a-z])+\.htm(l)?$/m,
+      pattern: /^\/(book|b|article)\/(\d|[a-z])+\.htm(l)?$/m,
       // 判斷是否為書籍信息頁面
       Is: (pathname: string = window.location.pathname) => {
         return this.data.Info.pattern.test(pathname);
@@ -359,7 +358,7 @@ class BookManager {
         if (this.data.IsTwkan) {
           let h = new URL(href);
           if (
-            /txt\/[0-9]+\/end\.html/.test(h.pathname) &&
+            /txt\/\d+\/end\.html/.test(h.pathname) &&
             h.searchParams.get("FromBook") === "true"
           ) {
             return true;
@@ -392,8 +391,17 @@ class BookManager {
     IsBiz: location.host === "69shu.biz",
     // 判斷是否為twkan.com域名
     IsTwkan: location.host === "twkan.com",
+
+    NotAny: () => {
+      return (
+        !this.data.Book.Is() &&
+        !this.data.Info.Is() &&
+        !this.data.End.Is() &&
+        !this.data.IsBookshelf()
+      );
+    },
   };
-  i18nInstance: i18n;
+  i18nInstance: I18n;
   t: typeof this.i18nInstance.t;
 
   /**
@@ -401,10 +409,8 @@ class BookManager {
    */
   getNextPageElement(): HTMLAnchorElement | null {
     for (const selector of this.SELECTORS.nextPage) {
-      const element = document.querySelector(
-        selector
-      ) as HTMLAnchorElement | null;
-      if (element && element.href) return element;
+      const element = document.querySelector<HTMLAnchorElement>(selector);
+      if (element?.href) return element;
     }
     // 備用方案：尋找文字為"下一章"的連結
     return Array.from(document.querySelectorAll("a")).find(
@@ -416,7 +422,7 @@ class BookManager {
    * 構造函數，根據當前頁面自動分派對應處理
    */
   constructor() {
-    this.i18nInstance = new i18n(i18nData, config.Language.toString());
+    this.i18nInstance = new I18n(i18nData, config.Language.toString());
     this.t = this.i18nInstance.t;
 
     try {
@@ -441,9 +447,9 @@ class BookManager {
       // #tag Info
       if (this.data.Info.Is()) {
         if (config.Debug) console.log("Book info page detected");
-        let Ele = document.querySelector(
+        let Ele = document.querySelector<HTMLAnchorElement>(
           "body > div.container > ul > li.col-8 > div:nth-child(2) > ul > li:nth-child(2) > a"
-        ) as HTMLAnchorElement | null;
+        );
         if (Ele) {
           Ele.click();
         }
@@ -455,12 +461,7 @@ class BookManager {
       }
 
       // if not match any pattern
-      if (
-        !this.data.Book.Is() &&
-        !this.data.Info.Is() &&
-        !this.data.End.Is() &&
-        !this.data.IsBookshelf()
-      ) {
+      if (this.data.NotAny()) {
         if (!config.Debug) {
           alert(this.t("noMatchingPattern"));
         }
@@ -518,12 +519,19 @@ class BookManager {
       }
 
       for (const key in replace_json) {
-        if (Object.prototype.hasOwnProperty.call(replace_json, key)) {
+        if (Object.hasOwn(replace_json, key)) {
           const element = replace_json[key];
-          (document.querySelector("#txtcontent") as HTMLDivElement).innerText =
+          if (document.querySelector<HTMLDivElement>("#txtcontent")) {
             (
-              document.querySelector("#txtcontent") as HTMLDivElement
-            )?.innerText.replaceAll(key, element);
+              document.querySelector<HTMLDivElement>(
+                "#txtcontent"
+              ) as HTMLDivElement
+            ).innerText = (
+              document.querySelector<HTMLDivElement>(
+                "#txtcontent"
+              ) as HTMLDivElement
+            ).innerText.replaceAll(key, element);
+          }
         }
       }
     }
@@ -617,9 +625,8 @@ class BookManager {
     if (!addbookcase.toString().includes("Ajax.Tip")) {
       addbookcase(aid, cid);
     } else {
-      const addBookcaseLink = document.querySelector(
-        "#a_addbookcase"
-      ) as HTMLElement | null;
+      const addBookcaseLink =
+        document.querySelector<HTMLElement>("#a_addbookcase");
       addBookcaseLink?.click();
     }
   }
@@ -628,7 +635,7 @@ class BookManager {
    * 替換標題div為帶有作者連結的新元素
    */
   private insertAuthorLink(): void {
-    let author = "?";
+    let author;
     if (!bookinfo) {
       author =
         document
@@ -749,16 +756,14 @@ class BookManager {
             (label2) => label2.textContent === "更新"
           )
         ) {
-          // if (location.origin === "https://www.69yuedu.net") {
-          // } else {
           const bookContinueEle = label.querySelector(
             "div.newright > a.btn.btn-tp"
           ) as HTMLAnchorElement;
           const bookContinueLink = bookContinueEle.href;
 
-          const BookName = (
-            label.querySelector("div.newnav > h3 > a > span") as HTMLSpanElement
-          ).textContent as string;
+          const BookName = label.querySelector<HTMLSpanElement>(
+            "div.newnav > h3 > a > span"
+          )?.textContent as string;
 
           const bookImgEle = label.querySelector("a > img") as HTMLImageElement;
           const bookImgUrl = bookImgEle.src;
