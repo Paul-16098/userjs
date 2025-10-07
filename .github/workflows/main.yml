@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@main
       - uses: actions/setup-python@main
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
       - name: Update version
         run: python update_version.py
