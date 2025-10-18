@@ -77,7 +77,7 @@ function setMenu(
   const trueShowMapping: { [x: string]: string } = {
     true: "開",
     false: "關",
-    ...(showMapping ?? {}),
+    ...showMapping,
   };
   let support = false;
   let showName: string = trueShowMapping[name] ?? name.replaceAll("_", " ");
@@ -190,14 +190,14 @@ class I18n {
   constructor(langJson: typeof this.langJson, lang: string | Array<string>) {
     // 構造函數，接受語言和語言映射
     this.langJson = langJson;
-    if (lang instanceof Array) {
+    if (Array.isArray(lang)) {
       // 如果傳入的是數組
       this.langList.push(...lang);
     } else if (typeof lang === "string") {
       // 如果傳入的是單個語言
       this.langList.push(lang);
     } else {
-      throw Error("i18n:constructor:parameter:lang: not allow type");
+      throw new TypeError("i18n:constructor:parameter:lang: not allow type");
     }
   }
 
@@ -218,7 +218,7 @@ class I18n {
         let text = this.langJson[lang][key]; // 獲取對應的語言文本
         if (args && args.length > 0) {
           // 如果傳入了參數
-          text = text.replace(/{(\d+)}/g, (match, number) => {
+          text = text.replaceAll(/{(\d+)}/g, (match, number) => {
             if (number >= 0 && number < args.length) {
               // 替換文本中的 {n} 參數
               return typeof args[number] === "undefined" ? match : args[number];
