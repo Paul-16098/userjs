@@ -105,7 +105,6 @@ class Config {
     constructor() {
         this.set();
         this.registerConfigMenu();
-        return this;
     }
     /**
      * 註冊所有配置項的菜單
@@ -172,8 +171,6 @@ const i18nData = {
         updatesAvailable: "個更新",
     },
 };
-const i18nInstance = new i18n(i18nData, config.Language);
-const t = i18nInstance.t;
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
  * 它包括偵測圖書頁面、圖書資訊頁面、結束頁面和書架頁面的功能。
@@ -310,7 +307,7 @@ class BookManager {
                 return href.split("/")[5];
             },
             // 書籍URL模式
-            pattern: /^\/(txt|c|r)\/([0-9]|[a-z])+\/([0-9]|[a-z])+(\.html)?$/m,
+            pattern: /^\/(txt|c|r)\/(\d|[a-z])+\/(\d|[a-z])+(\.html)?$/m,
             // 判斷是否為書籍頁面
             Is: (href = window.location.href) => {
                 return this.data.Book.pattern.test(new URL(href).pathname);
@@ -319,7 +316,7 @@ class BookManager {
         // 書籍信息相關操作
         Info: {
             // 書籍信息URL模式
-            pattern: /^\/(book|b|article)\/([0-9]|[a-z])+\.htm(l)?$/m,
+            pattern: /^\/(book|b|article)\/(\d|[a-z])+\.htm(l)?$/m,
             // 判斷是否為書籍信息頁面
             Is: (pathname = window.location.pathname) => {
                 return this.data.Info.pattern.test(pathname);
@@ -335,7 +332,7 @@ class BookManager {
                 }
                 if (this.data.IsTwkan) {
                     let h = new URL(href);
-                    if (/txt\/[0-9]+\/end\.html/.test(h.pathname) &&
+                    if (/txt\/\d+\/end\.html/.test(h.pathname) &&
                         h.searchParams.get("FromBook") === "true") {
                         return true;
                     }
@@ -366,14 +363,22 @@ class BookManager {
         IsBiz: location.host === "69shu.biz",
         // 判斷是否為twkan.com域名
         IsTwkan: location.host === "twkan.com",
+        NotAny: () => {
+            return (!this.data.Book.Is() &&
+                !this.data.Info.Is() &&
+                !this.data.End.Is() &&
+                !this.data.IsBookshelf());
+        },
     };
+    i18nInstance;
+    t;
     /**
      * 取得下一頁的a元素
      */
     getNextPageElement() {
         for (const selector of this.SELECTORS.nextPage) {
             const element = document.querySelector(selector);
-            if (element && element.href)
+            if (element?.href)
                 return element;
         }
         // 備用方案：尋找文字為"下一章"的連結
@@ -383,6 +388,8 @@ class BookManager {
      * 構造函數，根據當前頁面自動分派對應處理
      */
     constructor() {
+        this.i18nInstance = new I18n(i18nData, config.Language.toString());
+        this.t = this.i18nInstance.t;
         try {
             if (config.Debug) {
                 console.debug(this.debugInfo());
@@ -420,18 +427,15 @@ class BookManager {
                 this.handleBookshelf();
             }
             // if not match any pattern
-            if (!this.data.Book.Is() &&
-                !this.data.Info.Is() &&
-                !this.data.End.Is() &&
-                !this.data.IsBookshelf()) {
+            if (this.data.NotAny()) {
                 if (!config.Debug) {
-                    alert(t("noMatchingPattern"));
+                    alert(this.t("noMatchingPattern"));
                 }
             }
         }
         catch (error) {
             if (!config.Debug) {
-                alert(`${t("errorOccurred")}${String(error)}`);
+                alert(`${this.t("errorOccurred")}${String(error)}`);
             }
             throw error;
         }
@@ -475,10 +479,11 @@ class BookManager {
                 console.log("replace_json: ", replace_json);
             }
             for (const key in replace_json) {
-                if (Object.prototype.hasOwnProperty.call(replace_json, key)) {
+                if (Object.hasOwn(replace_json, key)) {
                     const element = replace_json[key];
-                    document.querySelector("#txtcontent").innerText =
-                        document.querySelector("#txtcontent")?.innerText.replaceAll(key, element);
+                    if (document.querySelector("#txtcontent")) {
+                        document.querySelector("#txtcontent").innerText = document.querySelector("#txtcontent").innerText.replaceAll(key, element);
+                    }
                 }
             }
         }
@@ -572,7 +577,7 @@ class BookManager {
      * 替換標題div為帶有作者連結的新元素
      */
     insertAuthorLink() {
-        let author = "?";
+        let author;
         if (!bookinfo) {
             author =
                 document
@@ -590,6 +595,10 @@ class BookManager {
         }
         const authorLink = this.createAuthorLink(author);
         let oal = document.querySelector("#container > div.mybox > div > div.txtinfo.hide720 > span:nth-child(2)");
+        if (oal === null) {
+            console.warn("insertAuthorLink:oal=null");
+            return void 0;
+        }
         document
             .querySelector("#container > div.mybox > div.txtnav > div.txtinfo.hide720")
             ?.replaceChild(authorLink, oal);
@@ -652,12 +661,12 @@ class BookManager {
             console.groupCollapsed("collectBookData");
         if (labels.length === 0) {
             if (retryCount <= 5) {
-                console.warn(t("noLabelsFound"));
+                console.warn(this.t("noLabelsFound"));
                 await new Promise((resolve) => setTimeout(resolve, 5000));
                 return this.collectBookData(retryCount + 1);
             }
             else {
-                console.error(t("maxRetriesReached"));
+                console.error(this.t("maxRetriesReached"));
                 return []; // 到達最大重試次數, 返回空陣列
             }
         }
@@ -668,11 +677,9 @@ class BookManager {
             const bookContainer = label;
             const tmp = (function () {
                 if (Array.from(label.querySelectorAll("label")).find((label2) => label2.textContent === "更新")) {
-                    // if (location.origin === "https://www.69yuedu.net") {
-                    // } else {
                     const bookContinueEle = label.querySelector("div.newright > a.btn.btn-tp");
                     const bookContinueLink = bookContinueEle.href;
-                    const BookName = label.querySelector("div.newnav > h3 > a > span").textContent;
+                    const BookName = label.querySelector("div.newnav > h3 > a > span")?.textContent;
                     const bookImgEle = label.querySelector("a > img");
                     const bookImgUrl = bookImgEle.src;
                     // }
@@ -715,8 +722,8 @@ class BookManager {
      */
     registerMenuCommand(bookData) {
         GM_registerMenuCommand(`${bookData.length === 0
-            ? t("noUpdates")
-            : `${bookData.length}${t("updatesAvailable")}`}`, () => {
+            ? this.t("noUpdates")
+            : `${bookData.length}${this.t("updatesAvailable")}`}`, () => {
             bookData.forEach((data) => {
                 GM_openInTab(data.Updata.url.value);
             });

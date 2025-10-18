@@ -31,7 +31,7 @@ declare class Config {
     private set;
 }
 declare const config: Config;
-declare const i18nData: typeof i18n.prototype.langJson;
+declare const i18nData: typeof I18n.prototype.langJson;
 interface BookData {
     Updata: {
         url: {
@@ -45,8 +45,6 @@ interface BookData {
         BookImgUrl: string;
     };
 }
-declare const i18nInstance: i18n;
-declare const t: (key: keyof (typeof this.langJson)[keyof typeof this.langJson], ...args: Array<any>) => string;
 /**
  * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
  * 它包括偵測圖書頁面、圖書資訊頁面、結束頁面和書架頁面的功能。
@@ -151,7 +149,9 @@ declare class BookManager {
     /**
      * 各種頁面判斷與數據獲取方法集合
      */
-    private data;
+    private readonly data;
+    i18nInstance: I18n;
+    t: typeof this.i18nInstance.t;
     /**
      * 取得下一頁的a元素
      */
