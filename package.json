@@ -16,5 +16,8 @@
   "dependencies": {
     "@types/tampermonkey": "^5.0.4",
     "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "build": "tsc -p ./Tools && tsc -p ./czbooksnet && tsc -p ./ixdzs8tw && tsc -p ./琉璃神社 && tsc -p \"./69shuba auto 書簽\""
   }
 }
