@@ -27,11 +27,13 @@ async function tryBuildWithEsbuild(files: string[]): Promise<boolean> {
     outdir: ".",
     bundle: true,
     format: "iife",
-    minify: true,
+    // minify: true,
     platform: "browser",
     target: "ESNext",
     sourcemap: true,
     logLevel: "info",
+    minifySyntax: true,
+    minifyWhitespace: true,
     plugins: [replacePlugin({ patterns: [] })],
   });
   console.log("[build] done (esbuild)");

@@ -68,11 +68,13 @@ function tryBuildWithEsbuild(files) {
                         outdir: ".",
                         bundle: true,
                         format: "iife",
-                        minify: true,
+                        // minify: true,
                         platform: "browser",
                         target: "ESNext",
                         sourcemap: true,
                         logLevel: "info",
+                        minifySyntax: true,
+                        minifyWhitespace: true,
                         plugins: [replacePlugin({ patterns: [] })],
                     })];
                 case 1:
