@@ -5,15 +5,15 @@ on:
   push:
     paths:
       - "*/*.user.ts"
+      - "*/*.user.metadate"
       - "*/*.tsconfig.json"
-      - "./swcrc"
       - ".github/workflows/main.yml"
   pull_request:
     types: [closed]
     paths:
       - "*/*.user.ts"
+      - "*/*.user.metadate"
       - "*/*.tsconfig.json"
-      - "./swcrc"
       - ".github/workflows/main.yml"
 
 permissions:
@@ -26,12 +26,10 @@ jobs:
       - uses: actions/checkout@main
       - uses: actions/setup-python@main
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
       - name: Update version
         run: python update_version.py
-      - name: Update task
-        run: python swcrc2taskjson.py
 
       - name: Install Node.js
         uses: actions/setup-node@main
@@ -41,18 +39,7 @@ jobs:
         run: |
           npm install
       - name: Build
-        run: |
-          echo 'import json
-          from typing import Any
-
-          with open("./.vscode/tasks.json", "r") as f:
-              tasks: dict[str, Any] = json.load(f)
-
-          print("npx " + " ".join(tasks["tasks"][0]["args"]))'>tmp.py
-          python tmp.py >tmp.sh
-          sh tmp.sh
-          rm tmp.py
-          rm tmp.sh
+        run: npm run build
 
       - name: Set up Git user
         run: |

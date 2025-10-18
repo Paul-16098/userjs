@@ -1,0 +1,76 @@
+// ==UserScript==
+// @name         69shuba auto 書簽
+// @namespace    Paul-16098
+// @version      3.5.13.0
+// @description  自動書籤,更改css,可以在看書頁找到作者連結
+// @author       Paul-16098
+// #tag 69shux.com
+// @match        https://69shux.com/txt/*/*
+// @match        https://69shux.com/txt/*/end.html
+// @match        https://69shux.com/book/*.htm*
+// @match        https://69shux.com/modules/article/bookcase.php*
+// #tag www.69shu.top
+// @match        https://www.69shu.top/txt/*/*
+// @match        https://www.69shu.top/txt/*/end.html
+// @match        https://www.69shu.top/book/*.htm*
+// @match        https://www.69shu.top/modules/article/bookcase.php*
+// #tag www.69shu.cx
+// @match        https://www.69shu.cx/txt/*/*
+// @match        https://www.69shu.cx/txt/*/end.html
+// @match        https://www.69shu.cx/book/*.htm*
+// @match        https://www.69shu.cx/modules/article/bookcase.php*
+// #tag 69shuba.cx
+// @match        https://69shuba.cx/txt/*/*
+// @match        https://69shuba.cx/txt/*/end.html
+// @match        https://69shuba.cx/book/*.htm*
+// @match        https://69shuba.cx/modules/article/bookcase.php*
+// #tag www.69shuba.pro
+// @match        https://www.69shuba.pro/txt/*/*
+// @match        https://www.69shuba.pro/txt/*/end.html
+// @match        https://www.69shuba.pro/book/*.htm*
+// @match        https://www.69shuba.pro/modules/article/bookcase.php*
+// #tag 69shuba.me
+// @match        https://69shu.me/txt/*/*
+// @match        https://69shu.me/txt/*/end.html
+// @match        https://69shu.me/book/*.htm*
+// @match        https://69shu.me/modules/article/bookcase.php*
+// #tag 69shu.biz
+// @match        https://69shu.biz/c/*/*
+// @match        https://69shu.biz/c/*/end.html
+// @match        https://69shu.biz/b/*.htm*
+// @match        https://69shu.biz/modules/article/bookcase.php*
+// #tag www.69yuedu.net
+// @match        https://www.69yuedu.net/r/*/*.html*
+// @match        https://www.69yuedu.net/article/*.html*
+// @match        https://www.69yuedu.net/modules/article/bookcase.php*
+// #tag www.69shuba.com
+// @match        https://www.69shuba.com/txt/*/*
+// @match        https://www.69shuba.com/modules/article/bookcase.php*
+// @match        https://www.69shuba.com/book/*.htm
+// #tag twkan.com
+// @match        https://twkan.com/txt/*/*
+// @match        https://twkan.com/bookcase*
+// @match        https://twkan.com/book/*.html
+
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
+// @grant        window.close
+// @grant        GM_addStyle
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        unsafeWindow
+// @grant        GM_registerMenuCommand
+// @grant        GM_openInTab
+// @grant        GM_getResourceText
+// @run-at       document-idle
+//#if debug
+// #@require file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
+//#else
+// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+//#endif
+
+// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
+// @resource     replace_json https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/replace.json
+// @license      MIT
+// @supportURL   https://github.com/Paul-16098/userjs/issues/
+// @homepageURL  https://github.com/Paul-16098/userjs/README.md
+// ==/UserScript==
