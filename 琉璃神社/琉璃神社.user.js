@@ -1,3 +1,4 @@
+/// <reference path = "./../Tools/Tools.user.d.ts"/>
 // ==UserScript==
 // @name         琉璃神社
 // @namespace    Paul-16098
@@ -17,5 +18,5 @@
 // @downloadURL  https://github.com/Paul-16098/userjs/raw/refs/heads/dev/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE.ts
 // @updateURL    https://github.com/Paul-16098/userjs/raw/refs/heads/dev/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE.ts
 // ==/UserScript==
-"use strict";(()=>{var __getOwnPropNames=Object.getOwnPropertyNames;var __commonJS=(cb,mod)=>function(){return mod||(0,cb[__getOwnPropNames(cb)[0]])((mod={exports:{}}).exports,mod),mod.exports};var require_user=__commonJS({"\u7409\u7483\u795E\u793E/\u7409\u7483\u795E\u793E.user.ts"(){var q=document.evaluate('//*[@id="wpforo-wrap"]/div[3]/div[1]/div/div/div/form/div/div/div/div/div/div[3]/div[1]/div[1]/strong',document,null,XPathResult.STRING_TYPE,null).stringValue.replace("\u2212","-").replace("\xD7","*").split("=")[0].trim();document.querySelector("#wpforo-wrap > div.wpforo-main > div.wpforo-content > div > div > div > form > div > div > div > div > div > div.wpf-field.wpf-field-type-text.wpf-field-hook > div.wpf-field-wrap > div.aiowps-captcha-equation.hide-when-displaying-tfa-input > strong > input.aiowps-captcha-answer").value=newEval(q)}});require_user();})();
-//# sourceMappingURL=%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE.user.js.map
+"use strict";let q=document.evaluate('//*[@id="wpforo-wrap"]/div[3]/div[1]/div/div/div/form/div/div/div/div/div/div[3]/div[1]/div[1]/strong',document,null,XPathResult.STRING_TYPE,null).stringValue.replace("−","-").replace("×","*").split("=")[0].trim();document.querySelector("#wpforo-wrap > div.wpforo-main > div.wpforo-content > div > div > div > form > div > div > div > div > div > div.wpf-field.wpf-field-type-text.wpf-field-hook > div.wpf-field-wrap > div.aiowps-captcha-equation.hide-when-displaying-tfa-input > strong > input.aiowps-captcha-answer").value=newEval(q);
+//# sourceMappingURL=琉璃神社.user.js.map

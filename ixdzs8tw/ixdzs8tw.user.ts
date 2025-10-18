@@ -1,3 +1,21 @@
+// ==UserScript==
+// @name         ixdzs8.tw
+// @namespace    pl816098
+// @version      1.2.9.2
+// @description  自用
+// @author       paul
+// @match        https://ixdzs8.com/read/*/*.html
+// @match        https://ixdzs8.com/read/*/
+// @match        https://ixdzs.hk/read/*/*.html
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=ixdzs8.tw
+// @license      MIT
+// @grant        GM_addStyle
+// @grant        GM_getResourceText
+// @grant        window.close
+// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/ixdzs8tw/ixdzs8tw.user.css
+// @supportURL   https://github.com/Paul-16098/userjs/issues/
+// ==/UserScript==
+
 let ele = [];
 let url = window.location.href;
 

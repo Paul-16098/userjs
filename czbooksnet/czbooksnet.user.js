@@ -1,3 +1,4 @@
+/// <reference path = "./../Tools/Tools.user.d.ts"/>
 // ==UserScript==
 // @name         czbooks.net
 // @namespace    pl816098
@@ -21,5 +22,20 @@
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/
 // ==/UserScript==
-"use strict";(()=>{var __getOwnPropNames=Object.getOwnPropertyNames;var __commonJS=(cb,mod)=>function(){return mod||(0,cb[__getOwnPropNames(cb)[0]])((mod={exports:{}}).exports,mod),mod.exports};var require_czbooksnet_user=__commonJS({"czbooksnet/czbooksnet.user.ts"(){var css1=GM_getResourceText("css1");GM_addStyle(css1);removeElement("body > div.header","body > div.footer","body > div.main > div:nth-child(3)","#go-to-top","#sticky-parent > div.chapter-detail > div.notice");var isDarkMode=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;(!changeBackground||typeof changeBackground!="function")&&(changeBackground=function(params){switch(params){case"default":{document.querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a")?.click();break}case"white":{document.querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a")?.click();break}}});var changeBackground;changeBackground(isDarkMode?"default":"white");window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",e=>{e.matches?changeBackground("default"):changeBackground("white")})}});require_czbooksnet_user();})();
+/**
+ * 取得並注入自定義CSS樣式
+ */"use strict";let css1=GM_getResourceText("css1");GM_addStyle(css1);/**
+ * 移除頁面不需要的元素，提升閱讀體驗
+ */removeElement("body > div.header","body > div.footer","body > div.main > div:nth-child(3)","#go-to-top","#sticky-parent > div.chapter-detail > div.notice");/**
+ * 判斷是否為深色模式
+ * @type {boolean}
+ */const isDarkMode=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;/**
+ * 切換背景主題（預設/白色）
+ * @param params - "default" 為深色，"white" 為淺色
+ */if(!changeBackground||typeof changeBackground!=="function"){function changeBackground1(params){switch(params){case"default":{// 點擊預設主題按鈕
+document.querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a").click();break}case"white":{// 點擊白色主題按鈕
+document.querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a").click();break}}}}// 根據系統主題自動切換背景
+if(isDarkMode){changeBackground("default")}else{changeBackground("white")}/**
+ * 監聽系統主題變化，自動切換背景
+ */window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",e=>{if(e.matches){changeBackground("default")}else{changeBackground("white")}});
 //# sourceMappingURL=czbooksnet.user.js.map

@@ -1,5 +1,22 @@
+// ==UserScript==
+// @name         Tools
+// @namespace    Paul-16098
+// @description  paul Tools
+// @version      2.2.14.0
+// @match        *://*/*
+// @author       paul
+// @license      MIT
+// @grant        GM_getValue
+// @run-at       document-start
+// @grant        unsafeWindow
+// @supportURL   https://github.com/Paul-16098/vs_code/issues/
+// @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
+// @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
+// @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/Tools.user.js
+// ==/UserScript==
+
 // 避免重複宣告 _unsafeWindow
-const _unsafeWindow = unsafeWindow ?? globalThis ?? window;
+const _unsafeWindow = unsafeWindow ?? window;
 
 const IS_DEBUG_LOG: boolean = GM_getValue("IS_DEBUG_LOG", false);
 
@@ -8,7 +25,7 @@ const IS_DEBUG_LOG: boolean = GM_getValue("IS_DEBUG_LOG", false);
  * @param args - CSS 選擇器字串陣列
  * @returns [true, args] 或 [false, args, error]
  */
-export function removeElement(...args: Array<string>) {
+function removeElement(...args: Array<string>) {
   try {
     if (args) {
       args.forEach((args) => {
@@ -50,7 +67,7 @@ type setMenuFn = (ev?: MouseEvent | KeyboardEvent) => void;
  * - 對於布林值，菜單會顯示切換選項，並在變更時重新加載頁面。
  * - 對於不支持的類型，當選擇菜單項時會記錄錯誤。
  */
-export function setMenu(
+function setMenu(
   name: string,
   fn?: setMenuFn,
   def?: any,
@@ -60,7 +77,7 @@ export function setMenu(
   const trueShowMapping: { [x: string]: string } = {
     true: "開",
     false: "關",
-    ...showMapping,
+    ...(showMapping ?? {}),
   };
   let support = false;
   let showName: string = trueShowMapping[name] ?? name.replaceAll("_", " ");
@@ -84,7 +101,7 @@ export function setMenu(
       ? function (ev: MouseEvent | KeyboardEvent) {
           if (typeof getValue === "boolean") {
             GM_setValue(name, !getValue);
-            globalThis.location.reload();
+            window.location.reload();
           }
         }
       : () => {
@@ -124,7 +141,7 @@ const blackList: Array<string | RegExp> = [
  * @returns 執行結果
  * @throws 若包含黑名單關鍵字則丟出錯誤
  */
-export function newEval(stringCode: string, safety: boolean = true) {
+function newEval(stringCode: string, safety: boolean = true) {
   // 檢查是否包含不允許的關鍵字或代碼
   if (safety) {
     // 遍歷不允許的字元或代碼列表
@@ -155,7 +172,7 @@ export function newEval(stringCode: string, safety: boolean = true) {
 /**
  * 多語系(i18n)工具類，支援多語言字典與動態參數替換。
  */
-export class I18n {
+class I18n {
   /** 語言字典資料 */
   public readonly langJson: {
     [lang: string]: {
@@ -173,14 +190,14 @@ export class I18n {
   constructor(langJson: typeof this.langJson, lang: string | Array<string>) {
     // 構造函數，接受語言和語言映射
     this.langJson = langJson;
-    if (Array.isArray(lang)) {
+    if (lang instanceof Array) {
       // 如果傳入的是數組
       this.langList.push(...lang);
     } else if (typeof lang === "string") {
       // 如果傳入的是單個語言
       this.langList.push(lang);
     } else {
-      throw new TypeError("i18n:constructor:parameter:lang: not allow type");
+      throw Error("i18n:constructor:parameter:lang: not allow type");
     }
   }
 
@@ -194,7 +211,7 @@ export class I18n {
     key: keyof (typeof this.langJson)[keyof typeof this.langJson],
     ...args: Array<any>
   ): string {
-    for (const lang of this?.langList) {
+    for (const lang of this.langList) {
       // 遍歷語言列表
       if (this.langJson[lang]?.[key]) {
         // 檢查語言映射中是否存在該鍵
