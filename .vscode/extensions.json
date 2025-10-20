@@ -1,6 +1,5 @@
 {
     "recommendations": [
-        "ms-vscode.vscode-typescript-next",
         "editorconfig.editorconfig",
         "yoavbls.pretty-ts-errors"
     ]
