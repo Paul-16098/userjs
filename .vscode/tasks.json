@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "fileName": "package.json",
+      "isDefault": false,
+      "name": "build",
+      "path": "package.json",
+      "project": "userjs",
+      "script": "build",
+      "scriptFile": false,
+      "takesArgs": false,
+      "taskFileId": "",
+      "taskItemId": "",
+      "te": true,
+      "problemMatcher": ["$tsc"],
+      "label": "npm: build"
+    }
+  ]
+}
