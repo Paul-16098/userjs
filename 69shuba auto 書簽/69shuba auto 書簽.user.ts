@@ -64,9 +64,9 @@
 // @grant        GM_getResourceText
 // @run-at       document-idle
 //#if debug
-// @require file://c:\Users\pl816\OneDrive\文件\git\userjs\Tools\Tools.user.js
+// #@require file://c:\Users\pl816\OneDrive\文件\git\userjs\Tools\Tools.user.js
 //#else
-// #@require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
 
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css

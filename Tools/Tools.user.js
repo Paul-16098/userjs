@@ -192,7 +192,7 @@ class I18n {
                     text = text.replaceAll(/{(\d+)}/g, (match, number) => {
                         if (number >= 0 && number < args.length) {
                             // 替換文本中的 {n} 參數
-                            return typeof args[number] === "undefined" ? match : args[number];
+                            return args[number] ?? match;
                         }
                         return match;
                     });

@@ -151,7 +151,7 @@ declare class BookManager {
      */
     private readonly data;
     i18nInstance: I18n;
-    t: typeof this.i18nInstance.t;
+    t: typeof I18n.prototype.t;
     /**
      * 取得下一頁的a元素
      */

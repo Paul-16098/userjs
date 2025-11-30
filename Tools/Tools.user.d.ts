@@ -6,7 +6,7 @@ declare const IS_DEBUG_LOG: boolean;
  * @returns [true, args] 或 [false, args, error]
  */
 declare function removeElement(...args: Array<string>): unknown[];
-type setMenuFn = (ev?: MouseEvent | KeyboardEvent) => void;
+type setMenuFn = typeof GM_registerMenuCommand extends (name: string, fn: infer F, ...args: any[]) => any ? F : never;
 /**
  * 註冊一個用戶菜單命令，支援布林值自動切換與自定義顯示。
  *
