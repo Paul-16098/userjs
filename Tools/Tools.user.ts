@@ -52,7 +52,13 @@ function removeElement(...args: Array<string>) {
   return [true, args];
 }
 
-type setMenuFn = (ev?: MouseEvent | KeyboardEvent) => void;
+type setMenuFn = typeof GM_registerMenuCommand extends (
+  name: string,
+  fn: infer F,
+  ...args: any[]
+) => any
+  ? F
+  : never;
 /**
  * 註冊一個用戶菜單命令，支援布林值自動切換與自定義顯示。
  *
@@ -221,7 +227,7 @@ class I18n {
           text = text.replaceAll(/{(\d+)}/g, (match, number) => {
             if (number >= 0 && number < args.length) {
               // 替換文本中的 {n} 參數
-              return typeof args[number] === "undefined" ? match : args[number];
+              return args[number] ?? match;
             }
             return match;
           });
