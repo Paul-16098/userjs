@@ -64,9 +64,9 @@
 // @grant        GM_getResourceText
 // @run-at       document-idle
 //#if debug
-// #@require file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
+// @require file://c:\Users\pl816\OneDrive\文件\git\userjs\Tools\Tools.user.js
 //#else
-// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+// #@require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
 
 // @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
@@ -75,6 +75,14 @@
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
 // ==/UserScript==
+
+try {
+  //   debugger;
+} catch (e) {
+  console.error("I18n error:" + e);
+  const I18n = {};
+  GM_registerMenuCommand("I18n error", () => alert(e));
+}
 
 // 語言選項枚舉
 enum Language {
@@ -122,24 +130,39 @@ class Config {
       // 語言切換菜單
       if (Object.values(Language).includes(value as Language)) {
         menu = () => {
-          Object.values(Language).forEach((lang) => {
+          for (const lang of Object.values(Language)) {
             if (lang !== value) {
               GM_setValue("Language", lang);
               location.reload();
             }
-          });
+          }
         };
       }
       setMenu(key, menu, value, {
         zh: "中文",
-        en: "english",
-        Debug: "偵錯",
-        AutoAddBookcase: "自動添加書櫃",
-        AutoAddBookcaseBlockade: "自動添加書櫃封鎖",
-        Language: "語言",
-        IsEndClose: "結束後關閉",
-        IsHookAlert: "掛鉤Alert",
-        HookAlertBlockade: "掛鉤Alert封鎖",
+        en: "English",
+        ...(this.Language == Language.zh
+          ? {
+              Debug: "偵錯",
+              AutoAddBookcase: "自動添加書櫃",
+              AutoAddBookcaseBlockade: "自動添加書櫃封鎖",
+              Language: "語言",
+              IsEndClose: "結束後關閉",
+              IsHookAlert: "掛鉤Alert",
+              HookAlertBlockade: "掛鉤Alert封鎖",
+            }
+          : {
+              Debug: "Debug",
+              AutoAddBookcase: "Auto Add Bookcase",
+              AutoAddBookcaseBlockade: "Auto Add Bookcase Blockade",
+              Language: "Language",
+              IsEndClose: "Is End Close",
+              IsHookAlert: "Is Hook Alert",
+              HookAlertBlockade: "Hook Alert Blockade",
+
+              true: "On",
+              false: "Off",
+            }),
       });
     }
   }
@@ -402,7 +425,7 @@ class BookManager {
     },
   };
   i18nInstance: I18n;
-  t: typeof this.i18nInstance.t;
+  t: typeof I18n.prototype.t;
 
   /**
    * 取得下一頁的a元素
@@ -620,9 +643,9 @@ class BookManager {
    * 加入書櫃（根據不同站點呼叫不同API或模擬點擊）
    */
   private addBookcase(): void {
-    const aid = this.data.Book.GetAid();
-    const cid = this.data.Book.GetCid();
     if (!addbookcase.toString().includes("Ajax.Tip")) {
+      const aid = this.data.Book.GetAid();
+      const cid = this.data.Book.GetCid();
       addbookcase(aid, cid);
     } else {
       const addBookcaseLink =
@@ -814,9 +837,9 @@ class BookManager {
           : `${bookData.length}${this.t("updatesAvailable")}`
       }`,
       () => {
-        bookData.forEach((data) => {
+        for (const data of bookData) {
           GM_openInTab(data.Updata.url.value);
-        });
+        }
       }
     );
   }
@@ -839,5 +862,6 @@ class BookManager {
   }
 }
 
+if (config.Debug) debugger;
 // 初始化書籍管理器
 const bookManager = new BookManager();
