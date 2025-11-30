@@ -74,14 +74,6 @@
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
 // ==/UserScript==
-try {
-    //   debugger;
-}
-catch (e) {
-    console.error("I18n error:" + e);
-    const I18n = {};
-    GM_registerMenuCommand("I18n error", () => alert(e));
-}
 // 語言選項枚舉
 var Language;
 (function (Language) {
