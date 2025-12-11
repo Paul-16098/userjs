@@ -638,7 +638,7 @@ class BookManager {
     createTitleLink() {
         const titleLink = document.createElement("a");
         titleLink.innerHTML = this.data.HasBookInfo
-            ? bookinfo.articlename ?? document.title.split("-")[0]
+            ? (bookinfo.articlename ?? document.title.split("-")[0])
             : document.title.split("-")[0];
         titleLink.classList.add("userjs_add");
         titleLink.id = "title";

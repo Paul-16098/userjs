@@ -34,31 +34,27 @@ GM_addStyle(css1);
 removeElement("body > div.header", "body > div.footer", "body > div.main > div:nth-child(3)", "#go-to-top", "#sticky-parent > div.chapter-detail > div.notice");
 /**
  * 判斷是否為深色模式
- * @type {boolean}
  */
-const isDarkMode = window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
+const isDarkMode = globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches;
 /**
  * 切換背景主題（預設/白色）
  * @param params - "default" 為深色，"white" 為淺色
  */
-if (!changeBackground || typeof changeBackground !== "function") {
-    function changeBackground(params) {
-        switch (params) {
-            case "default": {
-                // 點擊預設主題按鈕
-                document
-                    .querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a")
-                    ?.click();
-                break;
-            }
-            case "white": {
-                // 點擊白色主題按鈕
-                document
-                    .querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a")
-                    ?.click();
-                break;
-            }
+function changeBackground(params) {
+    switch (params) {
+        case "default": {
+            // 點擊預設主題按鈕
+            document
+                .querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a")
+                ?.click();
+            break;
+        }
+        case "white": {
+            // 點擊白色主題按鈕
+            document
+                .querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a")
+                ?.click();
+            break;
         }
     }
 }
