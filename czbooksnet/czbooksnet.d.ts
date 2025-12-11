@@ -1,1 +1,1 @@
-declare const changeBackground: ((mode: string) => void);
+// declare const changeBackground: ((mode: string) => void);
