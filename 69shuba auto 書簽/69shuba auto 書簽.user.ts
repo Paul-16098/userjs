@@ -95,7 +95,7 @@ class Config {
   /** 自動加入書櫃的封鎖名單（書ID陣列） */
   AutoAddBookcaseBlockade: Array<string> = GM_getValue(
     "AutoAddBookcaseBlockade",
-    []
+    [],
   );
   /** 是否攔截alert */
   IsHookAlert: boolean = GM_getValue("IsHookAlert", true);
@@ -429,7 +429,7 @@ class BookManager {
     }
     // 備用方案：尋找文字為"下一章"的連結
     return Array.from(document.querySelectorAll("a")).find(
-      (link) => link.textContent === "下一章"
+      (link) => link.textContent === "下一章",
     ) as HTMLAnchorElement | null;
   }
 
@@ -463,7 +463,7 @@ class BookManager {
       if (this.data.Info.Is()) {
         if (config.Debug) console.log("Book info page detected");
         let Ele = document.querySelector<HTMLAnchorElement>(
-          "body > div.container > ul > li.col-8 > div:nth-child(2) > ul > li:nth-child(2) > a"
+          "body > div.container > ul > li.col-8 > div:nth-child(2) > ul > li:nth-child(2) > a",
         );
         if (Ele) {
           Ele.click();
@@ -503,7 +503,7 @@ class BookManager {
       "body > div.container > div > div.yueduad1",
       "#pageheadermenu",
       ".bottom-ad2",
-      "body > div.container > div.yuedutuijian.light"
+      "body > div.container > div.yuedutuijian.light",
     );
     if (this.data.IsTwkan) {
       removeElement("#container > br");
@@ -539,11 +539,11 @@ class BookManager {
           if (document.querySelector<HTMLDivElement>("#txtcontent")) {
             (
               document.querySelector<HTMLDivElement>(
-                "#txtcontent"
+                "#txtcontent",
               ) as HTMLDivElement
             ).innerText = (
               document.querySelector<HTMLDivElement>(
-                "#txtcontent"
+                "#txtcontent",
               ) as HTMLDivElement
             ).innerText.replaceAll(key, element);
           }
@@ -586,7 +586,7 @@ class BookManager {
         !config.HookAlertBlockade.some(
           (blockade) =>
             JSON.stringify(message) === JSON.stringify(blockade) ||
-            JSON.stringify(blockade) === "*"
+            JSON.stringify(blockade) === "*",
         )
       ) {
         _alert(...message);
@@ -661,7 +661,7 @@ class BookManager {
       author = bookinfo.author;
     }
     const titleDiv = document.querySelector(
-      this.SELECTORS.titleDiv
+      this.SELECTORS.titleDiv,
     ) as HTMLDivElement;
     if (titleDiv) {
       const titleLink = this.createTitleLink();
@@ -669,7 +669,7 @@ class BookManager {
     }
     const authorLink = this.createAuthorLink(author);
     let oal = document.querySelector(
-      "#container > div.mybox > div > div.txtinfo.hide720 > span:nth-child(2)"
+      "#container > div.mybox > div > div.txtinfo.hide720 > span:nth-child(2)",
     );
     if (oal === null) {
       console.warn("insertAuthorLink:oal=null");
@@ -677,7 +677,7 @@ class BookManager {
     }
     document
       .querySelector(
-        "#container > div.mybox > div.txtnav > div.txtinfo.hide720"
+        "#container > div.mybox > div.txtnav > div.txtinfo.hide720",
       )
       ?.replaceChild(authorLink, oal);
   }
@@ -705,7 +705,7 @@ class BookManager {
   private createTitleLink(): HTMLAnchorElement {
     const titleLink = document.createElement("a");
     titleLink.innerHTML = this.data.HasBookInfo
-      ? bookinfo.articlename ?? document.title.split("-")[0]
+      ? (bookinfo.articlename ?? document.title.split("-")[0])
       : document.title.split("-")[0];
     titleLink.classList.add("userjs_add");
     titleLink.id = "title";
@@ -731,10 +731,10 @@ class BookManager {
    */
   private performSearch(search: string): void {
     const searchInput = document.querySelector(
-      this.SELECTORS.searchInput
+      this.SELECTORS.searchInput,
     ) as HTMLInputElement;
     const searchForm = document.querySelector(
-      this.SELECTORS.searchForm
+      this.SELECTORS.searchForm,
     ) as HTMLFormElement;
     if (searchInput && searchForm) {
       searchInput.value = search;
@@ -768,16 +768,16 @@ class BookManager {
       const tmp = (function () {
         if (
           Array.from(label.querySelectorAll("label")).find(
-            (label2) => label2.textContent === "更新"
+            (label2) => label2.textContent === "更新",
           )
         ) {
           const bookContinueEle = label.querySelector(
-            "div.newright > a.btn.btn-tp"
+            "div.newright > a.btn.btn-tp",
           ) as HTMLAnchorElement;
           const bookContinueLink = bookContinueEle.href;
 
           const BookName = label.querySelector<HTMLSpanElement>(
-            "div.newnav > h3 > a > span"
+            "div.newnav > h3 > a > span",
           )?.textContent as string;
 
           const bookImgEle = label.querySelector("a > img") as HTMLImageElement;
@@ -832,7 +832,7 @@ class BookManager {
         for (const data of bookData) {
           GM_openInTab(data.Updata.url.value);
         }
-      }
+      },
     );
   }
 
