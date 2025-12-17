@@ -307,14 +307,14 @@ class BookManager {
         // 書籍相關操作
         Book: {
             // 獲取書籍ID
-            GetAid: (href = window.location.href) => {
+            GetAid: (href = globalThis.location.href) => {
                 if (this.data.HasBookInfo) {
                     return bookinfo.articleid;
                 }
                 return href.split("/")[4];
             },
             // 獲取章節ID
-            GetCid: (href = window.location.href) => {
+            GetCid: (href = globalThis.location.href) => {
                 if (this.data.HasBookInfo) {
                     return bookinfo.chapterid;
                 }
@@ -323,7 +323,7 @@ class BookManager {
             // 書籍URL模式
             pattern: /^\/(txt|c|r)\/(\d|[a-z])+\/(\d|[a-z])+(\.html)?$/m,
             // 判斷是否為書籍頁面
-            Is: (href = window.location.href) => {
+            Is: (href = globalThis.location.href) => {
                 return this.data.Book.pattern.test(new URL(href).pathname);
             },
         },
@@ -332,14 +332,14 @@ class BookManager {
             // 書籍信息URL模式
             pattern: /^\/(book|b|article)\/(\d|[a-z])+\.htm(l)?$/m,
             // 判斷是否為書籍信息頁面
-            Is: (pathname = window.location.pathname) => {
+            Is: (pathname = globalThis.location.pathname) => {
                 return this.data.Info.pattern.test(pathname);
             },
         },
         // 結束頁面相關操作
         End: {
             // 判斷是否為結束頁面
-            Is: (href = window.location.href) => {
+            Is: (href = globalThis.location.href) => {
                 if (this.data.Info.Is()) {
                     const searchParams = new URL(href).searchParams;
                     return searchParams.get("FromBook") === "true";
@@ -564,7 +564,7 @@ class BookManager {
             if (nextPageLink) {
                 let href = new URL(nextPageLink);
                 href.searchParams.set("FromBook", "true");
-                window.location.href = href.toString();
+                globalThis.location.href = href.toString();
             }
             if (this.data.IsNextEnd()) {
                 if (config.IsEndClose) {
@@ -577,14 +577,14 @@ class BookManager {
      * 加入書櫃（根據不同站點呼叫不同API或模擬點擊）
      */
     addBookcase() {
-        if (!addbookcase.toString().includes("Ajax.Tip")) {
+        if (addbookcase.toString().includes("Ajax.Tip")) {
+            const addBookcaseLink = document.querySelector("#a_addbookcase");
+            addBookcaseLink?.click();
+        }
+        else {
             const aid = this.data.Book.GetAid();
             const cid = this.data.Book.GetCid();
             addbookcase(aid, cid);
-        }
-        else {
-            const addBookcaseLink = document.querySelector("#a_addbookcase");
-            addBookcaseLink?.click();
         }
     }
     /**
@@ -592,15 +592,15 @@ class BookManager {
      */
     insertAuthorLink() {
         let author;
-        if (!bookinfo) {
+        if (bookinfo) {
+            author = bookinfo.author;
+        }
+        else {
             author =
                 document
                     .querySelector(this.SELECTORS.authorInfo)
                     ?.textContent?.trim()
                     .split(" ")[1] ?? "undefined";
-        }
-        else {
-            author = bookinfo.author;
         }
         const titleDiv = document.querySelector(this.SELECTORS.titleDiv);
         if (titleDiv) {
@@ -626,7 +626,7 @@ class BookManager {
             authorLink.href = `https://twkan.com/author/${author}.html`;
         }
         else {
-            authorLink.href = `${window.location.origin}/modules/article/author.php?author=${encodeURIComponent(author)}`;
+            authorLink.href = `${globalThis.location.origin}/modules/article/author.php?author=${encodeURIComponent(author)}`;
         }
         authorLink.textContent = "作者： " + author;
         authorLink.style.color = "#007ead";
@@ -642,7 +642,7 @@ class BookManager {
             : document.title.split("-")[0];
         titleLink.classList.add("userjs_add");
         titleLink.id = "title";
-        titleLink.href = `${window.location.origin}/${this.data.IsBiz ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz || this.data.IsTwkan ? "html" : "htm"}`;
+        titleLink.href = `${globalThis.location.origin}/${this.data.IsBiz ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz || this.data.IsTwkan ? "html" : "htm"}`;
         return titleLink;
     }
     /**
@@ -690,7 +690,7 @@ class BookManager {
         labels.forEach((label) => {
             const bookContainer = label;
             const tmp = (function () {
-                if (Array.from(label.querySelectorAll("label")).find((label2) => label2.textContent === "更新")) {
+                if (Array.from(label.querySelectorAll("label")).some((label2) => label2.textContent === "更新")) {
                     const bookContinueEle = label.querySelector("div.newright > a.btn.btn-tp");
                     const bookContinueLink = bookContinueEle.href;
                     const BookName = label.querySelector("div.newnav > h3 > a > span")?.textContent;

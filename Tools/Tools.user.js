@@ -16,7 +16,7 @@
 // @updateURL    https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 // ==/UserScript==
 // 避免重複宣告 _unsafeWindow
-const _unsafeWindow = unsafeWindow ?? window;
+const _unsafeWindow = unsafeWindow ?? globalThis;
 const IS_DEBUG_LOG = GM_getValue("IS_DEBUG_LOG", false);
 /**
  * 從 DOM 中移除指定選擇器的所有元素。
@@ -89,7 +89,7 @@ function setMenu(name, fn, def, showMapping) {
             ? function (ev) {
                 if (typeof getValue === "boolean") {
                     GM_setValue(name, !getValue);
-                    window.location.reload();
+                    globalThis.location.reload();
                 }
             }
             : () => {
