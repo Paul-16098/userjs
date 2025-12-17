@@ -17,7 +17,7 @@
 // ==/UserScript==
 
 // 避免重複宣告 _unsafeWindow
-const _unsafeWindow = unsafeWindow ?? window;
+const _unsafeWindow = unsafeWindow ?? globalThis;
 
 const IS_DEBUG_LOG: boolean = GM_getValue("IS_DEBUG_LOG", false);
 
@@ -34,7 +34,7 @@ function removeElement(...args: Array<string>) {
           console.log("args: ", args);
           console.log(
             "document.querySelectorAll(args): ",
-            document.querySelectorAll(args)
+            document.querySelectorAll(args),
           );
         }
         if (document.querySelectorAll(args).length !== 0) {
@@ -78,7 +78,7 @@ function setMenu(
   name: string,
   fn?: setMenuFn,
   def?: any,
-  showMapping?: { [x: string]: string } | undefined
+  showMapping?: { [x: string]: string } | undefined,
 ): number {
   // 顯示值的映射
   const trueShowMapping: { [x: string]: string } = {
@@ -108,7 +108,7 @@ function setMenu(
       ? function (ev: MouseEvent | KeyboardEvent) {
           if (typeof getValue === "boolean") {
             GM_setValue(name, !getValue);
-            window.location.reload();
+            globalThis.location.reload();
           }
         }
       : () => {
@@ -157,14 +157,14 @@ function newEval(stringCode: string, safety: boolean = true) {
         if (stringCode.includes(value)) {
           throw new Error(
             `不允許的關鍵字或代碼: ${JSON.stringify(
-              value
-            )},在代碼: ${stringCode}`
+              value,
+            )},在代碼: ${stringCode}`,
           );
         }
       } else if (value instanceof RegExp) {
         if (value.test(stringCode)) {
           throw new Error(
-            `不允許的關鍵字或代碼: ${value},在代碼: ${stringCode}`
+            `不允許的關鍵字或代碼: ${value},在代碼: ${stringCode}`,
           );
         }
       }

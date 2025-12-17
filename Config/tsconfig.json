@@ -5,7 +5,7 @@
     "strictFunctionTypes": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
+    "paths": { "*": ["./*"] },
     "sourceMap": true,
     "lib": ["ESNext", "ES7", "DOM"],
     "target": "ESNext",
