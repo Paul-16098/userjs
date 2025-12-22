@@ -12,9 +12,9 @@
 // @grant        unsafeWindow
 
 //#if debug
-// #@require file://c:\Users\pl816\OneDrive\文件\git\userjs\Tools\Tools.user.js
+// @require file://c:\Users\pl816\OneDrive\文件\git\userjs\Tools\Tools.user.js
 //#else
-// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+// #@require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
 
 // @supportURL   https://github.com/Paul-16098/userjs/issues/

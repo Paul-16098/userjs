@@ -29,7 +29,7 @@ jobs:
           python-version: "3.13"
 
       - name: Update version
-        run: python update_version.py
+        run: python update_version.py debug=0
 
       - name: Install Node.js
         uses: actions/setup-node@main
