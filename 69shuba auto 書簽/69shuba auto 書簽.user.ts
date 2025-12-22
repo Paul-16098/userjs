@@ -557,10 +557,10 @@ class BookManager {
    */
   private autoAddToBookcase(): void {
     const aid = this.data.Book.GetAid();
-    if (!config.AutoAddBookcaseBlockade.includes(aid)) {
-      this.addBookcase();
-    } else {
+    if (config.AutoAddBookcaseBlockade.includes(aid)) {
       console.log("Book is in the blockade list, not auto adding to bookcase.");
+    } else {
+      this.addBookcase();
     }
   }
 

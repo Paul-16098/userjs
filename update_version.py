@@ -22,12 +22,6 @@ def process_require_blocks(text: str) -> str:
     處理條件 @require 區塊，根據 CONDITIONS 決定是否啟用
     """
 
-    def enabled(data: str) -> str:
-        return data.replace("#@", "@")
-
-    def disabled(data: str) -> str:
-        return data.replace(" @", " #@")
-
     def repl(match: re.Match[str]) -> str:
         directive, cond, url = match.group(1), match.group(2).strip(), match.group(3)
         if directive == "if":
