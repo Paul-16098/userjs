@@ -83,7 +83,7 @@ if (isDarkMode) {
 /**
  * 監聽系統主題變化，自動切換背景
  */
-window
+globalThis
   .matchMedia("(prefers-color-scheme: dark)")
   .addEventListener("change", (e) => {
     if (e.matches) {
