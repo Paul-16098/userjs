@@ -52,10 +52,11 @@ class Config {
   }
   public registerConfigMenu(
     menu?: setMenuFn,
-    showMapping?: { [x: string]: string }
+    showMapping?: { [x: string]: string },
   ) {
     for (const key in this.defaultValue) {
       setMenu(key, menu, this.defaultValue[key], showMapping);
     }
   }
 }
+

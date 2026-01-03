@@ -1,37 +1,37 @@
 {
-  "@match": {
-    "scope": "javascript,typescript",
-    "prefix": "@match",
-    "body": "// @match        "
-  },
-  "@resource": {
-    "scope": "javascript,typescript",
-    "prefix": "@resource",
-    "body": "// @resource     "
-  },
-  "@require": {
-    "scope": "javascript,typescript",
-    "prefix": "@require",
-    "body": "// @require      "
-  },
-  "@description": {
-    "scope": "javascript,typescript",
-    "prefix": "@description",
-    "body": "// @description  "
-  },
-  "@grant": {
-    "scope": "javascript,typescript",
-    "prefix": "@grant",
-    "body": "// @grant        "
-  },
-  "@name": {
-    "scope": "javascript,typescript",
-    "prefix": "@name",
-    "body": "// @name         "
-  },
-  "@namespace": {
-    "scope": "javascript,typescript",
-    "prefix": "@namespace",
-    "body": "// @namespace    "
-  }
+    "@match": {
+        "scope": "javascript,typescript",
+        "prefix": "@match",
+        "body": "// @match        "
+    },
+    "@resource": {
+        "scope": "javascript,typescript",
+        "prefix": "@resource",
+        "body": "// @resource     "
+    },
+    "@require": {
+        "scope": "javascript,typescript",
+        "prefix": "@require",
+        "body": "// @require      "
+    },
+    "@description": {
+        "scope": "javascript,typescript",
+        "prefix": "@description",
+        "body": "// @description  "
+    },
+    "@grant": {
+        "scope": "javascript,typescript",
+        "prefix": "@grant",
+        "body": "// @grant        "
+    },
+    "@name": {
+        "scope": "javascript,typescript",
+        "prefix": "@name",
+        "body": "// @name         "
+    },
+    "@namespace": {
+        "scope": "javascript,typescript",
+        "prefix": "@namespace",
+        "body": "// @namespace    "
+    }
 }
