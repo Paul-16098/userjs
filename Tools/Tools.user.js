@@ -31,13 +31,13 @@ function removeElement(...args) {
                     console.log("args: ", args);
                     console.log("document.querySelectorAll(args): ", document.querySelectorAll(args));
                 }
-                if (document.querySelectorAll(args).length !== 0) {
+                if (document.querySelectorAll(args).length === 0) {
+                    console.debug(args, "is not a Html Element.");
+                }
+                else {
                     document.querySelectorAll(args).forEach((ele) => {
                         ele.remove();
                     });
-                }
-                else {
-                    console.debug(args, "is not a Html Element.");
                 }
             });
         }

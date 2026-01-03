@@ -17,23 +17,23 @@
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // ==/UserScript==
 let ele = [];
-let url = window.location.href;
+let url = globalThis.location.href;
 let next_page_url = document.querySelector("body > div.page-d.page-turn > div > a.chapter-paging.chapter-next").href;
 let pattern = {
     book: {
-        pattern: /^\/read\/[0-9]+\/(?!end)p[0-9]*\.html$/gm,
+        pattern: /^\/read\/\d+\/(?!end)p\d*\.html$/gm,
         is: (url = location.pathname) => {
             return pattern.book.pattern.test(url);
         },
     },
     info: {
-        pattern: /^\/read\/[0-9]+\/$/gm,
+        pattern: /^\/read\/\d+\/$/gm,
         is: (url = location.pathname) => {
             return pattern.info.pattern.test(url);
         },
     },
     end: {
-        pattern: /^\/read\/[0-9]+\/end\.html$/gm,
+        pattern: /^\/read\/\d+\/end\.html$/gm,
         is: (url = location.pathname) => {
             return pattern.end.pattern.test(url);
         },
@@ -59,12 +59,10 @@ if (pattern.end.is() || pattern.end.is(new URL(next_page_url).pathname)) {
             if (!e.repeat) {
                 switch (true) {
                     case e.key === "ArrowRight": {
-                        // console.log('(e.key === "ArrowRight") === true');
                         window.close();
                         break;
                     }
                     default: {
-                        // console.log("e: ", e);
                         break;
                     }
                 }
