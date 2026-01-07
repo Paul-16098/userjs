@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.13.0
+// @version      3.5.14.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -403,7 +403,8 @@ class BookManager {
      */
     constructor() {
         this.i18nInstance = new I18n(i18nData, config.Language.toString());
-        this.t = this.i18nInstance.t;
+        // 綁定 i18n 實例以確保 t 內部的 this 指向正確，避免在 BookManager 上下文中調用時出現 this.langList 錯誤
+        this.t = this.i18nInstance.t.bind(this.i18nInstance);
         try {
             if (config.Debug) {
                 console.debug(this.debugInfo());
