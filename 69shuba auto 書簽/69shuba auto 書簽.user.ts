@@ -387,52 +387,35 @@ class BookManager {
       "body > div.container > div.yuedutuijian.light",
     );
     if (this.data.IsTwkan) removeElement("#container > br");
-    if (config.AutoAddBookcase) this.AddToBookcase();
+    if (config.AutoAddBookcase) this.addToBookcase();
     this.insertAuthorLink();
     this.updateNextPageLink();
+    this.replaceText();
+  }
+
+  /** 替換文本內容，根據替換字典進行替換 */
+  private replaceText(): void {
     if (this.data.IsTwkan) {
       const raw_replace_json = GM_getResourceText("replace_json");
-      let replace_json: {
-        [key: string]: string;
-      } = {};
+      let replace_json: string[] = [];
       try {
         replace_json = JSON.parse(raw_replace_json);
       } catch (error) {
-        if (error instanceof SyntaxError) {
-          if (config.Debug) {
-            console.log(error);
-          } else {
-            alert(error);
-          }
-        } else {
-          throw error;
-        }
+        alert(error);
       }
       if (config.Debug) {
         console.log("replace_json: ", replace_json);
       }
 
-      for (const key in replace_json) {
-        if (Object.hasOwn(replace_json, key)) {
-          const element = replace_json[key];
-          if (document.querySelector<HTMLDivElement>("#txtcontent")) {
-            (
-              document.querySelector<HTMLDivElement>(
-                "#txtcontent",
-              ) as HTMLDivElement
-            ).innerText = (
-              document.querySelector<HTMLDivElement>(
-                "#txtcontent",
-              ) as HTMLDivElement
-            ).innerText.replaceAll(key, element);
-          }
-        }
+      const ele: HTMLDivElement = document.querySelector("#txtcontent0")!;
+      for (const value in replace_json) {
+        ele.innerText = ele.innerText.replaceAll(value, "");
       }
     }
   }
 
   /** 自動加入書櫃(如未在封鎖名單) */
-  private AddToBookcase(): void {
+  private addToBookcase(): void {
     const aid = this.data.Book.GetAid();
     if (config.AutoAddBookcaseBlockade.includes(aid)) {
       console.log("Book is in the blockade list, not auto adding to bookcase.");
@@ -704,6 +687,8 @@ class BookManager {
     };
   }
 }
+
+// --- main --- //
 
 /** 配置初始化 */
 const config: Config = new Config();
