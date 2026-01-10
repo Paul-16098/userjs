@@ -167,29 +167,6 @@ class Config {
   }
 }
 
-/** 配置初始化 */
-const config: Config = new Config();
-
-/** i18n 設定 */
-const i18nData: typeof I18n.prototype.langJson = {
-  en: {
-    noMatchingPattern: "No matching URL pattern found",
-    errorOccurred: "An error occurred: ",
-    noLabelsFound: "No labels found, retrying in 5 seconds...",
-    maxRetriesReached: "Max retries reached. No labels found.",
-    noUpdates: "No updates",
-    updatesAvailable: " updates available",
-  },
-  zh: {
-    noMatchingPattern: "未找到匹配的 URL 模式",
-    errorOccurred: "發生了一些錯誤: ",
-    noLabelsFound: "未找到標籤，5 秒後重試...",
-    maxRetriesReached: "已達到最大重試次數。未找到標籤。",
-    noUpdates: "沒有更新",
-    updatesAvailable: "個更新",
-  },
-};
-
 /** 書籍數據接口 */
 interface BookData {
   Updata: {
@@ -728,7 +705,29 @@ class BookManager {
   }
 }
 
+/** 配置初始化 */
+const config: Config = new Config();
+
+/** i18n 設定 */
+const i18nData: typeof I18n.prototype.langJson = {
+  en: {
+    noMatchingPattern: "No matching URL pattern found",
+    errorOccurred: "An error occurred: ",
+    noLabelsFound: "No labels found, retrying in 5 seconds...",
+    maxRetriesReached: "Max retries reached. No labels found.",
+    noUpdates: "No updates",
+    updatesAvailable: " updates available",
+  },
+  zh: {
+    noMatchingPattern: "未找到匹配的 URL 模式",
+    errorOccurred: "發生了一些錯誤: ",
+    noLabelsFound: "未找到標籤，5 秒後重試...",
+    maxRetriesReached: "已達到最大重試次數。未找到標籤。",
+    noUpdates: "沒有更新",
+    updatesAvailable: "個更新",
+  },
+};
+
 if (config.Debug) debugger;
 /** 初始化書籍管理器 */
 const bookManager = new BookManager();
-
