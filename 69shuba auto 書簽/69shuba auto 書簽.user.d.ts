@@ -1,10 +1,9 @@
+/** 語言選項枚舉 */
 declare enum Language {
     en = "en",
     zh = "zh"
 }
-/**
- * 用戶配置類，負責管理腳本的各項設置，並註冊菜單。
- */
+/** 用戶配置類，負責管理腳本的各項設置，並註冊菜單 */
 declare class Config {
     /** 是否開啟偵錯模式 */
     Debug: boolean;
@@ -21,17 +20,12 @@ declare class Config {
     /** 語言設定 */
     Language: Language;
     constructor();
-    /**
-     * 註冊所有配置項的菜單
-     */
+    /** 註冊所有配置項的菜單 */
     private registerConfigMenu;
-    /**
-     * 將當前配置寫入GM存儲
-     */
+    /** 將當前配置寫入GM存儲 */
     private set;
 }
-declare const config: Config;
-declare const i18nData: typeof I18n.prototype.langJson;
+/** 書籍數據接口 */
 interface BookData {
     Updata: {
         url: {
@@ -54,9 +48,7 @@ declare class BookManager {
         searchInput: string;
         searchForm: string;
     };
-    /**
-     * 各種頁面判斷與數據獲取方法集合
-     */
+    /** 各種頁面判斷與數據獲取方法集合 */
     private readonly data;
     /** i18n 處理實例，用於管理當前語言與字典資料 */
     i18nInstance: I18n;
@@ -101,5 +93,9 @@ declare class BookManager {
     /** 輸出調試資訊 */
     private debugInfo;
 }
+/** 配置初始化 */
+declare const config: Config;
+/** i18n 設定 */
+declare const i18nData: typeof I18n.prototype.langJson;
 /** 初始化書籍管理器 */
 declare const bookManager: BookManager;
