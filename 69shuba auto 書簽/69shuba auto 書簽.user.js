@@ -68,7 +68,7 @@
 //#else
 // @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
-// @resource     BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
+// @resource     BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/BookPage.user.css
 // @resource     replace_json https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/replace.json
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
