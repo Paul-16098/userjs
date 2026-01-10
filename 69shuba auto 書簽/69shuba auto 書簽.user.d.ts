@@ -12,7 +12,7 @@ declare class Config {
     IsEndClose: boolean;
     /** 是否自動加入書櫃 */
     AutoAddBookcase: boolean;
-    /** 自動加入書櫃的封鎖名單（書ID陣列） */
+    /** 自動加入書櫃的封鎖名單(書ID陣列) */
     AutoAddBookcaseBlockade: Array<string>;
     /** 是否攔截alert */
     IsHookAlert: boolean;
@@ -62,73 +62,44 @@ declare class BookManager {
     i18nInstance: I18n;
     /** 綁定的翻譯方法，避免 this 指向錯誤 */
     t: typeof I18n.prototype.t;
-    /**
-     * 取得下一頁的元素
-     */
+    /** 取得下一頁的元素 */
     getNextPageElement(): HTMLAnchorElement | null;
     /** 構造函數，根據當前頁面自動分派對應處理 */
     constructor();
-    /**
-     * 書頁自動化處理：樣式、導航、元素移除、書櫃、作者連結、下一頁鏈接
-     */
+    /** 書頁自動化處理: 樣式、導航、元素移除、書櫃、作者連結、下一頁鏈接 */
     private handleBookPage;
-    /**
-     * 自動加入書櫃（如未在封鎖名單）
-     */
+    /** 自動加入書櫃(如未在封鎖名單) */
     private AddToBookcase;
-    /**
-     * 更新下一頁鏈接，附加FromBook參數
-     */
+    /** 更新下一頁鏈接，附加FromBook參數 */
     private updateNextPageLink;
-    /**
-     * 攔截全局alert，根據封鎖名單過濾
-     */
+    /** 攔截全局alert，根據封鎖名單過濾 */
     private hookAlert;
     /**
      * 注入自定義CSS樣式
      */
     private addStyles;
-    /**
-     * 移除原有onkeydown，註冊自定義鍵盤導航
-     */
+    /** 移除原有onkeydown，註冊自定義鍵盤導航 */
     private modifyPageNavigation;
-    /**
-     * 處理右鍵導航與結束自動關閉
-     */
+    /** 處理右鍵導航與結束自動關閉 */
     private keydownHandler;
-    /**
-     * 加入書櫃（根據不同站點呼叫不同API或模擬點擊）
-     */
+    /** 加入書櫃(根據不同站點呼叫不同API或模擬點擊) */
     private addBookcase;
-    /**
-     * 替換標題div為帶有作者連結的新元素
-     */
+    /** 替換標題div為帶有作者連結的新元素 */
     private insertAuthorLink;
-    /**
-     * 建立作者頁面連結元素
-     */
+    /** 建立作者頁面連結元素 */
     private createAuthorLink;
     /** 建立書名連結元素 */
     private createTitleLink;
-    /**
-     * 書架頁面：收集書籍資料並註冊菜單
-     */
+    /** 書架頁面: 收集書籍資料並註冊菜單 */
     private handleBookshelf;
-    /**
-     * 搜尋功能：自動填入並提交表單
-     */
+    /** 搜尋功能: 自動填入並提交表單 */
     private performSearch;
-    /**
-     * 遞迴收集書架書籍資料，最多重試5次
-     */
+    /** 遞迴收集書架書籍資料，最多重試5次 */
     private collectBookData;
-    /**
-     * 註冊菜單命令，點擊可批量打開所有更新書籍
-     */
+    /** 註冊菜單命令，點擊可批量打開所有更新書籍 */
     private registerMenuCommand;
-    /**
-     * 輸出調試資訊
-     */
+    /** 輸出調試資訊 */
     private debugInfo;
 }
+/** 初始化書籍管理器 */
 declare const bookManager: BookManager;

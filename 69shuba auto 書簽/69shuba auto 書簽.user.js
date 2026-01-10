@@ -90,7 +90,7 @@ class Config {
     IsEndClose = GM_getValue("IsEndClose", true);
     /** 是否自動加入書櫃 */
     AutoAddBookcase = GM_getValue("AutoAddBookcase", true);
-    /** 自動加入書櫃的封鎖名單（書ID陣列） */
+    /** 自動加入書櫃的封鎖名單(書ID陣列) */
     AutoAddBookcaseBlockade = GM_getValue("AutoAddBookcaseBlockade", []);
     /** 是否攔截alert */
     IsHookAlert = GM_getValue("IsHookAlert", true);
@@ -237,12 +237,12 @@ class BookManager {
                 return this.data.Book.pattern.test(new URL(href).pathname);
             },
         },
-        // 書籍信息相關操作
+        /** 書籍信息相關操作 */
         Info: {
-            // 書籍信息URL模式
+            /** 書籍信息URL模式 */
             pattern: /^\/(book|b|article)\/(\d|[a-z])+\.htm(l)?$/m,
             tw_pattern: /^\/book\/\d+\/index\.html$/m,
-            // 判斷是否為書籍信息頁面
+            /** 判斷是否為書籍信息頁面 */
             Is: (pathname = globalThis.location.pathname) => {
                 return this.data.IsTwkan
                     ? this.data.Info.tw_pattern.test(pathname) ||
@@ -250,9 +250,9 @@ class BookManager {
                     : this.data.Info.pattern.test(pathname);
             },
         },
-        // 結束頁面相關操作
+        /** 結束頁面相關操作 */
         End: {
-            // 判斷是否為結束頁面
+            /** 判斷是否為結束頁面 */
             Is: (href = globalThis.location.href) => {
                 if (this.data.Info.Is()) {
                     const searchParams = new URL(href).searchParams;
@@ -271,12 +271,12 @@ class BookManager {
                 return false;
             },
         },
-        // 獲取下一頁URL
+        /** 獲取下一頁URL */
         GetNextPageUrl: () => {
             const nextPageEle = this.getNextPageElement();
             return nextPageEle?.href;
         },
-        // 判斷下一頁是否為結束頁面
+        /** 判斷下一頁是否為結束頁面 */
         IsNextEnd: () => {
             if (this.data.Book.Is()) {
                 const nextUrl = this.data.GetNextPageUrl();
@@ -287,10 +287,11 @@ class BookManager {
             }
             return false;
         },
-        // 判斷是否為69shu.biz域名
+        /** 判斷是否為69shu.biz域名 */
         IsBiz: location.host === "69shu.biz",
-        // 判斷是否為twkan.com域名
+        /** 判斷是否為twkan.com域名 */
         IsTwkan: location.host === "twkan.com",
+        /** 判斷是否不屬於任何已知頁面類型 */
         NotAny: () => {
             return (!this.data.Book.Is() &&
                 !this.data.Info.Is() &&
@@ -302,16 +303,14 @@ class BookManager {
     i18nInstance;
     /** 綁定的翻譯方法，避免 this 指向錯誤 */
     t;
-    /**
-     * 取得下一頁的元素
-     */
+    /** 取得下一頁的元素 */
     getNextPageElement() {
         for (const selector of this.SELECTORS.nextPage) {
             const element = document.querySelector(selector);
             if (element?.href)
                 return element;
         }
-        // 備用方案：尋找文字為"下一章"的連結
+        // 備用方案: 尋找文字為"下一章"的連結
         return Array.from(document.querySelectorAll("a")).find((link) => link.textContent === "下一章");
     }
     /** 構造函數，根據當前頁面自動分派對應處理 */
@@ -369,9 +368,7 @@ class BookManager {
             throw error;
         }
     }
-    /**
-     * 書頁自動化處理：樣式、導航、元素移除、書櫃、作者連結、下一頁鏈接
-     */
+    /** 書頁自動化處理: 樣式、導航、元素移除、書櫃、作者連結、下一頁鏈接 */
     handleBookPage() {
         if (config.IsHookAlert)
             this.hookAlert();
@@ -416,9 +413,7 @@ class BookManager {
             }
         }
     }
-    /**
-     * 自動加入書櫃（如未在封鎖名單）
-     */
+    /** 自動加入書櫃(如未在封鎖名單) */
     AddToBookcase() {
         const aid = this.data.Book.GetAid();
         if (config.AutoAddBookcaseBlockade.includes(aid)) {
@@ -428,9 +423,7 @@ class BookManager {
             this.addBookcase();
         }
     }
-    /**
-     * 更新下一頁鏈接，附加FromBook參數
-     */
+    /** 更新下一頁鏈接，附加FromBook參數 */
     updateNextPageLink() {
         const nextPageEle = this.getNextPageElement();
         if (nextPageEle) {
@@ -439,9 +432,7 @@ class BookManager {
             nextPageEle.href = href.toString();
         }
     }
-    /**
-     * 攔截全局alert，根據封鎖名單過濾
-     */
+    /** 攔截全局alert，根據封鎖名單過濾 */
     hookAlert() {
         const _alert = alert;
         unsafeWindow.alert = (...message) => {
@@ -460,18 +451,14 @@ class BookManager {
         const css = GM_getResourceText(name);
         GM_addStyle(css);
         if (config.Debug)
-            console.log("CSS added");
+            console.log(`CSS ${name} added`);
     }
-    /**
-     * 移除原有onkeydown，註冊自定義鍵盤導航
-     */
+    /** 移除原有onkeydown，註冊自定義鍵盤導航 */
     modifyPageNavigation() {
         document.onkeydown = null;
         addEventListener("keydown", this.keydownHandler.bind(this));
     }
-    /**
-     * 處理右鍵導航與結束自動關閉
-     */
+    /** 處理右鍵導航與結束自動關閉 */
     keydownHandler(e) {
         if (!e.repeat && e.key === "ArrowRight") {
             const nextPageLink = this.data.GetNextPageUrl();
@@ -487,9 +474,7 @@ class BookManager {
             }
         }
     }
-    /**
-     * 加入書櫃（根據不同站點呼叫不同API或模擬點擊）
-     */
+    /** 加入書櫃(根據不同站點呼叫不同API或模擬點擊) */
     addBookcase() {
         if (addbookcase.toString().includes("Ajax.Tip")) {
             const addBookcaseLink = document.querySelector("#a_addbookcase");
@@ -501,9 +486,7 @@ class BookManager {
             addbookcase(aid, cid);
         }
     }
-    /**
-     * 替換標題div為帶有作者連結的新元素
-     */
+    /** 替換標題div為帶有作者連結的新元素 */
     insertAuthorLink() {
         let author;
         if (bookinfo) {
@@ -531,9 +514,7 @@ class BookManager {
             .querySelector("#container > div.mybox > div.txtnav > div.txtinfo.hide720")
             ?.replaceChild(authorLink, oal);
     }
-    /**
-     * 建立作者頁面連結元素
-     */
+    /** 建立作者頁面連結元素 */
     createAuthorLink(author) {
         const authorLink = document.createElement("a");
         if (this.data.IsTwkan) {
@@ -542,7 +523,7 @@ class BookManager {
         else {
             authorLink.href = `${globalThis.location.origin}/modules/article/author.php?author=${encodeURIComponent(author)}`;
         }
-        authorLink.textContent = "作者： " + author;
+        authorLink.textContent = "作者:  " + author;
         authorLink.style.color = "#007ead";
         return authorLink;
     }
@@ -557,18 +538,14 @@ class BookManager {
         titleLink.href = `${globalThis.location.origin}/${this.data.IsBiz ? "b" : "book"}/${this.data.Book.GetAid()}.${this.data.IsBiz || this.data.IsTwkan ? "html" : "htm"}`;
         return titleLink;
     }
-    /**
-     * 書架頁面：收集書籍資料並註冊菜單
-     */
+    /** 書架頁面: 收集書籍資料並註冊菜單 */
     async handleBookshelf() {
         const bookData = await this.collectBookData();
         if (config.Debug)
             console.log("Bookshelf data collected", bookData);
         this.registerMenuCommand(bookData);
     }
-    /**
-     * 搜尋功能：自動填入並提交表單
-     */
+    /** 搜尋功能: 自動填入並提交表單 */
     performSearch(search) {
         const searchInput = document.querySelector(this.SELECTORS.searchInput);
         const searchForm = document.querySelector(this.SELECTORS.searchForm);
@@ -577,9 +554,7 @@ class BookManager {
             searchForm.submit();
         }
     }
-    /**
-     * 遞迴收集書架書籍資料，最多重試5次
-     */
+    /** 遞迴收集書架書籍資料，最多重試5次 */
     async collectBookData(retryCount = 0) {
         const books = [];
         const labels = document.querySelectorAll("[id^='book_']");
@@ -643,9 +618,7 @@ class BookManager {
             console.groupEnd();
         return books;
     }
-    /**
-     * 註冊菜單命令，點擊可批量打開所有更新書籍
-     */
+    /** 註冊菜單命令，點擊可批量打開所有更新書籍 */
     registerMenuCommand(bookData) {
         GM_registerMenuCommand(`${bookData.length === 0
             ? this.t("noUpdates")
@@ -655,9 +628,7 @@ class BookManager {
             }
         });
     }
-    /**
-     * 輸出調試資訊
-     */
+    /** 輸出調試資訊 */
     debugInfo() {
         return {
             IsBook: this.data.Book.Is(),
@@ -674,6 +645,6 @@ class BookManager {
 }
 if (config.Debug)
     debugger;
-// 初始化書籍管理器
+/** 初始化書籍管理器 */
 const bookManager = new BookManager();
 //# sourceMappingURL=69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.js.map
