@@ -68,8 +68,7 @@
 //#else
 // @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
-
-// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
+// @resource     BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @resource     replace_json https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/replace.json
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
@@ -499,7 +498,7 @@ class BookManager {
    */
   private handleBookPage(): void {
     if (config.IsHookAlert) this.hookAlert();
-    this.addStyles();
+    this.addStyles("BookPageCss");
     this.modifyPageNavigation();
     removeElement(
       ".mytitle",
@@ -603,9 +602,9 @@ class BookManager {
   /**
    * 注入自定義CSS樣式
    */
-  private addStyles(): void {
-    const css1 = GM_getResourceText("css1");
-    GM_addStyle(css1);
+  private addStyles(name: string): void {
+    const css = GM_getResourceText(name);
+    GM_addStyle(css);
     if (config.Debug) console.log("CSS added");
   }
 
