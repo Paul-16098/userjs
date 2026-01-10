@@ -308,10 +308,9 @@ class BookManager {
             if (this.data.Info.Is()) {
                 if (config.Debug)
                     console.log("Book info page detected");
-                let Ele = document.querySelector("body > div.container > ul > li.col-8 > div:nth-child(2) > ul > li:nth-child(2) > a");
-                if (Ele) {
-                    Ele.click();
-                }
+                document
+                    .querySelector("body > div.container > ul > li.col-8 > div:nth-child(2) > ul > li:nth-child(2) > a")
+                    ?.click();
             }
             // #tag Book
             if (this.data.Book.Is()) {
@@ -504,7 +503,7 @@ class BookManager {
         const bookData = await this.collectBookData();
         if (config.Debug)
             console.log("Bookshelf data collected", bookData);
-        this.registerMenuCommand(bookData);
+        this.registerOpenUpdateBookMenuCommand(bookData);
     }
     /** 搜尋功能: 自動填入並提交表單 */
     performSearch(search) {
@@ -513,6 +512,9 @@ class BookManager {
         if (searchInput && searchForm) {
             searchInput.value = search;
             searchForm.submit();
+        }
+        else {
+            throw new Error("Search input or form not found");
         }
     }
     /** 遞迴收集書架書籍資料，最多重試5次 */
@@ -537,22 +539,12 @@ class BookManager {
         }
         labels.forEach((label) => {
             const bookContainer = label;
-            const tmp = (function () {
-                if (Array.from(label.querySelectorAll("label")).some((label2) => label2.textContent === "更新")) {
-                    const bookContinueEle = label.querySelector("div.newright > a.btn.btn-tp");
-                    const bookContinueLink = bookContinueEle.href;
-                    const BookName = label.querySelector("div.newnav > h3 > a > span")?.textContent;
-                    const bookImgEle = label.querySelector("a > img");
-                    const bookImgUrl = bookImgEle.src;
-                    // }
-                    return { bookContinueLink, BookName, bookImgUrl };
-                }
-                else {
-                    return false;
-                }
-            })();
-            if (tmp) {
-                const { bookContinueLink, BookName, bookImgUrl } = tmp;
+            if (Array.from(label.querySelectorAll("label")).some((label) => label.textContent === "更新")) {
+                const bookContinueEle = label.querySelector("div.newright > a.btn.btn-tp");
+                const bookContinueLink = bookContinueEle.href;
+                const BookName = label.querySelector("div.newnav > h3 > a > span")?.textContent;
+                const bookImgEle = label.querySelector("a > img");
+                const bookImgUrl = bookImgEle.src;
                 const push_data = {
                     Updata: {
                         url: {
@@ -580,7 +572,7 @@ class BookManager {
         return books;
     }
     /** 註冊菜單命令，點擊可批量打開所有更新書籍 */
-    registerMenuCommand(bookData) {
+    registerOpenUpdateBookMenuCommand(bookData) {
         GM_registerMenuCommand(`${bookData.length === 0
             ? this.t("noUpdates")
             : `${bookData.length}${this.t("updatesAvailable")}`}`, () => {
