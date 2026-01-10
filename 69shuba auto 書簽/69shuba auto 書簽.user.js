@@ -68,7 +68,7 @@
 //#else
 // @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
-// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
+// @resource     BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.css
 // @resource     replace_json https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/replace.json
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
@@ -465,7 +465,7 @@ class BookManager {
     handleBookPage() {
         if (config.IsHookAlert)
             this.hookAlert();
-        this.addStyles();
+        this.addStyles("BookPageCss");
         this.modifyPageNavigation();
         removeElement(".mytitle", ".top_Scroll", "#pagefootermenu", "body > div.container > div > div.yueduad1", "#pageheadermenu", ".bottom-ad2", "body > div.container > div.yuedutuijian.light");
         if (this.data.IsTwkan) {
@@ -547,9 +547,9 @@ class BookManager {
     /**
      * 注入自定義CSS樣式
      */
-    addStyles() {
-        const css1 = GM_getResourceText("css1");
-        GM_addStyle(css1);
+    addStyles(name) {
+        const css = GM_getResourceText(name);
+        GM_addStyle(css);
         if (config.Debug)
             console.log("CSS added");
     }
