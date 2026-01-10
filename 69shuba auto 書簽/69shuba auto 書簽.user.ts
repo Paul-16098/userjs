@@ -75,15 +75,13 @@
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
 // ==/UserScript==
 
-// 語言選項枚舉
+/** 語言選項枚舉 */
 enum Language {
   en = "en",
   zh = "zh",
 }
 
-/**
- * 用戶配置類，負責管理腳本的各項設置，並註冊菜單。
- */
+/** 用戶配置類，負責管理腳本的各項設置，並註冊菜單 */
 class Config {
   /** 是否開啟偵錯模式 */
   Debug: boolean = GM_getValue("Debug", false);
@@ -113,9 +111,7 @@ class Config {
     this.set();
     this.registerConfigMenu();
   }
-  /**
-   * 註冊所有配置項的菜單
-   */
+  /** 註冊所有配置項的菜單 */
   private registerConfigMenu() {
     for (const key in this) {
       const value = this[key as keyof Config];
@@ -159,9 +155,7 @@ class Config {
       });
     }
   }
-  /**
-   * 將當前配置寫入GM存儲
-   */
+  /** 將當前配置寫入GM存儲 */
   private set() {
     GM_setValue("Debug", this.Debug);
     GM_setValue("IsEndClose", this.IsEndClose);
@@ -173,10 +167,10 @@ class Config {
   }
 }
 
-// 配置初始化
+/** 配置初始化 */
 const config: Config = new Config();
 
-// i18n 設定
+/** i18n 設定 */
 const i18nData: typeof I18n.prototype.langJson = {
   en: {
     noMatchingPattern: "No matching URL pattern found",
@@ -196,7 +190,7 @@ const i18nData: typeof I18n.prototype.langJson = {
   },
 };
 
-// 書籍數據接口
+/** 書籍數據接口 */
 interface BookData {
   Updata: {
     url: {
@@ -225,13 +219,11 @@ class BookManager {
       "body > header > div > form > div > div.inputbox > input[type=text]",
     searchForm: "body > header > div > form",
   };
-  /**
-   * 各種頁面判斷與數據獲取方法集合
-   */
+  /** 各種頁面判斷與數據獲取方法集合 */
   private readonly data = {
-    // 判斷是否有書籍信息
+    /** 判斷是否有書籍信息 */
     HasBookInfo: typeof bookinfo !== "undefined",
-    // 判斷是否在書架頁面
+    /** 判斷是否在書架頁面 */
     IsBookshelf: (href: string = location.href) => {
       if (this.data.IsTwkan) {
         return new URL(href).pathname === "/bookcase";
@@ -239,25 +231,25 @@ class BookManager {
         return new URL(href).pathname === "/modules/article/bookcase.php";
       }
     },
-    // 書籍相關操作
+    /** 書籍相關操作 */
     Book: {
-      // 獲取書籍ID
+      /** 獲取書籍ID */
       GetAid: (href: string = globalThis.location.href) => {
         if (this.data.HasBookInfo) {
           return bookinfo.articleid;
         }
         return href.split("/")[4];
       },
-      // 獲取章節ID
+      /** 獲取章節ID */
       GetCid: (href: string = globalThis.location.href) => {
         if (this.data.HasBookInfo) {
           return bookinfo.chapterid;
         }
         return href.split("/")[5];
       },
-      // 書籍URL模式
+      /** 書籍URL模式 */
       pattern: /^\/(txt|c|r)\/(\d|[a-z])+\/(\d|[a-z])+(\.html)?$/m,
-      // 判斷是否為書籍頁面
+      /** 判斷是否為書籍頁面 */
       Is: (href: string = globalThis.location.href) => {
         return this.data.Book.pattern.test(new URL(href).pathname);
       },
@@ -739,3 +731,4 @@ class BookManager {
 if (config.Debug) debugger;
 /** 初始化書籍管理器 */
 const bookManager = new BookManager();
+
