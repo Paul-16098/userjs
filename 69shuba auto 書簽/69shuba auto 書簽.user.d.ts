@@ -60,8 +60,10 @@ declare class BookManager {
     constructor();
     /** 書頁自動化處理: 樣式、導航、元素移除、書櫃、作者連結、下一頁鏈接 */
     private handleBookPage;
+    /** 替換文本內容，根據替換字典進行替換 */
+    private replaceText;
     /** 自動加入書櫃(如未在封鎖名單) */
-    private AddToBookcase;
+    private addToBookcase;
     /** 更新下一頁鏈接，附加FromBook參數 */
     private updateNextPageLink;
     /** 攔截全局alert，根據封鎖名單過濾 */
