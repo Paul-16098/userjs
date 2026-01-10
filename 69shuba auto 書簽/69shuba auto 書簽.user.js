@@ -96,9 +96,11 @@ class Config {
     IsHookAlert = GM_getValue("IsHookAlert", true);
     /** 攔截alert的訊息封鎖名單 */
     HookAlertBlockade = GM_getValue("HookAlertBlockade", [
+        // opencclint-disable
         ["添加成功"],
         ["刪除成功!"],
         ["恭喜您，该章节已经加入到您的书签！"],
+        // opencclint-enable
     ]);
     /** 語言設定 */
     Language = GM_getValue("Language", Language.zh);
@@ -185,98 +187,6 @@ const i18nData = {
         updatesAvailable: "個更新",
     },
 };
-/**
- * `BookManager` 類別提供了各種方法來管理網頁上與書籍相關的資料並與之互動。
- * 它包括偵測圖書頁面、圖書資訊頁面、結束頁面和書架頁面的功能。
- * 它還提供了處理導航、將書籍添加到書架以及修改頁面元素的方法。
- *
- * @class
- * @classdesc 此類旨在自動化並增強與圖書相關的網站的使用者體驗。
- *
- * @property {Object} data -包含用於偵測和處理書籍相關頁面的各種方法和模式。
- * @property {Function} data.HasBookInfo  -檢查是否可用書籍信息。
- * @property {Function} data.IsBookshelf  -檢查當前頁面是否是書架頁面。
- * @property {Object} data.Book  -包含與書籍操作有關的方法。
- * @property {Function} data.Book.GetAid  -檢索書ID。
- * @property {Function} data.Book.GetCid  -檢索章節ID。
- * @property {RegExp} data.Book.pattern  -標識書頁的模式。
- * @property {Function} data.Book.Is  -檢查當前頁面是否是書頁。
- * @property {Object} data.Info  -包含與書籍信息操作有關的方法。
- * @property {RegExp} data.Info.pattern  -識別圖書信息頁面的模式。
- * @property {Function} data.Info.Is  -檢查當前頁面是否是書籍信息頁面。
- * @property {Object} data.End  -包含與最終頁面操作相關的方法。
- * @property {Function} data.End.Is  -檢查當前頁面是否是結束頁面。
- * @property {Function} data.GetNextPageUrl  -檢索下一頁的URL。
- * @property {Function} data.IsNextEnd  -檢查下一頁是否是終點頁面。
- * @property {Function} data.IsBiz  -檢查當前域是否為“ 69shu.biz”。
- *
- * @constructor
- * @description 初始化 `Bookmanager` 類的新實例。它註冊了配置菜單並處理不同類型的頁面（書籍, 書籍信息, 結束, 書架）。如果設置了 `config.debug` 標誌, 它還記錄了調試信息。
- * @throws 如果發生錯誤並且未設置 `config.debug` , 將提醒用户。
- *
- * @method handleBookPage
- * @description 透過執行各種修改和增強來處理書籍頁面。
- * @private
- * @returns {void}
- *
- * @method hookAlert
- * @description 掛鈎全域「警報」功能以有條件地阻止或記錄警報訊息。
- * @private
- * @returns {void}
- *
- * @method addStyles
- * @description 透過從指定資源注入 CSS 內容, 將自訂樣式新增至文件。
- * @private
- * @returns {void}
- *
- * @method modifyPageNavigation
- * @description 透過刪除現有的「onkeydown」事件處理程序並新增新的「keydown」事件偵聽器來修改頁面導航。
- * @private
- * @returns {void}
- *
- * @method keydownHandler
- * @description 處理鍵盤事件, 以便在按下「向右箭頭」鍵時導覽至下一頁。
- * @private
- * @param {KeyboardEvent} e -鍵盤事件物件。
- * @returns {void}
- *
- * @method addBookcase
- * @description 將當前的書添加到書架中。
- * @private
- * @returns {void}
- *
- * @method insertAuthorLink
- * @description 插入作者鏈接並用新鏈接替換標題DIV。
- * @private
- * @returns {void}
- *
- * @method handleBookshelf
- * @description 通過收集書籍數據和註冊菜單命令來處理書架。
- * @private
- * @returns {Promise<void>}
- *
- * @method collectBookData
- * @description 通過以 `book_` 開頭查詢ID, 從DOM收集書籍數據。
- * @private
- * @param {number} [retryCount=0]  -當前的重試計數。
- * @returns {Promise<BookData[]>}  -解決一系列收集的書籍數據的承諾。
- *
- * @method registerMenuCommand
- * @description 註冊菜單命令, 其中包含收集的書籍數據。
- * @private
- * @param {BookData[]} bookData  -收集的書籍數據。
- * @returns {void}
- *
- * @method debugInfo
- * @description 收集和返回調試信息。
- * @private
- * @returns {Object}  -調試信息。
- *
- * @method registerConfigMenu
- * @description 註冊配置菜單。
- * @private
- * @returns {void}
- */
 class BookManager {
     /** 常用選擇器集合 */
     SELECTORS = {
@@ -388,10 +298,12 @@ class BookManager {
                 !this.data.IsBookshelf());
         },
     };
+    /** i18n 處理實例，用於管理當前語言與字典資料 */
     i18nInstance;
+    /** 綁定的翻譯方法，避免 this 指向錯誤 */
     t;
     /**
-     * 取得下一頁的a元素
+     * 取得下一頁的元素
      */
     getNextPageElement() {
         for (const selector of this.SELECTORS.nextPage) {
@@ -402,9 +314,7 @@ class BookManager {
         // 備用方案：尋找文字為"下一章"的連結
         return Array.from(document.querySelectorAll("a")).find((link) => link.textContent === "下一章");
     }
-    /**
-     * 構造函數，根據當前頁面自動分派對應處理
-     */
+    /** 構造函數，根據當前頁面自動分派對應處理 */
     constructor() {
         this.i18nInstance = new I18n(i18nData, config.Language.toString());
         // 綁定 i18n 實例以確保 t 內部的 this 指向正確，避免在 BookManager 上下文中調用時出現 this.langList 錯誤
@@ -468,11 +378,10 @@ class BookManager {
         this.addStyles("BookPageCss");
         this.modifyPageNavigation();
         removeElement(".mytitle", ".top_Scroll", "#pagefootermenu", "body > div.container > div > div.yueduad1", "#pageheadermenu", ".bottom-ad2", "body > div.container > div.yuedutuijian.light");
-        if (this.data.IsTwkan) {
+        if (this.data.IsTwkan)
             removeElement("#container > br");
-        }
         if (config.AutoAddBookcase)
-            this.autoAddToBookcase();
+            this.AddToBookcase();
         this.insertAuthorLink();
         this.updateNextPageLink();
         if (this.data.IsTwkan) {
@@ -510,7 +419,7 @@ class BookManager {
     /**
      * 自動加入書櫃（如未在封鎖名單）
      */
-    autoAddToBookcase() {
+    AddToBookcase() {
         const aid = this.data.Book.GetAid();
         if (config.AutoAddBookcaseBlockade.includes(aid)) {
             console.log("Book is in the blockade list, not auto adding to bookcase.");
@@ -637,9 +546,7 @@ class BookManager {
         authorLink.style.color = "#007ead";
         return authorLink;
     }
-    /**
-     * 建立書名連結元素
-     */
+    /** 建立書名連結元素 */
     createTitleLink() {
         const titleLink = document.createElement("a");
         titleLink.innerHTML = this.data.HasBookInfo
