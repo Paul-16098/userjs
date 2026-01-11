@@ -65,27 +65,27 @@
 // @run-at       document-idle
 
 //#if debug
-// @require file://c:\Users\pl816\OneDrive\文件\git\userjs\Tools\Tools.user.js
+// #@require file://c:\Users\pl816\OneDrive\文件\git\userjs\Tools\Tools.user.js
 //#else
-// #@require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
+// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
 
 //#if debug
-// @resource BookPageCss file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\BookPage.user.css
-// @resource BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/BookPage.user.css
+// #@resource BookPageCss file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\BookPage.user.css
+// #@resource BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/BookPage.user.css
 //#else
 //#endif
 
 //#if debug
-// @resource StrReplace file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\StrReplace.json
+// #@resource StrReplace file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\StrReplace.json
 //#else
-// #@resource StrReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/StrReplace.json
+// @resource StrReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/StrReplace.json
 //#endif
 
 //#if debug
-// @resource RegReplace file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\RegReplace.json
+// #@resource RegReplace file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\RegReplace.json
 //#else
-// #@resource RegReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/RegReplace.json
+// @resource RegReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/RegReplace.json
 //#endif
 
 // @license      MIT

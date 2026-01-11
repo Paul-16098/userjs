@@ -68,9 +68,21 @@
 //#else
 // @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 //#endif
-// @resource     BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/BookPage.user.css
-// @resource     StrReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/StrReplace.json
-// @resource     RegReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/RegReplace.json
+//#if debug
+// #@resource BookPageCss file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\BookPage.user.css
+// #@resource BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/BookPage.user.css
+//#else
+//#endif
+//#if debug
+// #@resource StrReplace file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\StrReplace.json
+//#else
+// @resource StrReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/StrReplace.json
+//#endif
+//#if debug
+// #@resource RegReplace file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\RegReplace.json
+//#else
+// @resource RegReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/RegReplace.json
+//#endif
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
@@ -357,16 +369,29 @@ class BookManager {
     /** 替換文本內容，根據替換字典進行替換 */
     replaceText() {
         if (this.data.IsTwkan) {
-            const raw_replace_json = GM_getResourceText("StrReplace");
-            if (config.Debug)
-                console.log("raw_replace_json: ", raw_replace_json);
-            let replace_json = [];
-            replace_json = JSON.parse(raw_replace_json);
-            if (config.Debug)
-                console.log("replace_json: ", replace_json);
             const ele = document.querySelector("#txtcontent0");
-            for (const value in replace_json) {
+            const RawStrReplace = GM_getResourceText("StrReplace");
+            if (config.Debug)
+                console.log("raw_replace_json: ", RawStrReplace);
+            const StrReplace = JSON.parse(RawStrReplace);
+            if (config.Debug)
+                console.log("replace_json: ", StrReplace);
+            for (const value of StrReplace) {
                 ele.innerText = ele.innerText.replaceAll(value, "");
+            }
+            const RawRegReplace = GM_getResourceText("RegReplace");
+            if (config.Debug)
+                console.log("raw_reg_replace_json: ", RawRegReplace);
+            const StrRegReplace = JSON.parse(RawRegReplace);
+            const RegReplace = [];
+            StrRegReplace.forEach((pattern) => {
+                RegReplace.push(new RegExp(pattern, "g"));
+            });
+            if (config.Debug)
+                console.log("reg_replace_json: ", RegReplace);
+            //   debugger;
+            for (const pattern of RegReplace) {
+                ele.innerText = ele.innerText.replaceAll(pattern, "");
             }
         }
     }
