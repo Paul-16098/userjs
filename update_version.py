@@ -119,9 +119,9 @@ def process_require_blocks(text: str) -> str:
                     continue
 
                 # Process @require lines based on condition
-                require_match = re.match(r"^//\s?(#?)@require\s+(.+)$", current)
+                require_match = re.match(r"^//\s?(#?)@([^ ]*)\s+(.+)$", current)
                 if require_match:
-                    url = require_match.group(2)
+                    url = require_match.group(3)
 
                     # Determine if this line should be active
                     should_activate = (is_active and not in_else) or (
@@ -129,9 +129,9 @@ def process_require_blocks(text: str) -> str:
                     )
 
                     if should_activate:
-                        block_lines.append(f"// @require {url}")
+                        block_lines.append(f"// @{require_match.group(2)} {url}")
                     else:
-                        block_lines.append(f"// #@require {url}")
+                        block_lines.append(f"// #@{require_match.group(2)} {url}")
                 else:
                     block_lines.append(current)
 
