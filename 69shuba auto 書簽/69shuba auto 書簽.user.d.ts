@@ -91,7 +91,7 @@ declare class BookManager {
     /** 遞迴收集書架書籍資料，最多重試5次 */
     private collectBookData;
     /** 註冊菜單命令，點擊可批量打開所有更新書籍 */
-    private registerMenuCommand;
+    private registerOpenUpdateBookMenuCommand;
     /** 輸出調試資訊 */
     private debugInfo;
 }
