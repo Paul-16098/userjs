@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.5.16.0
+// @version      3.6.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag 69shux.com
@@ -434,7 +434,7 @@ class BookManager {
       });
       if (config.Debug) console.log("reg_replace_json: ", RegReplace);
 
-    //   debugger;
+      //   debugger;
       for (const pattern of RegReplace) {
         ele.innerText = ele.innerText.replaceAll(pattern, "");
       }
@@ -483,8 +483,8 @@ class BookManager {
    */
   private addStyles(name: string): void {
     const css = GM_getResourceText(name);
-    GM_addStyle(css);
-    if (config.Debug) console.log(`CSS ${name} added`);
+    const style = GM_addStyle(css);
+    if (config.Debug) console.log(`CSS ${name} added`, style);
   }
 
   /** 移除原有onkeydown，註冊自定義鍵盤導航 */
