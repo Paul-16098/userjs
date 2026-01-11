@@ -395,7 +395,7 @@ class BookManager {
   /** 替換文本內容，根據替換字典進行替換 */
   private replaceText(): void {
     if (this.data.IsTwkan) {
-      const raw_replace_json = GM_getResourceText("replace_json");
+      const raw_replace_json = GM_getResourceText("StrReplace");
       let replace_json: string[] = [];
       try {
         replace_json = JSON.parse(raw_replace_json);
