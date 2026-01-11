@@ -70,6 +70,7 @@
 //#endif
 // @resource     BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/BookPage.user.css
 // @resource     StrReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/StrReplace.json
+// @resource     RegReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/RegReplace.json
 // @license      MIT
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
@@ -396,17 +397,13 @@ class BookManager {
   private replaceText(): void {
     if (this.data.IsTwkan) {
       const raw_replace_json = GM_getResourceText("StrReplace");
+      if (config.Debug) console.log("raw_replace_json: ", raw_replace_json);
       let replace_json: string[] = [];
-      try {
-        replace_json = JSON.parse(raw_replace_json);
-      } catch (error) {
-        alert(error);
-      }
-      if (config.Debug) {
-        console.log("replace_json: ", replace_json);
-      }
+      replace_json = JSON.parse(raw_replace_json);
 
-      const ele: HTMLDivElement = document.querySelector("#txtcontent0")!;
+      if (config.Debug) console.log("replace_json: ", replace_json);
+
+      const ele = document.querySelector<HTMLDivElement>("#txtcontent0")!;
       for (const value in replace_json) {
         ele.innerText = ele.innerText.replaceAll(value, "");
       }
@@ -705,6 +702,6 @@ const i18nData: typeof I18n.prototype.langJson = {
   },
 };
 
-if (config.Debug) debugger;
+// debugger;
 /** 初始化書籍管理器 */
 const bookManager = new BookManager();
