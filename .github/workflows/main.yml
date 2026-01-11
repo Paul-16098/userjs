@@ -41,6 +41,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Compile Less to CSS
+        run: pnpm run build:less
+
       - name: Set up Git user
         if: ${{ !env.ACT }}
         run: |
