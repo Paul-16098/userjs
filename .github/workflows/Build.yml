@@ -8,7 +8,7 @@ on:
       - "*/*.less"
       - "*/*.tsconfig.json"
       - "./swcrc"
-      - ".github/workflows/main.yml"
+      - ".github/workflows/Build.yml"
   pull_request:
     types: [closed]
     paths:
@@ -16,7 +16,7 @@ on:
       - "*/*.less"
       - "*/*.tsconfig.json"
       - "./swcrc"
-      - ".github/workflows/main.yml"
+      - ".github/workflows/Build.yml"
 
 permissions:
   contents: write
