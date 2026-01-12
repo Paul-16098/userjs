@@ -77,7 +77,7 @@ jobs:
         run: |
           npm install
       - name: Build less
-        run: npm run build-less
+        run: npm run build:less
 
       - name: Set up Git user
         if: ${{ !env.ACT }}

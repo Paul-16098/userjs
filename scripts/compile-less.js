@@ -5,10 +5,9 @@
  *
  * This script is intentionally dependency-free except for 'less'.
  */
-const fs = require('node:fs');
-const fsp = require('node:fs/promises');
-const path = require('node:path');
-const less = require('less');
+const fsp = require("node:fs/promises");
+const path = require("node:path");
+const less = require("less");
 
 /**
  * Recursively walk a directory and return all .less files.
@@ -22,9 +21,14 @@ async function findLessFiles(dir) {
     const fullPath = path.join(dir, entry.name);
     // Skip common folders we don't need
     if (entry.isDirectory()) {
-      if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === '.github') continue;
-      results.push(...await findLessFiles(fullPath));
-    } else if (entry.isFile() && entry.name.endsWith('.less')) {
+      if (
+        entry.name === "node_modules" ||
+        entry.name === ".git" ||
+        entry.name === ".github"
+      )
+        continue;
+      results.push(...(await findLessFiles(fullPath)));
+    } else if (entry.isFile() && entry.name.endsWith(".less")) {
       results.push(fullPath);
     }
   }
@@ -36,7 +40,7 @@ async function findLessFiles(dir) {
  * @param {string} filePath
  */
 async function compileFile(filePath) {
-  const src = await fsp.readFile(filePath, 'utf8');
+  const src = await fsp.readFile(filePath, "utf8");
   const { css } = await less.render(src, {
     filename: filePath, // important for relative imports and sourcemaps
     compress: true,
@@ -45,8 +49,8 @@ async function compileFile(filePath) {
       outputSourceFiles: true,
     },
   });
-  const outPath = filePath.replace(/\.less$/i, '.css');
-  await fsp.writeFile(outPath, css, 'utf8');
+  const outPath = filePath.replace(/\.less$/i, ".css");
+  await fsp.writeFile(outPath, css, "utf8");
   return { in: filePath, out: outPath };
 }
 
@@ -54,7 +58,7 @@ async function run() {
   const root = process.cwd();
   const lessFiles = await findLessFiles(root);
   if (lessFiles.length === 0) {
-    console.log('No .less files found.');
+    console.log("No .less files found.");
     return;
   }
   console.log(`Found ${lessFiles.length} .less file(s). Compiling...`);
@@ -68,6 +72,6 @@ async function run() {
 }
 
 run().catch((err) => {
-  console.error('Less compilation failed:', err && err.stack ? err.stack : err);
+  console.error("Less compilation failed:", err && err.stack ? err.stack : err);
   process.exitCode = 1;
 });
