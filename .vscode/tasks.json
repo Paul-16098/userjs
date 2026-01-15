@@ -8,10 +8,16 @@
       "label": "Live Preview: 執行伺服器",
       "runOptions": {
         "instanceLimit": 1,
-        "instancePolicy": "terminateOldest",
-        // "runOn": "folderOpen"
+        "instancePolicy": "terminateOldest"
       },
       "detail": "for debug"
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "problemMatcher": ["$eslint-stylish", "$eslint-compact"],
+      "label": "npm: lint",
+      "detail": "eslint '**/*.user.ts' '**/*.ts' --ignore-pattern='**/*.d.ts'"
     }
   ]
 }
