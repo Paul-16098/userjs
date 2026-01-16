@@ -2,81 +2,21 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "process",
+      "type": "npm",
+      "script": "build",
       "group": "build",
-      "label": "swc: build",
-      "command": "npx",
-      "args": [
-        "swc",
-        "\".\"",
-        "--no-swcrc",
-        "--out-dir",
-        "\".\"",
-        "",
-        "--only",
-        "\"**/*.user.ts\"-C",
-        "minify=true",
-        "-C",
-        "jsc.parser.syntax='typescript'",
-        "-C",
-        "jsc.target='esnext'",
-        "-C",
-        "jsc.minify.format.comments='all'",
-        "-C",
-        "jsc.experimental.plugins=[]",
-        "-C",
-        "module.type='commonjs'",
-        "-C",
-        "module.strictMode=true",
-        "-C",
-        "sourceMaps=true",
-        ""
-      ],
-      "isBuildCommand": true
+      "label": "rollup: build",
+      "problemMatcher": [],
+      "detail": "Build all userscripts with Rollup"
     },
     {
-      "type": "process",
+      "type": "npm",
+      "script": "watch",
       "group": "build",
-      "label": "swc: watch",
-      "command": "npx",
-      "args": [
-        "swc",
-        "\".\"",
-        "--no-swcrc",
-        "--out-dir",
-        "\".\"",
-        "",
-        "--only",
-        "\"**/*.user.ts\"-C",
-        "minify=true",
-        "-C",
-        "jsc.parser.syntax='typescript'",
-        "-C",
-        "jsc.target='esnext'",
-        "-C",
-        "jsc.minify.format.comments='all'",
-        "-C",
-        "jsc.experimental.plugins=[]",
-        "-C",
-        "module.type='commonjs'",
-        "-C",
-        "module.strictMode=true",
-        "-C",
-        "sourceMaps=true",
-        "",
-        "-w"
-      ],
-      "isBackground": true
-    },
-    {
-      "type": "process",
-      "command": "python",
-      "args": [
-        "/home/runner/work/userjs/userjs/swcrc2taskjson.py"
-      ],
-      "problemMatcher": "$python",
-      "label": "swcrc to taskjson",
-      "group": "build"
+      "label": "rollup: watch",
+      "isBackground": true,
+      "problemMatcher": [],
+      "detail": "Watch and rebuild userscripts with Rollup"
     }
   ]
 }
