@@ -1,6 +1,4 @@
 import swc from '@rollup/plugin-swc';
-import stripCode from 'rollup-plugin-strip-code';
-import shiftHeader from 'rollup-plugin-shift-header';
 import { glob } from 'glob';
 import path from 'path';
 
