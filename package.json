@@ -13,12 +13,21 @@
   "license": "MIT",
   "author": "Paul-16098",
   "type": "commonjs",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
   "dependencies": {
     "@types/tampermonkey": "^5.0.4",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@rollup/plugin-swc": "^0.4.0",
     "@swc/cli": "^0.7.9",
-    "@swc/core": "^1.15.1"
+    "@swc/core": "^1.15.1",
+    "glob": "^13.0.0",
+    "rollup": "^4.55.1",
+    "rollup-plugin-shift-header": "^1.0.1",
+    "rollup-plugin-strip-code": "^0.2.8"
   }
 }
