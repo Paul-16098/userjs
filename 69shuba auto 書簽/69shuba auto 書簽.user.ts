@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      3.6.0
+// @version      4.0.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag www.69shuba.com
@@ -149,13 +149,64 @@ interface BookData {
   };
 }
 
-class BookManager {
+interface Site {
   /** 常用選擇器集合 */
+  readonly SELECTORS: {
+    /**
+     * 下一頁按鈕選擇器
+     */
+    nextPage: string;
+    /**
+     * 作者信息選擇器
+     */
+    authorInfo: string;
+    /**
+     * 標題區域選擇器
+     */
+    titleDiv: string;
+    /**
+     * 搜索輸入框選擇器
+     */
+    searchInput: string;
+    /**
+     * 搜索表單選擇器
+     */
+    searchForm: string;
+  };
+  /**
+   * 是否有書籍信息
+   */
+  readonly HasBookInfo: boolean;
+  /**
+   * 是否在書架頁面
+   */
+  readonly IsBookshelf: () => boolean;
+  readonly Book: {
+    /** 獲取書籍ID */
+    GetAid: () => string;
+    /**
+     * 獲取章節ID
+     */
+    GetCid: () => string;
+
+    pattern: RegExp;
+    Is: () => boolean;
+  };
+  readonly Info: {
+    pattern: RegExp;
+    Is: () => boolean;
+  };
+  readonly End: {
+    pattern?: RegExp;
+    Is: (pathname?: string) => boolean;
+  };
+
+  readonly isSite: boolean;
+}
+
+class Site_tw implements Site {
   SELECTORS = {
-    nextPage: [
-      "body > div.container > div.mybox > div.page1 > a:nth-child(4)",
-      "body > div.mainbox > div > div.page1 > a:nth-child(4)",
-    ],
+    nextPage: "#container > div.page1 > a:nth-child(4)",
     authorInfo:
       "body > div.container > div.mybox > div.txtnav > div.txtinfo.hide720 > span:nth-child(2)",
     titleDiv: "body > div.container > div.mybox > div.tools",
@@ -163,121 +214,103 @@ class BookManager {
       "body > header > div > form > div > div.inputbox > input[type=text]",
     searchForm: "body > header > div > form",
   };
-  /** 各種頁面判斷與數據獲取方法集合 */
-  private readonly data = {
-    /** 判斷是否有書籍信息 */
-    HasBookInfo: typeof bookinfo !== "undefined",
-    /** 判斷是否在書架頁面 */
-    IsBookshelf: (href: string = location.href) => {
-      if (this.data.IsTwkan) {
-        return new URL(href).pathname === "/bookcase";
-      } else {
-        return new URL(href).pathname === "/modules/article/bookcase.php";
-      }
+  HasBookInfo = true;
+  IsBookshelf = () => {
+    return location.pathname === "/bookcase";
+  };
+  Book = {
+    GetAid: () => {
+      return bookinfo.articleid;
     },
-    /** 書籍相關操作 */
-    Book: {
-      /** 獲取書籍ID */
-      GetAid: (href: string = globalThis.location.href) => {
-        if (this.data.HasBookInfo) {
-          return bookinfo.articleid;
-        }
-        return href.split("/")[4];
-      },
-      /** 獲取章節ID */
-      GetCid: (href: string = globalThis.location.href) => {
-        if (this.data.HasBookInfo) {
-          return bookinfo.chapterid;
-        }
-        return href.split("/")[5];
-      },
-      /** 書籍URL模式 */
-      pattern: /^\/(txt|c|r)\/(\d|[a-z])+\/(\d|[a-z])+(\.html)?$/m,
-      /** 判斷是否為書籍頁面 */
-      Is: (href: string = globalThis.location.href) => {
-        return this.data.Book.pattern.test(new URL(href).pathname);
-      },
+    /** 獲取章節ID */
+    GetCid: () => {
+      return bookinfo.chapterid;
     },
-    /** 書籍信息相關操作 */
-    Info: {
-      /** 書籍信息URL模式 */
-      pattern: /^\/(book|b|article)\/(\d|[a-z])+\.htm(l)?$/m,
-      tw_pattern: /^\/book\/\d+\/index\.html$/m,
-      /** 判斷是否為書籍信息頁面 */
-      Is: (pathname: string = globalThis.location.pathname) => {
-        return this.data.IsTwkan
-          ? this.data.Info.tw_pattern.test(pathname) ||
-              this.data.Info.pattern.test(pathname)
-          : this.data.Info.pattern.test(pathname);
-      },
+
+    /** 書籍URL模式 */
+    pattern: /^\/txt\/\d+\/\d+$/m,
+    /** 判斷是否為書籍頁面 */
+    Is: () => {
+      return this.Book.pattern.test(location.pathname);
     },
-    /** 結束頁面相關操作 */
-    End: {
-      /** 判斷是否為結束頁面 */
-      Is: (href: string = globalThis.location.href) => {
-        if (this.data.Info.Is()) {
-          const searchParams = new URL(href).searchParams;
-          return searchParams.get("FromBook") === "true";
-        }
-        if (this.data.IsTwkan) {
-          let h = new URL(href);
-          if (
-            /txt\/\d+\/end\.html/.test(h.pathname) &&
-            h.searchParams.get("FromBook") === "true"
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-        return false;
-      },
+  };
+  Info = {
+    pattern: /^\/book\/\d+\/index\.html$/m,
+    /** 判斷是否為書籍信息頁面 */
+    Is: (pathname = location.pathname) => {
+      return this.Info.pattern.test(pathname);
     },
-    /** 獲取下一頁URL */
-    GetNextPageUrl: () => {
-      const nextPageEle = this.getNextPageElement();
-      return nextPageEle?.href;
+  };
+  End = {
+    pattern: /\/txt\/\d+\/end\.html/m,
+    Is: (pathname = location.pathname) => {
+      return this.End.pattern.test(pathname);
     },
-    /** 判斷下一頁是否為結束頁面 */
-    IsNextEnd: () => {
-      if (this.data.Book.Is()) {
-        const nextUrl = this.data.GetNextPageUrl();
-        if (nextUrl) {
-          return (
-            this.data.End.Is(nextUrl) ||
-            this.data.Info.Is(new URL(nextUrl).pathname)
-          );
-        }
+  };
+  isSite = location.host === "twkan.com";
+}
+
+class Site_69shuba implements Site {
+  SELECTORS = {
+    nextPage: "body > div.container > div.mybox > div.page1 > a:nth-child(4)",
+    authorInfo:
+      "body > div.container > div.mybox > div.txtnav > div.txtinfo.hide720 > span:nth-child(2)",
+    titleDiv: "body > div.container > div.mybox > div.tools",
+    searchInput:
+      "body > header > div > form > div > div.inputbox > input[type=text]",
+    searchForm: "body > header > div > form",
+  };
+  HasBookInfo = true;
+  IsBookshelf = () => {
+    return location.pathname === "/modules/article/bookcase.php";
+  };
+  Book = {
+    GetAid: () => {
+      return bookinfo.articleid;
+    },
+    /** 獲取章節ID */
+    GetCid: () => {
+      return bookinfo.chapterid;
+    },
+
+    pattern: /\/txt\/\d+\/\d+/m,
+    Is: () => {
+      return this.Book.pattern.test(location.pathname);
+    },
+  };
+  Info = {
+    pattern: /\/book\/\d+\.htm/m,
+    Is: () => {
+      return this.Info.pattern.test(location.pathname);
+    },
+  };
+  End = {
+    Is: () => {
+      if (this.Info.Is()) {
+        const searchParams = new URL(location.href).searchParams;
+        return searchParams.get("FromBook") === "true";
       }
       return false;
     },
-    /** 判斷是否為69shu.biz域名 */
-    IsBiz: location.host === "69shu.biz",
-    /** 判斷是否為twkan.com域名 */
-    IsTwkan: location.host === "twkan.com",
-
-    /** 判斷是否不屬於任何已知頁面類型 */
-    NotAny: () => {
-      return (
-        !this.data.Book.Is() &&
-        !this.data.Info.Is() &&
-        !this.data.End.Is() &&
-        !this.data.IsBookshelf()
-      );
-    },
   };
+  isSite = location.host === "www.69shuba.com";
+}
+
+class BookManager {
+  readonly Site: Site;
 
   /** i18n 處理實例，用於管理當前語言與字典資料 */
-  i18nInstance: I18n;
+  readonly i18nInstance: I18n;
   /** 綁定的翻譯方法，避免 this 指向錯誤 */
-  t: typeof I18n.prototype.t;
+  readonly t: typeof I18n.prototype.t;
 
   /** 取得下一頁的元素 */
   getNextPageElement(): HTMLAnchorElement | null {
-    for (const selector of this.SELECTORS.nextPage) {
-      const element = document.querySelector<HTMLAnchorElement>(selector);
-      if (element?.href) return element;
-    }
+    const element = document.querySelector<HTMLAnchorElement>(
+      this.Site.SELECTORS.nextPage,
+    );
+    if (element?.href) return element;
+
     // 備用方案: 尋找文字為"下一章"的連結
     return Array.from(document.querySelectorAll("a")).find(
       (link) => link.textContent === "下一章",
@@ -285,13 +318,15 @@ class BookManager {
   }
 
   /** 構造函數，根據當前頁面自動分派對應處理 */
-  constructor() {
+  constructor(Site: Site) {
+    this.Site = Site;
     this.i18nInstance = new I18n(i18nData, config.Language.toString());
     // 綁定 i18n 實例以確保 t 內部的 this 指向正確，避免在 BookManager 上下文中調用時出現 this.langList 錯誤
     this.t = this.i18nInstance.t.bind(this.i18nInstance);
 
     try {
       if (config.Debug) {
+        console.debug(this.Site);
         console.debug(this.debugInfo());
       }
 
@@ -300,12 +335,12 @@ class BookManager {
       if (search) this.performSearch(search);
 
       // #tag BookEnd
-      if (this.data.End.Is()) {
+      if (this.Site.End.Is()) {
         if (config.Debug) console.log("End page detected");
         if (config.IsEndClose) window.close();
       }
       // #tag Info
-      if (this.data.Info.Is()) {
+      if (this.Site.Info.Is()) {
         if (config.Debug) console.log("Book info page detected");
         document
           .querySelector<HTMLAnchorElement>(
@@ -314,18 +349,23 @@ class BookManager {
           ?.click();
       }
       // #tag Book
-      if (this.data.Book.Is()) {
+      if (this.Site.Book.Is()) {
         if (config.Debug) console.log("Book page detected");
         this.handleBookPage();
       }
       // #tag Bookshelf
-      if (this.data.IsBookshelf()) {
+      if (this.Site.IsBookshelf()) {
         if (config.Debug) console.log("Bookshelf page detected");
         this.handleBookshelf();
       }
 
       // if not match any pattern
-      if (this.data.NotAny()) {
+      if (
+        !this.Site.Book.Is() &&
+        !this.Site.Info.Is() &&
+        !this.Site.IsBookshelf() &&
+        !this.Site.End.Is()
+      ) {
         if (!config.Debug) {
           alert(this.t("noMatchingPattern"));
         }
@@ -351,8 +391,8 @@ class BookManager {
       "#pageheadermenu",
       ".bottom-ad2",
       "body > div.container > div.yuedutuijian.light",
+      "#container > br",
     );
-    if (this.data.IsTwkan) removeElement("#container > br");
     if (config.AutoAddBookcase) this.addToBookcase();
     this.insertAuthorLink();
     this.updateNextPageLink();
@@ -361,7 +401,7 @@ class BookManager {
 
   /** 替換文本內容，根據替換字典進行替換 */
   private replaceText(): void {
-    if (this.data.IsTwkan) {
+    if (Site_tw.prototype == this.Site) {
       const ele = document.querySelector<HTMLDivElement>("#txtcontent0")!;
 
       const RawStrReplace = GM_getResourceText("StrReplace");
@@ -392,7 +432,7 @@ class BookManager {
 
   /** 自動加入書櫃(如未在封鎖名單) */
   private addToBookcase(): void {
-    const aid = this.data.Book.GetAid();
+    const aid = this.Site.Book.GetAid();
     if (config.AutoAddBookcaseBlockade.includes(aid)) {
       console.log("Book is in the blockade list, not auto adding to bookcase.");
     } else {
@@ -445,13 +485,15 @@ class BookManager {
   /** 處理右鍵導航與結束自動關閉 */
   private keydownHandler(e: KeyboardEvent): void {
     if (!e.repeat && e.key === "ArrowRight") {
-      const nextPageLink = this.data.GetNextPageUrl();
+      const nextPageLink = document.querySelector<HTMLAnchorElement>(
+        this.Site.SELECTORS.nextPage,
+      )!.href;
       if (nextPageLink) {
         let href = new URL(nextPageLink);
         href.searchParams.set("FromBook", "true");
         globalThis.location.href = href.toString();
       }
-      if (this.data.IsNextEnd()) {
+      if (this.Site.End.Is(nextPageLink)) {
         if (config.IsEndClose) {
           window.close();
         }
@@ -466,8 +508,8 @@ class BookManager {
         document.querySelector<HTMLElement>("#a_addbookcase");
       addBookcaseLink?.click();
     } else {
-      const aid = this.data.Book.GetAid();
-      const cid = this.data.Book.GetCid();
+      const aid = this.Site.Book.GetAid();
+      const cid = this.Site.Book.GetCid();
       addbookcase(aid, cid);
     }
   }
@@ -480,12 +522,12 @@ class BookManager {
     } else {
       author =
         document
-          .querySelector(this.SELECTORS.authorInfo)
+          .querySelector(this.Site.SELECTORS.authorInfo)
           ?.textContent?.trim()
           .split(" ")[1] ?? "undefined";
     }
     const titleDiv = document.querySelector<HTMLDivElement>(
-      this.SELECTORS.titleDiv,
+      this.Site.SELECTORS.titleDiv,
     );
     if (titleDiv) {
       const titleLink = this.createTitleLink();
@@ -509,7 +551,7 @@ class BookManager {
   /** 建立作者頁面連結元素 */
   private createAuthorLink(author: string): HTMLAnchorElement {
     const authorLink = document.createElement("a");
-    if (this.data.IsTwkan) {
+    if (this.Site == Site_tw.prototype) {
       authorLink.href = `https://twkan.com/author/${author}.html`;
     } else {
       authorLink.href = `${
@@ -524,15 +566,13 @@ class BookManager {
   /** 建立書名連結元素 */
   private createTitleLink(): HTMLAnchorElement {
     const titleLink = document.createElement("a");
-    titleLink.innerHTML = this.data.HasBookInfo
+    titleLink.innerHTML = this.Site.HasBookInfo
       ? (bookinfo.articlename ?? document.title.split("-")[0])
       : document.title.split("-")[0];
     titleLink.classList.add("userjs_add");
     titleLink.id = "title";
-    titleLink.href = `${globalThis.location.origin}/${
-      this.data.IsBiz ? "b" : "book"
-    }/${this.data.Book.GetAid()}.${
-      this.data.IsBiz || this.data.IsTwkan ? "html" : "htm"
+    titleLink.href = `${globalThis.location.origin}/${"book"}/${this.Site.Book.GetAid()}.${
+      this.Site == Site_tw.prototype ? "html" : "htm"
     }`;
     return titleLink;
   }
@@ -547,10 +587,10 @@ class BookManager {
   /** 搜尋功能: 自動填入並提交表單 */
   private performSearch(search: string): void {
     const searchInput = document.querySelector<HTMLInputElement>(
-      this.SELECTORS.searchInput,
+      this.Site.SELECTORS.searchInput,
     );
     const searchForm = document.querySelector<HTMLFormElement>(
-      this.SELECTORS.searchForm,
+      this.Site.SELECTORS.searchForm,
     );
     if (searchInput && searchForm) {
       searchInput.value = search;
@@ -644,14 +684,11 @@ class BookManager {
   /** 輸出調試資訊 */
   private debugInfo() {
     return {
-      IsBook: this.data.Book.Is(),
-      IsInfo: this.data.Info.Is(),
-      IsEnd: this.data.End.Is(),
-      IsNextEnd: this.data.IsNextEnd(),
-      IsBookshelf: this.data.IsBookshelf(),
-      HasBookinfo: this.data.HasBookInfo,
-      IsBiz: this.data.IsBiz,
-      IsTwkan: this.data.IsTwkan,
+      IsBook: this.Site.Book.Is(),
+      IsInfo: this.Site.Info.Is(),
+      IsEnd: this.Site.End.Is(),
+      IsBookshelf: this.Site.IsBookshelf(),
+      HasBookinfo: this.Site.HasBookInfo,
       ...config,
     };
   }
@@ -682,6 +719,6 @@ const i18nData: typeof I18n.prototype.langJson = {
   },
 };
 
-// debugger;
+const SiteList: Site[] = [new Site_tw(), new Site_69shuba()];
 /** 初始化書籍管理器 */
-const bookManager = new BookManager();
+const bookManager = new BookManager(SiteList.find((site) => site.isSite)!);
