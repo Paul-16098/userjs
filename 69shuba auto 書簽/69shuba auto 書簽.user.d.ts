@@ -39,25 +39,124 @@ interface BookData {
         BookImgUrl: string;
     };
 }
-declare class BookManager {
+interface Site {
     /** 常用選擇器集合 */
+    readonly SELECTORS: {
+        /**
+         * 下一頁按鈕選擇器
+         */
+        nextPage: string;
+        /**
+         * 作者信息選擇器
+         */
+        authorInfo: string;
+        /**
+         * 標題區域選擇器
+         */
+        titleDiv: string;
+        /**
+         * 搜索輸入框選擇器
+         */
+        searchInput: string;
+        /**
+         * 搜索表單選擇器
+         */
+        searchForm: string;
+    };
+    /**
+     * 是否有書籍信息
+     */
+    readonly HasBookInfo: boolean;
+    /**
+     * 是否在書架頁面
+     */
+    readonly IsBookshelf: () => boolean;
+    readonly Book: {
+        /** 獲取書籍ID */
+        GetAid: () => string;
+        /**
+         * 獲取章節ID
+         */
+        GetCid: () => string;
+        pattern: RegExp;
+        Is: () => boolean;
+    };
+    readonly Info: {
+        pattern: RegExp;
+        Is: () => boolean;
+    };
+    readonly End: {
+        pattern?: RegExp;
+        Is: (pathname?: string) => boolean;
+    };
+    readonly isSite: boolean;
+}
+declare class Site_tw implements Site {
     SELECTORS: {
-        nextPage: string[];
+        nextPage: string;
         authorInfo: string;
         titleDiv: string;
         searchInput: string;
         searchForm: string;
     };
-    /** 各種頁面判斷與數據獲取方法集合 */
-    private readonly data;
+    HasBookInfo: boolean;
+    IsBookshelf: () => boolean;
+    Book: {
+        GetAid: () => string;
+        /** 獲取章節ID */
+        GetCid: () => string;
+        /** 書籍URL模式 */
+        pattern: RegExp;
+        /** 判斷是否為書籍頁面 */
+        Is: () => boolean;
+    };
+    Info: {
+        pattern: RegExp;
+        /** 判斷是否為書籍信息頁面 */
+        Is: (pathname?: string) => boolean;
+    };
+    End: {
+        pattern: RegExp;
+        Is: (pathname?: string) => boolean;
+    };
+    isSite: boolean;
+}
+declare class Site_69shuba implements Site {
+    SELECTORS: {
+        nextPage: string;
+        authorInfo: string;
+        titleDiv: string;
+        searchInput: string;
+        searchForm: string;
+    };
+    HasBookInfo: boolean;
+    IsBookshelf: () => boolean;
+    Book: {
+        GetAid: () => string;
+        /** 獲取章節ID */
+        GetCid: () => string;
+        pattern: RegExp;
+        Is: () => boolean;
+    };
+    Info: {
+        pattern: RegExp;
+        Is: () => boolean;
+    };
+    End: {
+        Is: () => boolean;
+    };
+    isSite: boolean;
+}
+declare class BookManager {
+    readonly Site: Site;
     /** i18n 處理實例，用於管理當前語言與字典資料 */
-    i18nInstance: I18n;
+    readonly i18nInstance: I18n;
     /** 綁定的翻譯方法，避免 this 指向錯誤 */
-    t: typeof I18n.prototype.t;
+    readonly t: typeof I18n.prototype.t;
     /** 取得下一頁的元素 */
     getNextPageElement(): HTMLAnchorElement | null;
     /** 構造函數，根據當前頁面自動分派對應處理 */
-    constructor();
+    constructor(Site: Site);
     /** 書頁自動化處理: 樣式、導航、元素移除、書櫃、作者連結、下一頁鏈接 */
     private handleBookPage;
     /** 替換文本內容，根據替換字典進行替換 */
@@ -99,5 +198,6 @@ declare class BookManager {
 declare const config: Config;
 /** i18n 設定 */
 declare const i18nData: typeof I18n.prototype.langJson;
+declare const SiteList: Site[];
 /** 初始化書籍管理器 */
 declare const bookManager: BookManager;
