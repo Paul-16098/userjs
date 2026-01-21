@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      4.0.0
+// @version      4.1.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag www.69shuba.com
@@ -516,16 +516,15 @@ class BookManager {
 
   /** 替換標題div為帶有作者連結的新元素 */
   private insertAuthorLink(): void {
-    let author;
-    if (bookinfo) {
-      author = bookinfo.author;
-    } else {
-      author =
-        document
+    if (config.Debug) console.log("Inserting author link");
+    // debugger;
+    let author = this.Site.HasBookInfo
+      ? bookinfo.author
+      : (document
           .querySelector(this.Site.SELECTORS.authorInfo)
           ?.textContent?.trim()
-          .split(" ")[1] ?? "undefined";
-    }
+          .split(" ")[1] ?? "undefined");
+
     const titleDiv = document.querySelector<HTMLDivElement>(
       this.Site.SELECTORS.titleDiv,
     );
@@ -534,18 +533,10 @@ class BookManager {
       titleDiv.parentNode?.replaceChild(titleLink, titleDiv);
     }
     const authorLink = this.createAuthorLink(author);
-    let oal = document.querySelector(
-      "#container > div.mybox > div > div.txtinfo.hide720 > span:nth-child(2)",
-    );
-    if (oal === null) {
-      console.warn("insertAuthorLink:oal=null");
-      return void 0;
-    }
-    document
-      .querySelector(
-        "#container > div.mybox > div.txtnav > div.txtinfo.hide720",
-      )
-      ?.replaceChild(authorLink, oal);
+
+    let oal = document.querySelector(this.Site.SELECTORS.authorInfo)!;
+    oal.parentNode!.replaceChild(authorLink, oal);
+    if (config.Debug) console.log("Author link inserted");
   }
 
   /** 建立作者頁面連結元素 */
