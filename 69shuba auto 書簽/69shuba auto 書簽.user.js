@@ -297,7 +297,7 @@ class BookManager {
     }
     /** 替換文本內容，根據替換字典進行替換 */
     replaceText() {
-        if (Site_tw.prototype == this.Site) {
+        if (this.Site instanceof Site_tw) {
             const ele = document.querySelector("#txtcontent0");
             const RawStrReplace = GM_getResourceText("StrReplace");
             if (config.Debug)
@@ -422,11 +422,11 @@ class BookManager {
     /** 建立作者頁面連結元素 */
     createAuthorLink(author) {
         const authorLink = document.createElement("a");
-        if (this.Site == Site_tw.prototype) {
+        if (this.Site instanceof Site_tw) {
             authorLink.href = `https://twkan.com/author/${author}.html`;
         }
         else {
-            authorLink.href = `${globalThis.location.origin}/modules/article/author.php?author=${encodeURIComponent(author)}`;
+            authorLink.href = `${globalThis.location.origin}/modules/article/author.php?author=${author}`;
         }
         authorLink.textContent = "作者:  " + author;
         authorLink.style.color = "#007ead";
@@ -434,13 +434,17 @@ class BookManager {
     }
     /** 建立書名連結元素 */
     createTitleLink() {
+        if (config.Debug)
+            console.log("Creating title link");
         const titleLink = document.createElement("a");
         titleLink.innerHTML = this.Site.HasBookInfo
             ? (bookinfo.articlename ?? document.title.split("-")[0])
             : document.title.split("-")[0];
         titleLink.classList.add("userjs_add");
         titleLink.id = "title";
-        titleLink.href = `${globalThis.location.origin}/${"book"}/${this.Site.Book.GetAid()}.${this.Site == Site_tw.prototype ? "html" : "htm"}`;
+        titleLink.href = `${globalThis.location.origin}/book/${this.Site.Book.GetAid()}${this.Site instanceof Site_tw ? "/index.html" : ".htm"}`;
+        if (config.Debug)
+            console.log("Title link created:", titleLink);
         return titleLink;
     }
     /** 書架頁面: 收集書籍資料並註冊菜單 */
