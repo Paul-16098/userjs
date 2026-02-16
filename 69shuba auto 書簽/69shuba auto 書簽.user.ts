@@ -152,41 +152,25 @@ interface BookData {
 interface Site {
   /** 常用選擇器集合 */
   readonly SELECTORS: {
-    /**
-     * 下一頁按鈕選擇器
-     */
+    /** 下一頁按鈕選擇器 */
     nextPage: string;
-    /**
-     * 作者信息選擇器
-     */
+    /** 作者信息選擇器 */
     authorInfo: string;
-    /**
-     * 標題區域選擇器
-     */
+    /** 標題區域選擇器 */
     titleDiv: string;
-    /**
-     * 搜索輸入框選擇器
-     */
+    /** 搜索輸入框選擇器 */
     searchInput: string;
-    /**
-     * 搜索表單選擇器
-     */
+    /** 搜索表單選擇器 */
     searchForm: string;
   };
-  /**
-   * 是否有書籍信息
-   */
+  /** 是否有書籍信息 */
   readonly HasBookInfo: boolean;
-  /**
-   * 是否在書架頁面
-   */
+  /** 是否在書架頁面 */
   readonly IsBookshelf: () => boolean;
   readonly Book: {
     /** 獲取書籍ID */
     GetAid: () => string;
-    /**
-     * 獲取章節ID
-     */
+    /** 獲取章節ID */
     GetCid: () => string;
 
     pattern: RegExp;
