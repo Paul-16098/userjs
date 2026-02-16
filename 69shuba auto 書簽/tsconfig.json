@@ -14,7 +14,8 @@
     "strict": true,
     "declaration": true,
     "noImplicitAny": true,
-    "incremental": true
+    "incremental": true,
+    "types": ["tampermonkey"]
   },
   "exclude": ["node_modules", "**/node_modules/*"]
 }
