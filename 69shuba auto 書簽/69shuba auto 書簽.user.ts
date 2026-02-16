@@ -182,6 +182,7 @@ interface Site {
   };
   readonly End: {
     pattern?: RegExp;
+    // eslint-disable-next-line no-unused-vars
     Is: (pathname?: string) => boolean;
   };
 
@@ -694,4 +695,4 @@ const i18nData: typeof I18n.prototype.langJson = {
 
 const SiteList: Site[] = [new Site_tw(), new Site_69shuba()];
 /** 初始化書籍管理器 */
-const bookManager = new BookManager(SiteList.find((site) => site.isSite)!);
+new BookManager(SiteList.find((site) => site.isSite)!);
