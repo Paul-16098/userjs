@@ -566,5 +566,5 @@ const i18nData = {
 };
 const SiteList = [new Site_tw(), new Site_69shuba()];
 /** 初始化書籍管理器 */
-const bookManager = new BookManager(SiteList.find((site) => site.isSite));
+new BookManager(SiteList.find((site) => site.isSite));
 //# sourceMappingURL=69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.js.map

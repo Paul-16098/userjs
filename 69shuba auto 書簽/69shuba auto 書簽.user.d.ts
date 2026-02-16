@@ -183,5 +183,3 @@ declare const config: Config;
 /** i18n 設定 */
 declare const i18nData: typeof I18n.prototype.langJson;
 declare const SiteList: Site[];
-/** 初始化書籍管理器 */
-declare const bookManager: BookManager;
