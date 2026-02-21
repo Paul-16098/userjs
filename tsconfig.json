@@ -10,7 +10,6 @@
     "lib": ["ESNext", "ES7", "DOM"],
     "target": "ESNext",
     "module": "commonjs",
-    "outDir": ".",
     "strict": true,
     "declaration": true,
     "noImplicitAny": true,
