@@ -35,7 +35,6 @@ jobs:
         uses: actions/setup-node@main
         with:
           node-version: "25"
-          cache: "pnpm"
       - name: Install dependencies
         run: |
           npx pnpm install
@@ -72,7 +71,6 @@ jobs:
         uses: actions/setup-node@main
         with:
           node-version: "25"
-          cache: "pnpm"
       - name: Install dependencies
         run: |
           npx pnpm install
