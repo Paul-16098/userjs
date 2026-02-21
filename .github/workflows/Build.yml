@@ -38,6 +38,10 @@ jobs:
       - name: Install dependencies
         run: |
           npx pnpm install
+
+      - name: Lint
+        run: npx pnpm run lint
+
       - name: Build
         run: npx pnpm run build
 
