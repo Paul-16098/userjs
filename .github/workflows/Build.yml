@@ -34,7 +34,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@main
         with:
-          node-version: "23"
+          node-version: "25"
           cache: "pnpm"
       - name: Install dependencies
         run: |
@@ -71,7 +71,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@main
         with:
-          node-version: "23"
+          node-version: "25"
           cache: "pnpm"
       - name: Install dependencies
         run: |
