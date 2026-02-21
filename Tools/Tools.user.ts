@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // ==UserScript==
 // @name         Tools
 // @namespace    Paul-16098
