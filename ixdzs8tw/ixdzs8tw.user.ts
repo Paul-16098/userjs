@@ -17,7 +17,7 @@
 // ==/UserScript==
 
 let ele = [];
-let url = globalThis.location.href;
+// let url = globalThis.location.href;
 
 let next_page_url = (
   document.querySelector(
