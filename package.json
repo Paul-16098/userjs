@@ -26,7 +26,7 @@
     "less": "^4.5.1"
   },
   "scripts": {
-    "build": "tsc -p ./Tools && tsc -p ./czbooksnet && tsc -p ./ixdzs8tw && tsc -p ./琉璃神社 && tsc -p \"./69shuba auto 書簽\" && tsc -p ./Config",
+    "build": "tsc -p ./Tools && tsc -p ./czbooksnet && tsc -p ./琉璃神社 && tsc -p \"./69shuba auto 書簽\" && tsc -p ./Config",
     "build:less": "node ./scripts/compile-less.js",
     "lint": "eslint",
     "lint:fix": "eslint --fix"

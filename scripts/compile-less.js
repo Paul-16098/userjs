@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
  * Compile all .less files in the repository to matching .css files.
  * - Minifies output (compress: true)
