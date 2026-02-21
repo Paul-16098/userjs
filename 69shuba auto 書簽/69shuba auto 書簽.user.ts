@@ -187,6 +187,7 @@ interface Site {
   };
   readonly End: {
     pattern?: RegExp;
+
     // eslint-disable-next-line no-unused-vars
     Is: (pathname?: string) => boolean;
   };
