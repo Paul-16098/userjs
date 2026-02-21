@@ -1,0 +1,101 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "*/*.user.ts"
+      - "*/*.less"
+      - "*/*.tsconfig.json"
+      - "./swcrc"
+      - ".github/workflows/Build.yml"
+  pull_request:
+    types: [closed]
+    paths:
+      - "*/*.user.ts"
+      - "*/*.less"
+      - "*/*.tsconfig.json"
+      - "./swcrc"
+      - ".github/workflows/Build.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-ts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-python@main
+        with:
+          python-version: "3.13"
+
+      - name: Update version
+        run: python update_version.py debug=0
+
+      - name: Install Node.js
+        uses: actions/setup-node@main
+        with:
+          node-version: "23"
+      - name: Install dependencies
+        run: |
+          npm install
+      - name: Build
+        run: npm run build
+
+      - name: Set up Git user
+        if: ${{ !env.ACT }}
+        run: |
+          git config --global user.email "Actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Commit changes
+        if: ${{ !env.ACT }}
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -am "[bot] build-ts"
+          else
+            echo "No changes to commit."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changes
+        if: ${{ !env.ACT }}
+        run: git push
+
+  build-less:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Install Node.js
+        uses: actions/setup-node@main
+        with:
+          node-version: "23"
+      - name: Install dependencies
+        run: |
+          npm install
+      - name: Build less
+        run: npm run build:less
+
+      - name: Set up Git user
+        if: ${{ !env.ACT }}
+        run: |
+          git config --global user.email "Actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Commit changes
+        if: ${{ !env.ACT }}
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -am "[bot] build-ts"
+          else
+            echo "No changes to commit."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changes
+        if: ${{ !env.ACT }}
+        run: git push

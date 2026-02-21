@@ -6,61 +6,47 @@
 // @author       paul
 // @match        https://ixdzs8.com/read/*/*.html
 // @match        https://ixdzs8.com/read/*/
+// @match        https://ixdzs.hk/read/*/*.html
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=ixdzs8.tw
 // @license      MIT
 // @grant        GM_addStyle
+// @grant        GM_getResourceText
 // @grant        window.close
+// @resource     css1 https://github.com/Paul-16098/userjs/raw/refs/heads/dev/ixdzs8tw/ixdzs8tw.user.css
 // @supportURL   https://github.com/Paul-16098/userjs/issues/
-// @homepageURL  https://github.com/Paul-16098/vs_code/blob/main/js/userjs/README.md
-// @downloadURL  https://github.com/Paul-16098/vs_code/raw/main/js/userjs/ixdzs8tw.user.js
-// @updateURL    https://github.com/Paul-16098/vs_code/raw/main/js/userjs/ixdzs8tw.user.js
 // ==/UserScript==
 
 let ele = [];
-let url = window.location.href;
+let url = globalThis.location.href;
 
 let next_page_url = (
   document.querySelector(
-    "body > div.page-d.page-turn > div > a.chapter-paging.chapter-next"
+    "body > div.page-d.page-turn > div > a.chapter-paging.chapter-next",
   ) as HTMLAnchorElement
 ).href;
 
 let pattern = {
   book: {
-    pattern:
-      /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/(?!end)p[0-9]*\.html)$/gm,
-    is: (url: string) => {
-      if (pattern.book.pattern.test(url)) {
-        return true;
-      } else {
-        return false;
-      }
+    pattern: /^\/read\/\d+\/(?!end)p\d*\.html$/gm,
+    is: (url: string = location.pathname) => {
+      return pattern.book.pattern.test(url);
     },
   },
   info: {
-    pattern: /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/)$/gm,
-    is: (url: string) => {
-      if (pattern.info.pattern.test(url)) {
-        return true;
-      } else {
-        return false;
-      }
+    pattern: /^\/read\/\d+\/$/gm,
+    is: (url: string = location.pathname) => {
+      return pattern.info.pattern.test(url);
     },
   },
   end: {
-    pattern:
-      /^(https?:\/\/)(ixdzs8\.[a-zA-Z]{1,3}\/read\/[0-9]+\/end\.html)$/gm,
-    is: (url: string) => {
-      if (pattern.end.pattern.test(url)) {
-        return true;
-      } else {
-        return false;
-      }
+    pattern: /^\/read\/\d+\/end\.html$/gm,
+    is: (url: string = location.pathname) => {
+      return pattern.end.pattern.test(url);
     },
   },
 };
 
-if (pattern.book.is(url)) {
+if (pattern.book.is()) {
   ele = [
     "#page-id3",
     "#page-toolbar",
@@ -71,38 +57,29 @@ if (pattern.book.is(url)) {
       document.querySelector(ele)!.remove();
     }
   });
-  GM_addStyle(`
-    .page-content{
-max-width: none;
-padding: 10px 15px;
-transform: translateX(0px);
-background: #ffffff!important;
+  GM_addStyle(GM_getResourceText("css1"));
 }
-`);
-}
-if (pattern.end.is(url) || pattern.end.is(next_page_url)) {
+if (pattern.end.is() || pattern.end.is(new URL(next_page_url).pathname)) {
   // console.log("end")
   if (pattern.end.is(next_page_url)) {
     document.addEventListener("keydown", function (e) {
       if (!e.repeat) {
         switch (true) {
           case e.key === "ArrowRight": {
-            // console.log('(e.key === "ArrowRight") === true');
             window.close();
             break;
           }
           default: {
-            // console.log("e: ", e);
             break;
           }
         }
       }
     });
   }
-  if (pattern.end.is(url)) {
+  if (pattern.end.is()) {
     window.close();
   }
 }
-if (pattern.info.is(url)) {
+if (pattern.info.is()) {
   (document.querySelector("#intro") as HTMLElement).click();
 }

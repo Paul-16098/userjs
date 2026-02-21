@@ -1,18 +1,12 @@
 declare const _unsafeWindow: Window & Omit<typeof globalThis, "GM_addElement" | "GM_addStyle" | "GM_addValueChangeListener" | "GM_deleteValue" | "GM_download" | "GM_getResourceText" | "GM_getResourceURL" | "GM_getTab" | "GM_getTabs" | "GM_getValue" | "GM_info" | "GM_listValues" | "GM_log" | "GM_notification" | "GM_openInTab" | "GM_registerMenuCommand" | "GM_removeValueChangeListener" | "GM_saveTab" | "GM_setClipboard" | "GM_setValue" | "GM_unregisterMenuCommand" | "GM_xmlhttpRequest" | "GM">;
 declare const IS_DEBUG_LOG: boolean;
 /**
- * 初始化 GM API 代理，兼容不同腳本管理器環境。
- * 會自動偵測可用的 GM_* API，並設置對應的變數。
- * 若無法取得則提供降級方案。
- */
-declare function setGM(): void;
-/**
  * 從 DOM 中移除指定選擇器的所有元素。
  * @param args - CSS 選擇器字串陣列
  * @returns [true, args] 或 [false, args, error]
  */
 declare function removeElement(...args: Array<string>): unknown[];
-type setMenuFn = (ev?: MouseEvent | KeyboardEvent) => void;
+type setMenuFn = typeof GM_registerMenuCommand extends (name: string, fn: infer F, ...args: any[]) => any ? F : never;
 /**
  * 註冊一個用戶菜單命令，支援布林值自動切換與自定義顯示。
  *
@@ -30,6 +24,7 @@ type setMenuFn = (ev?: MouseEvent | KeyboardEvent) => void;
 declare function setMenu(name: string, fn?: setMenuFn, def?: any, showMapping?: {
     [x: string]: string;
 } | undefined): number;
+declare const blackList: Array<string | RegExp>;
 /**
  * 安全執行傳入的字串代碼，支援黑名單過濾。
  * @param stringCode - 要執行的代碼
@@ -41,9 +36,9 @@ declare function newEval(stringCode: string, safety?: boolean): any;
 /**
  * 多語系(i18n)工具類，支援多語言字典與動態參數替換。
  */
-declare class i18n {
+declare class I18n {
     /** 語言字典資料 */
-    langJson: {
+    readonly langJson: {
         [lang: string]: {
             [key: string]: string;
         };

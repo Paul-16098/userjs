@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "paths": { "*": ["./*"] },
+    "sourceMap": true,
+    "lib": ["ESNext", "ES7", "DOM"],
+    "target": "ESNext",
+    "module": "commonjs",
+    "strict": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "incremental": true,
+    "types": ["tampermonkey"]
+  },
+  "exclude": ["node_modules", "**/node_modules/*"]
+}

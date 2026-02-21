@@ -1,7 +1,7 @@
 {
-    "recommendations": [
-        "ms-vscode.vscode-typescript-next",
-        "editorconfig.editorconfig",
-        "yoavbls.pretty-ts-errors"
-    ]
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "yoavbls.pretty-ts-errors",
+    "typescriptteam.native-preview"
+  ]
 }
