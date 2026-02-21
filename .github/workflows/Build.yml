@@ -35,11 +35,12 @@ jobs:
         uses: actions/setup-node@main
         with:
           node-version: "23"
+          cache: "pnpm"
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Set up Git user
         if: ${{ !env.ACT }}
@@ -71,11 +72,12 @@ jobs:
         uses: actions/setup-node@main
         with:
           node-version: "23"
+          cache: "pnpm"
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install
       - name: Build less
-        run: npm run build:less
+        run: pnpm run build:less
 
       - name: Set up Git user
         if: ${{ !env.ACT }}
