@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      4.1.0
+// @version      4.2.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag www.69shuba.com
@@ -44,7 +44,9 @@
 
 /** 語言選項枚舉 */
 enum Language {
+  // eslint-disable-next-line no-unused-vars
   en = "en",
+  // eslint-disable-next-line no-unused-vars
   zh = "zh",
 }
 
@@ -162,6 +164,9 @@ interface Site {
     searchInput: string;
     /** 搜索表單選擇器 */
     searchForm: string;
+
+    /** 需要移除的元素選擇器陣列 */
+    ElementNeedRemove: string[];
   };
   /** 是否有書籍信息 */
   readonly HasBookInfo: boolean;
@@ -198,6 +203,12 @@ class Site_tw implements Site {
     searchInput:
       "body > header > div > form > div > div.inputbox > input[type=text]",
     searchForm: "body > header > div > form",
+    ElementNeedRemove: [
+      "#pageheadermenu",
+      "#container > div.mybox > h3",
+      "#container > div.mybox > div.top_Scroll",
+      "#pagefootermenu",
+    ],
   };
   HasBookInfo = true;
   IsBookshelf = () => {
@@ -244,6 +255,11 @@ class Site_69shuba implements Site {
     searchInput:
       "body > header > div > form > div > div.inputbox > input[type=text]",
     searchForm: "body > header > div > form",
+    ElementNeedRemove: [
+      "#pageheadermenu",
+      "body > div.container > div.mybox > h3",
+      "#pagefootermenu",
+    ],
   };
   HasBookInfo = true;
   IsBookshelf = () => {
@@ -368,16 +384,18 @@ class BookManager {
     if (config.IsHookAlert) this.hookAlert();
     this.addStyles("BookPageCss");
     this.modifyPageNavigation();
-    removeElement(
-      ".mytitle",
-      ".top_Scroll",
-      "#pagefootermenu",
-      "body > div.container > div > div.yueduad1",
-      "#pageheadermenu",
-      ".bottom-ad2",
-      "body > div.container > div.yuedutuijian.light",
-      "#container > br",
-    );
+    this.Site.SELECTORS.ElementNeedRemove.forEach((selector) => {
+      let o = document.querySelectorAll(selector);
+      if (config.Debug)
+        console.log(`Removing elements for selector: ${selector}`, o);
+      if (o.length == 0) {
+        if (config.Debug)
+          console.log(`No elements found for selector: ${selector}`);
+      }
+      o.forEach((ele) => {
+        ele.remove();
+      });
+    });
     if (config.AutoAddBookcase) this.addToBookcase();
     this.insertAuthorLink();
     this.updateNextPageLink();
@@ -408,7 +426,6 @@ class BookManager {
       });
       if (config.Debug) console.log("reg_replace_json: ", RegReplace);
 
-      //   debugger;
       for (const pattern of RegReplace) {
         ele.innerText = ele.innerText.replaceAll(pattern, "");
       }
@@ -452,9 +469,7 @@ class BookManager {
     };
   }
 
-  /**
-   * 注入自定義CSS樣式
-   */
+  /** 注入自定義CSS樣式 */
   private addStyles(name: string): void {
     const css = GM_getResourceText(name);
     const style = GM_addStyle(css);
@@ -502,7 +517,6 @@ class BookManager {
   /** 替換標題div為帶有作者連結的新元素 */
   private insertAuthorLink(): void {
     if (config.Debug) console.log("Inserting author link");
-    // debugger;
     let author = this.Site.HasBookInfo
       ? bookinfo.author
       : (document
