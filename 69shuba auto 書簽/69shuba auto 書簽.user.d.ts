@@ -52,6 +52,8 @@ interface Site {
         searchInput: string;
         /** 搜索表單選擇器 */
         searchForm: string;
+        /** 需要移除的元素選擇器陣列 */
+        ElementNeedRemove: string[];
     };
     /** 是否有書籍信息 */
     readonly HasBookInfo: boolean;
@@ -82,6 +84,7 @@ declare class Site_tw implements Site {
         titleDiv: string;
         searchInput: string;
         searchForm: string;
+        ElementNeedRemove: string[];
     };
     HasBookInfo: boolean;
     IsBookshelf: () => boolean;
@@ -112,6 +115,7 @@ declare class Site_69shuba implements Site {
         titleDiv: string;
         searchInput: string;
         searchForm: string;
+        ElementNeedRemove: string[];
     };
     HasBookInfo: boolean;
     IsBookshelf: () => boolean;
@@ -151,9 +155,7 @@ declare class BookManager {
     private updateNextPageLink;
     /** 攔截全局alert，根據封鎖名單過濾 */
     private hookAlert;
-    /**
-     * 注入自定義CSS樣式
-     */
+    /** 注入自定義CSS樣式 */
     private addStyles;
     /** 移除原有onkeydown，註冊自定義鍵盤導航 */
     private modifyPageNavigation;
