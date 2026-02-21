@@ -38,9 +38,9 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: |
-          pnpm install
+          npx pnpm install
       - name: Build
-        run: pnpm run build
+        run: npx pnpm run build
 
       - name: Set up Git user
         if: ${{ !env.ACT }}
@@ -75,9 +75,9 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: |
-          pnpm install
+          npx pnpm install
       - name: Build less
-        run: pnpm run build:less
+        run: npx pnpm run build:less
 
       - name: Set up Git user
         if: ${{ !env.ACT }}
