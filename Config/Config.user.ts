@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /// <reference path = "./../Tools/Tools.user.d.ts" />
 // ==UserScript==
 // @name         Tools
