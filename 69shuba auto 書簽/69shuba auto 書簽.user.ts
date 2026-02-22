@@ -2,13 +2,13 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      4.2.0
+// @version      4.2.1
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag www.69shuba.com
 // @match        https://www.69shuba.com/txt/*/*
 // @match        https://www.69shuba.com/modules/article/bookcase.php*
-// @match        https://www.69shuba.com/book/*.htm
+// @match        https://www.69shuba.com/book/*
 // #tag twkan.com
 // @match        https://twkan.com/txt/*/*
 // @match        https://twkan.com/bookcase*
