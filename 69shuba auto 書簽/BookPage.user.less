@@ -31,37 +31,42 @@ body > div.mainbox {
     --abg: #3d3737;
     --ac: #d6d6d6;
   }
-  body > div.container > div.mybox {
-    background: var(--bg);
-    color: var(--ac);
-  }
-  body > div.container > div.mybox > div.page1 {
-    border: 0;
-    background: var(--bg);
-    a {
-      :hover {
-        background: var(--abg);
+  body {
+    background-color: var(--bg);
+    div.container > div.mybox {
+      background: var(--bg);
+      color: var(--ac);
+    }
+    div.container > div.mybox > div.page1 {
+      border: 0;
+      background: var(--bg);
+      a {
+        :hover {
+          background: var(--abg);
+        }
       }
     }
   }
   #title {
     color: var(--ac);
   }
-  #container > div.mybox > div.page1 > a {
-    background: var(--abg);
-  }
   #baocuo {
     background: var(--bg);
-  }
-  #container > div.page1 {
-    background: var(--bg);
-    border: 0;
-    a {
-      background: var(--abg);
+    li {
       color: var(--ac);
     }
   }
-  #baocuo > li {
-    color: var(--ac);
+  #container {
+    div.mybox > div.page1 > a {
+      background: var(--abg);
+    }
+    div.page1 {
+      background: var(--bg);
+      border: 0;
+      a {
+        background: var(--abg);
+        color: var(--ac);
+      }
+    }
   }
 }
