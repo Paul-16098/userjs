@@ -232,7 +232,8 @@ class Site_tw implements Site {
     },
   };
   Info = {
-    pattern: /^\/book\/\d+\/index\.html$/m,
+    // /book/91116.html
+    pattern: /^\/book\/\d+\.html$/m,
     /** 判斷是否為書籍信息頁面 */
     Is: (pathname = location.pathname) => {
       return this.Info.pattern.test(pathname);
