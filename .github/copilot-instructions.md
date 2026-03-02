@@ -1,65 +1,58 @@
-# Copilot instructions for this repo
+# Copilot 使用说明（仓库级）
 
-This repo is a monorepo of Tampermonkey/Greasemonkey userscripts written in TypeScript and compiled with SWC. Keep changes pragmatic and consistent with existing patterns.
+目的
 
-## Big picture
+- 为 Copilot / AI agent 提供本仓库的开发约定、构建/测试命令、关键文件位置与常见陷阱，以便自动化助手能可靠地完成代码生成、格式化、lint、build 与 PR 建议。
 
-- One folder per site/script (e.g. `69shuba auto 書簽/`, `czbooksnet/`, `琉璃神社/`). Each contains a `*.user.ts` entry, optional CSS/JSON resources, and a local `tsconfig.json` that emits to the same folder.
-- Shared utilities live in `Tools/Tools.user.ts` and are consumed by other scripts via Tampermonkey `@require` and a d.ts reference: `/// <reference path="./../Tools/Tools.user.d.ts"/>`.
-- Userscript headers follow Tampermonkey conventions. Many scripts gate local-vs-remote requires using conditional directives that `update_version.py` processes from `F.json` (see below).
+快速上手
 
-## Build & dev workflow
+- 推荐包管理器：pnpm（仓库含 `pnpm-lock.yaml` / `pnpm-workspace.yaml`）。
+- 安装依赖：`pnpm install`
+- 常用命令：
+  - 构建（TypeScript 子模块）：`pnpm run build`（会逐个 `tsc -p` 子目录）
+  - 编译 less：`pnpm run build:less`
+  - 静态检查：`pnpm run lint`
+  - 自动修复：`pnpm run lint:fix`
 
-- Use VS Code tasks:
-  - Build once: run task "swc: build" (compiles all `**/*.user.ts` in-place to `.user.js` and source maps).
-  - Watch: run task "swc: watch" while editing.
-- SWC is configured via task args (no `.swcrc` committed here): TypeScript parser, `module=commonjs`, `target=esnext`, `minify=true`, `sourceMaps=true`, `comments=all`. Write modern ES; SWC keeps comments for metadata.
-- Conditional @require and version stamps:
-  - `F.json` controls flags (e.g. `{ "debug": false }`).
-  - `update_version.py` does two things across all `./*/*.user.ts`:
-    - Cleans `// @version` to plain numeric (strips `-beta*`).
-    - Processes blocks like:
-      ```
-      //#if debug
-      // #@require file://C:\\Users\\p\\Documents\\git\\userjs\\Tools\\Tools.user.js
-      //#else
-      // @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
-      //#endif
-      ```
-    - When `debug` is true, local `file://` lines become active; otherwise the remote `@require` remains active. Keep this exact shape in new scripts.
+构建与测试 约定
 
-## Project conventions (use these in new code)
+- 每个脚本目录（如 `Tools/`, `czbooksnet/`, `69shuba auto 書簽/`, `琉璃神社/`, `Config/`）都有局部 `tsconfig.json`，通常继承根 `tsconfig.json`。
+- `package.json` 的 `build` 脚本通过 `tsc -p <subdir>` 编译各模块；请勿私自替换为不同的全局构建流程，除非同时更新 README 与 CI 配置。
 
-- File layout: keep all assets next to the `*.user.ts` (e.g. CSS in the same folder). Remote resources use the `dev` branch raw path, e.g. `.../raw/refs/heads/dev/<folder>/<file>`.
-- TypeScript: strict settings (see each folder’s `tsconfig.json`). Other scripts reference `Tools.user.d.ts` for types of helpers and GM APIs (repo depends on `@types/tampermonkey`).
-- Metadata header: include `@name`, `@namespace`, `@version`, `@description`, `@match`, relevant `@grant`s, and `@resource` when embedding CSS/JSON. Follow existing examples:
-  - CSS resource + injection (from `czbooksnet/czbooksnet.user.ts`): fetch via `GM_getResourceText("css1")` then `GM_addStyle(css1)`.
-  - Conditional require of `Tools.user.js` as shown above.
-- Shared helpers from `Tools/Tools.user.ts`:
-  - `removeElement(...selectors)` to drop unwanted DOM nodes.
-  - `setMenu(name, fn?, def?, showMapping?)` to register GM menu toggles; used for per-script config (see `69shuba auto 書簽.user.ts`’s `Config` class and `Language` enum).
-  - `i18n` class for simple keyed translations; create with language map and current language, then use `t(key, ...args)`.
-  - `newEval(code, safety=true)` for evaluating simple math/text with a blacklist when `safety` is true.
-- Page routing pattern (see `69shuba auto 書簽.user.ts`):
-  - Define `SELECTORS` and a `data` object grouping URL/DOM checks (e.g. `Book/Info/End` patterns, `IsBiz/IsTwkan` flags) and helpers like `GetNextPageUrl()`.
-  - Guard use of site-provided globals (e.g. `bookinfo`, `addbookcase`) and fall back to DOM when absent.
-  - For keyboard/nav tweaks, clear `document.onkeydown` and attach your own listeners.
+代码风格与 lint
 
-## External integration points
+- ESLint 配置位于 `eslint.config.mjs`，使用 `@typescript-eslint` 与 `eslint-plugin-userscripts`。
+- 修改/新增 TypeScript 文件前请运行 `pnpm run lint` 并在提交前修复警告。
 
-- Tampermonkey GM APIs: scripts grant and use `GM_addStyle`, `GM_get/SetValue`, `GM_registerMenuCommand`, `GM_openInTab`, `GM_getResourceText`, etc. The shared `setGM()` helper normalizes variations across managers; prefer using helpers where they exist.
-- Remote assets are served from this repo’s `dev` branch via GitHub raw. Keep URLs consistent with existing files.
+重要文件与参考
 
-## Quick start for a new script
+- `README.md` — 项目总体说明与开发流程（优先参考）
+- `package.json` — 可用脚本（build、lint、build:less 等）
+- `tsconfig.json`（根与子目录）— TypeScript 配置
+- `eslint.config.mjs` — lint 规则与全局定义
+- `Tools/Tools.user.ts` 与 `Tools/Tools.user.d.ts` — 仓库共享工具与全局类型，agent 在修改脚本时应保留或遵循这些全局约定
+- `update_version.py` — 与 user script metadata（header）版本更新相关的辅助脚本，修改 metadata 时请遵循该脚本格式
 
-1. Create a folder and copy an existing `tsconfig.json` from a sibling folder.
-2. Create `Your Script.user.ts` with a metadata header modeled on `czbooksnet.user.ts` or `69shuba auto 書簽.user.ts`. Add the conditional `@require` block for `Tools.user.js`.
-3. If you need styles or data, add `@resource` entries and load with `GM_getResourceText` + `GM_addStyle`.
-4. Run "swc: watch" and iterate. When ready, run `update_version.py` so `@version` and `@require` blocks are normalized per `F.json`.
+常见陷阱（Agent 注意事项）
 
-Notes
+- 使用 pnpm：在操作依赖或运行脚本时优先使用 pnpm，以避免 node_modules 布局差异导致的问题。
+- Metadata 头部：大量脚本含 UserScript header（`@grant` / `@resource` 等），agent 修改这些 header 前应检查 `update_version.py` 与 README 中的约定。
+- 构建工具差异：README 中可能提到 swc/Tasks，但当前 `package.json` `build` 使用 `tsc -p`。对构建流程做出变更前请先在 issue/PR 中说明并保持向后兼容。
 
-- Tasks can also be regenerated from a `.swcrc` using `swcrc2taskjson.py` (not typical in this repo since task args are already present).
-- Keep `@grant` minimal but sufficient; ensure the code only uses granted APIs.
+如何让 Copilot / Agent 帮忙（示例 prompts）
 
-If anything above is unclear (e.g., release steps, resource hosting paths, or additional shared utilities you want documented), tell me what’s missing and I’ll refine this file.
+- "请帮我为 `czbooksnet/czbooksnet.user.ts` 添加一个新的功能，并确保通过 `pnpm run lint` 和 `pnpm run build`。列出所修改的文件与变更理由。"
+- "生成一个测试说明，教新人如何用 pnpm 在本仓库编译所有脚本目录并运行 lint。"
+- "请检查所有 `*.user.ts` 文件的 UserScript header，确保 `@version` 字段遵循仓库的版本格式（引用 `update_version.py`）。"
+
+提交与 PR 约定
+
+- 在更改构建、tsconfig 或 lint 配置时，请在 PR 描述中说明动机与兼容性影响，并运行 `pnpm run lint` 与 `pnpm run build` 验证无误。
+
+后续建议
+
+- 可根据需要把本文件拆分为多份 `applyTo` 规则（例如：`/Tools/**`、`/scripts/**`、`/*.user.ts`）以更精细控制 agent 行为。
+
+---
+
+最后更新：自动生成草案。若需要我将其合并到仓库并创建 PR（或改写为 `AGENTS.md`），我可以继续操作。
