@@ -14,7 +14,7 @@
 // @match        https://twkan.com/txt/*/*
 // @match        https://twkan.com/bookcase*
 // @match        https://twkan.com/book/*.html
-// @excludes     https://twkan.com/book/*/index.html
+// @exclude      https://twkan.com/book/*/index.html
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
 // @grant        GM_addStyle
