@@ -33,5 +33,10 @@
         "scope": "javascript,typescript",
         "prefix": "@namespace",
         "body": "// @namespace    "
+    },
+    "@exclude": {
+        "scope": "javascript,typescript",
+        "prefix": "@exclude",
+        "body": "// @exclude      "
     }
 }
