@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      4.2.1
+// @version      4.2.2
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag www.69shuba.com
@@ -14,6 +14,7 @@
 // @match        https://twkan.com/txt/*/*
 // @match        https://twkan.com/bookcase*
 // @match        https://twkan.com/book/*.html
+// @excludes     https://twkan.com/book/*/index.html
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
 // @grant        window.close
 // @grant        GM_addStyle
