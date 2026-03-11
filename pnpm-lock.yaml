@@ -35,7 +35,7 @@ importers:
         version: 0.5.6(eslint@10.0.3)
       less:
         specifier: ^4.5.1
-        version: 4.6.2
+        version: 4.6.3
 
 packages:
 
@@ -350,8 +350,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  less@4.6.2:
-    resolution: {integrity: sha512-/f26k/Z8VOtdkmubElnfZGtNoOlnZN6E1g9WkPkRmsz/FNVaaArbwCIMflPdH//RJeowfuTPmdZSp9zyEYQ1gQ==}
+  less@4.6.3:
+    resolution: {integrity: sha512-xxjVIiz0rvWAhx49t8YLA/Dj6Uig4XdJgTRI5hbYHGmiDSh+S8hi2Wxsed2trjl/uur4kbW2+e2a8Mrk9Rcgbw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -817,7 +817,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  less@4.6.2:
+  less@4.6.3:
     dependencies:
       copy-anything: 3.0.5
       parse-node-version: 1.0.1
