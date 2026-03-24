@@ -1,145 +1,112 @@
-# userjs — Tampermonkey/Greasemonkey 使用者腳本集合
+# userjs
 
-本倉庫是一個以 TypeScript 撰寫、以 SWC 編譯的使用者腳本（Userscripts）單一倉庫（monorepo）。每個資料夾代表一組對應網站的腳本。
+一个以 TypeScript 为主的 Userscript（油猴脚本）仓库，按站点拆分目录进行维护，包含通用工具、样式资源与构建脚本。
 
-- 腳本管理器：建議使用 Tampermonkey（Chrome/Edge/Firefox 等）或 Greasemonkey/Violentmonkey
-- 分支慣例：開發分支 `dev`、預設分支 `main`
+## 项目简介
 
-## 快速安裝（使用者）
+本仓库用于维护多个站点脚本，每个脚本目录独立管理：
 
-1. 先安裝瀏覽器擴充：Tampermonkey（或相容管理器）
+- 入口文件通常为 `*.user.ts`（编译产物为 `*.user.js`）
+- 每个脚本目录一般有自己的 `tsconfig.json`
+- 共享能力集中在 `Tools/Tools.user.ts`
+- Less 资源通过统一脚本编译
 
-2. 點擊下列「安裝」連結（指向 GitHub raw 的 `dev` 分支）：
+适合场景：
 
-- 69shuba auto 書簽 — [安裝連結](https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.js)
-- 琉璃神社 — [安裝連結](https://github.com/Paul-16098/userjs/raw/refs/heads/dev/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE/%E7%90%89%E7%92%83%E7%A5%9E%E7%A4%BE.user.js)
-- czbooksnet — [安裝連結](https://github.com/Paul-16098/userjs/raw/refs/heads/dev/czbooksnet/czbooksnet.user.js)
-- ixdzs8tw — [安裝連結](https://github.com/Paul-16098/userjs/raw/refs/heads/dev/ixdzs8tw/ixdzs8tw.user.js)
+- 在多个站点复用同一套工具函数
+- 统一 lint / build 规范
+- 使用 pnpm 管理依赖与脚本命令
 
-安裝後，Tampermonkey 會提示新增腳本，按「安裝」即可。
+## 目录结构
 
-> 提示：上述連結使用 `dev` 分支的 raw 檔案，方便追到最新版。若要使用穩定版，請改用 `main` 分支路徑。
+当前仓库的主要目录如下：
 
-## 專案結構與慣例
+- `Tools/`：共享工具脚本与类型声明
+- `Config/`：配置类脚本
+- `czbooksnet/`：`czbooksnet` 相关脚本与样式
+- `69shuba auto 書簽/`：69shuba 相关脚本与资源
+- `琉璃神社/`：琉璃神社相关脚本
+- `scripts/`：仓库级辅助脚本（如 less 编译）
 
-- 一個資料夾對應一個網站/腳本：
-  - 例如 `69shuba auto 書簽/`、`czbooksnet/`、`琉璃神社/`、`ixdzs8tw/`
-  - 內含 `*.user.ts` 入口檔（編譯成同名 `.user.js`）、可選的 CSS/JSON 資源、與局部 `tsconfig.json`
-- 共享工具放在 `Tools/Tools.user.ts`，其他腳本以 Tampermonkey `@require` 引入（並搭配 `Tools.user.d.ts` 提供型別）
-- SWC 以 VS Code Tasks 執行（專案未提交 `.swcrc`，設定由 Tasks 參數提供）
-- 腳本中常見模式：
-  - 透過 `Tools` 提供的 `setMenu`、`i18n`、`removeElement`、`newEval` 等輔助
-  - 需要樣式時以 `@resource` + `GM_getResourceText` + `GM_addStyle` 注入
+根目录关键文件：
 
-## 開發與建置（貢獻者）
+- `package.json`：脚本命令与依赖
+- `tsconfig.json`：根级 TypeScript 配置
+- `eslint.config.mjs`：ESLint 配置
+- `update_version.py`：Userscript metadata 版本处理辅助脚本
+- `pnpm-lock.yaml` / `pnpm-workspace.yaml`：pnpm 锁定与工作区配置
 
-前置需求：
+## 环境要求
 
-- Node.js（可用 npx）
-- VS Code（建議，因已內建 Tasks）
-- Tampermonkey（本機測試）
+- Node.js（建议使用较新 LTS 版本）
+- pnpm
 
-步驟：
+## 快速开始
 
-1. 在 VS Code 中執行 Tasks
-   - 單次編譯：任務「swc: build」— 會編譯所有 `**/*.user.ts` 為同目錄下的 `.user.js` 與來源對應檔（source maps）
-   - 監看模式：任務「swc: watch」— 開發時持續編譯
-2. 編譯設定（由 Tasks 參數提供）：
-   - TypeScript parser、`module=commonjs`、`target=esnext`、`minify=true`、`sourceMaps=true`、`comments=all`
-3. 腳本約定：
-   - 每個資料夾一份局部 `tsconfig.json`，輸出至同資料夾
-   - 共用型別：於腳本頂部加入 `/// <reference path="./../Tools/Tools.user.d.ts"/>`
+1. 安装依赖
 
-> 若需要以指令執行：亦可直接在專案根目錄執行 swc（但通常以 VS Code Tasks 為主）。
+   `pnpm install`
 
-## 條件式 @require 與版本號規範
+2. 代码检查
 
-本倉庫提供 `update_version.py` 與 `F.json` 控制「本地開發」與「遠端引用」。維護腳本頭部的 `@version` 與 `@require` 條件區塊。
+   `pnpm run lint`
 
-- 當 `F.json` 中 `{ "debug": true }`：啟用本地 `file://` 的 `@require`
-- 當 `{ "debug": false }`：保留遠端 `@require`（指向本倉庫 `dev` 分支 raw 檔案）
+3. 自动修复可修复问题
 
-請在新腳本維持下列區塊形狀，供 `update_version.py` 正確處理（勿更動註解符號與縮排）：
+   `pnpm run lint:fix`
 
-```text
-//#if debug
-// #@require file://C:\\Users\\p\\Documents\\git\\userjs\\Tools\\Tools.user.js
-//#else
-// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
-//#endif
-```
+4. 编译 TypeScript 子模块
 
-`update_version.py` 也會清理 `// @version` 行，將如 `-beta*` 等尾碼移除，統一為純數字。
+   `pnpm run build`
 
-## 共享工具（Tools）
+5. 编译 less 资源（如有改动）
 
-- 檔案：`Tools/Tools.user.ts`（輸出 `Tools.user.js` 與 `Tools.user.d.ts`）
-- 功能重點：
-  - `removeElement(...selectors)`：移除不需要的 DOM 節點
-  - `setMenu(name, fn?, def?, showMapping?)`：註冊/切換 GM 選單與配置
-  - `i18n`：簡易鍵值翻譯；`t(key, ...args)` 取得字串
-  - `newEval(code, safety=true)`：安全地評估簡單運算字串
-  - `setGM()`：對齊不同腳本管理器的 GM API 差異
-- 型別支援：在各腳本加上 `/// <reference path="./../Tools/Tools.user.d.ts"/>` 取得型別提示
+   `pnpm run build:less`
 
-## 載入 CSS/JSON 資源的慣例
+## 可用脚本命令
 
-- 在腳本 metadata header 中加入 `@resource`
-- 於程式中：
-  - `const css = GM_getResourceText("css1");`
-  - `GM_addStyle(css);`
+基于 `package.json` 当前定义：
 
-可參考 `czbooksnet/czbooksnet.user.ts` 的作法。
+- `pnpm run build`：依次编译 `Tools`、`czbooksnet`、`琉璃神社`、`69shuba auto 書簽`、`Config`
+- `pnpm run build:less`：执行 `scripts/compile-less.js`
+- `pnpm run lint`：运行 ESLint
+- `pnpm run lint:fix`：运行 ESLint 自动修复
 
-## 資料夾導覽
+## 开发约定
 
-```text
-<repo-root>
-├─ 69shuba auto 書簽/
-│  ├─ 69shuba auto 書簽.user.ts  # 入口 TypeScript（輸出同名 .user.js）
-│  ├─ *.less / *.css / *.json     # 可選資源，與腳本同層
-│  └─ tsconfig.json               # 區域 TS 設定（emit 到同資料夾）
-├─ 琉璃神社/
-├─ czbooksnet/
-├─ ixdzs8tw/
-├─ Tools/
-│  ├─ Tools.user.ts               # 共享工具（搭配 d.ts 型別）
-│  └─ Tools.user.d.ts
-├─ update_version.py              # 正規化 @version 與條件式 @require
-├─ F.json                         # 旗標（例如 { "debug": false }）
-├─ package.json                   # npx swc 由 VS Code Tasks 呼叫
-└─ LICENSE.txt
-```
+- 优先使用 `pnpm` 执行安装与脚本命令
+- 涉及代码改动时，提交前至少确保：
+  - `pnpm run lint` 通过
+  - `pnpm run build` 通过
+- 保持“一个脚本目录一套局部配置”的组织方式
+- 修改 Userscript metadata（如 `@version`、`@grant`、`@resource`）时，注意与仓库现有处理流程一致
 
-## 釋出與版本
+## 开发流程（建议）
 
-- 開發：主要在 `dev` 分支演進，raw 連結指向 `refs/heads/dev` 以便測試
-- 穩定：合併至 `main` 後視需求更新文件
-- 版本號：使用 `update_version.py` 正規化版本欄位
+1. 新建分支并在对应脚本目录开发
+2. 完成功能后执行 `pnpm run lint`
+3. 执行 `pnpm run build` 验证编译
+4. 若涉及样式资源，补充执行 `pnpm run build:less`
+5. 再进行提交与 PR
 
-## 常見問題（FAQ）
+## 常见问题
 
-- 為什麼看到成對的 `@require`？
-  - 這是條件化區塊，`debug=true` 時啟用本地 `file://`，否則使用遠端 raw 檔，利於本地開發與發佈切換
-- 我需要另外安裝 `Tools.user.js` 嗎？
-  - 不需要。各腳本會以 `@require` 引入；只要從上方「安裝」連結安裝對應腳本即可
-- 我要如何為某網站新增一支腳本？
-  1. 新增資料夾，複製相鄰資料夾的 `tsconfig.json`
-  2. 建立 `Your Script.user.ts`，參考現有檔案的 metadata header 與條件式 `@require`
-  3. 如需樣式或資料，將資源檔放同資料夾，並以 `@resource` 載入
-  4. 以「swc: watch」開發，完成後執行 `update_version.py`
+### 为什么要拆分多个脚本目录？
 
-## 貢獻
+不同站点逻辑差异较大，拆分目录可以降低耦合、提升可维护性。
 
-歡迎 Issue/PR。請維持：
+### 为什么还需要 `Tools/`？
 
-- 一個資料夾一支腳本的結構
-- 嚴謹的 TypeScript 型別
-- 一致的 metadata header 與條件式 `@require` 區塊
-- 最小必要的 `@grant` 權限
+用于沉淀跨站点可复用逻辑，避免在各脚本中重复实现。
 
-提交訊息格式可參考倉庫內規範（如「git 提交信息規範」）。
+### 什么时候需要运行 `build:less`？
 
-## 授權
+当你修改了 less 文件，或者依赖 less 编译产物参与脚本样式注入时。
 
-授權內容請見根目錄 `LICENSE.txt`。
+## 贡献
+
+欢迎通过 Issue / PR 参与改进。提交前请确保 lint/build 验证通过，并在描述中说明改动范围与目的。
+
+## 许可证
+
+详见根目录 `LICENSE.txt`。

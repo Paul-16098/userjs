@@ -35,9 +35,7 @@
 
 常见陷阱（Agent 注意事项）
 
-- 使用 pnpm：在操作依赖或运行脚本时优先使用 pnpm，以避免 node_modules 布局差异导致的问题。
 - Metadata 头部：大量脚本含 UserScript header（`@grant` / `@resource` 等），agent 修改这些 header 前应检查 `update_version.py` 与 README 中的约定。
-- 构建工具差异：README 中可能提到 swc/Tasks，但当前 `package.json` `build` 使用 `tsc -p`。对构建流程做出变更前请先在 issue/PR 中说明并保持向后兼容。
 
 如何让 Copilot / Agent 帮忙（示例 prompts）
 
@@ -56,3 +54,29 @@
 ---
 
 最后更新：自动生成草案。若需要我将其合并到仓库并创建 PR（或改写为 `AGENTS.md`），我可以继续操作。
+
+## 本仓库新增执行规则（2026-03-24）
+
+适用范围：仅本仓库（`userjs`）。
+
+### 规则分级
+
+- **PREFER（偏好）**：优先使用 `pnpm` 执行安装与脚本命令。
+  - 示例：`pnpm install`、`pnpm run lint`、`pnpm run build`
+  - 若外部流程必须使用其他包管理器，可说明原因后执行。
+
+- **MUST（硬约束）**：涉及代码变更时，交付前必须通过 lint/build。
+  - 最低验收：`pnpm run lint` 与 `pnpm run build`
+  - 若改动仅涉及 less，也需保证相关构建链路可用（必要时执行 `pnpm run build:less`）。
+
+### Agent 执行清单（提交前）
+
+1. 确认变更影响范围（TS、less、metadata、构建配置）。
+2. 执行并通过 `pnpm run lint`。
+3. 执行并通过 `pnpm run build`。
+4. 在说明中简述验证结果；若有例外，必须写明原因与风险。
+
+### 失败处理约定
+
+- lint/build 任一失败时，不得宣称任务完成。
+- 必须继续修复，或明确阻塞点（含错误摘要、影响文件、下一步建议）。
