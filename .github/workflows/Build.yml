@@ -81,6 +81,7 @@ jobs:
       - name: Install dependencies
         run: |
           npx pnpm install
+
       - name: Build less
         run: npx pnpm run build:less
 

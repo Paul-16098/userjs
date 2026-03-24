@@ -84,8 +84,8 @@ class Config {
 	/** 註冊所有配置項的菜單 */
 	private registerConfigMenu() {
 		for (const key in this) {
-			const value = this[key as keyof Config];
-			let menu = undefined;
+			const value: Config[keyof Config] = this[key as keyof Config];
+			let menu: undefined | (() => void) = undefined;
 			// 語言切換菜單
 			if (Object.values(Language).includes(value as Language)) {
 				menu = () => {

@@ -17,24 +17,24 @@ const less = require("less");
  * @returns {Promise<string[]>}
  */
 async function findLessFiles(dir) {
-  const entries = await fsp.readdir(dir, { withFileTypes: true });
-  const results = [];
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    // Skip common folders we don't need
-    if (entry.isDirectory()) {
-      if (
-        entry.name === "node_modules" ||
-        entry.name === ".git" ||
-        entry.name === ".github"
-      )
-        continue;
-      results.push(...(await findLessFiles(fullPath)));
-    } else if (entry.isFile() && entry.name.endsWith(".less")) {
-      results.push(fullPath);
-    }
-  }
-  return results;
+	const entries = await fsp.readdir(dir, { withFileTypes: true });
+	const results = [];
+	for (const entry of entries) {
+		const fullPath = path.join(dir, entry.name);
+		// Skip common folders we don't need
+		if (entry.isDirectory()) {
+			if (
+				entry.name === "node_modules" ||
+				entry.name === ".git" ||
+				entry.name === ".github"
+			)
+				continue;
+			results.push(...(await findLessFiles(fullPath)));
+		} else if (entry.isFile() && entry.name.endsWith(".less")) {
+			results.push(fullPath);
+		}
+	}
+	return results;
 }
 
 /**
@@ -42,38 +42,41 @@ async function findLessFiles(dir) {
  * @param {string} filePath
  */
 async function compileFile(filePath) {
-  const src = await fsp.readFile(filePath, "utf8");
-  const { css } = await less.render(src, {
-    filename: filePath, // important for relative imports and sourcemaps
-    compress: true,
-    sourceMap: {
-      sourceMapFileInline: true,
-      outputSourceFiles: true,
-    },
-  });
-  const outPath = filePath.replace(/\.less$/i, ".css");
-  await fsp.writeFile(outPath, css, "utf8");
-  return { in: filePath, out: outPath };
+	const src = await fsp.readFile(filePath, "utf8");
+	const outPath = filePath.replace(/\.less$/i, ".css");
+	const outName = path.basename(outPath);
+	const { css } = await less.render(src, {
+		filename: filePath, // important for relative imports and sourcemaps
+		compress: true,
+		sourceMap: {
+			sourceMapFileInline: true,
+			outputSourceFiles: true,
+			sourceMapBasepath: process.cwd(),
+			sourceMapURL: outName,
+		},
+	});
+	await fsp.writeFile(outPath, css, "utf8");
+	return { in: filePath, out: outPath };
 }
 
 async function run() {
-  const root = process.cwd();
-  const lessFiles = await findLessFiles(root);
-  if (lessFiles.length === 0) {
-    console.log("No .less files found.");
-    return;
-  }
-  console.log(`Found ${lessFiles.length} .less file(s). Compiling...`);
-  const results = [];
-  for (const file of lessFiles) {
-    const res = await compileFile(file);
-    results.push(res);
-    console.log(`✔ ${path.relative(root, res.out)}`);
-  }
-  console.log(`Compiled ${results.length} file(s).`);
+	const root = process.cwd();
+	const lessFiles = await findLessFiles(root);
+	if (lessFiles.length === 0) {
+		console.log("No .less files found.");
+		return;
+	}
+	console.log(`Found ${lessFiles.length} .less file(s). Compiling...`);
+	const results = [];
+	for (const file of lessFiles) {
+		const res = await compileFile(file);
+		results.push(res);
+		console.log(`✔ ${path.relative(root, res.out)}`);
+	}
+	console.log(`Compiled ${results.length} file(s).`);
 }
 
 run().catch((err) => {
-  console.error("Less compilation failed:", err && err.stack ? err.stack : err);
-  process.exitCode = 1;
+	console.error("Less compilation failed:", err && err.stack ? err.stack : err);
+	process.exitCode = 1;
 });
