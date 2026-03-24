@@ -1,30 +1,19 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "type": "Live Preview",
-      "workspacePath": "c:\\Users\\pl816\\OneDrive\\文件\\git\\userjs",
-      "problemMatcher": [],
-      "label": "Live Preview: 執行伺服器",
-      "runOptions": {
-        "instanceLimit": 1,
-        "instancePolicy": "terminateOldest"
-      },
-      "detail": "for debug"
-    },
-    {
-      "type": "npm",
-      "script": "lint:fix",
-      "problemMatcher": ["$eslint-stylish", "$eslint-compact"],
-      "label": "npm: lint:fix",
-      "detail": "eslint --fix"
-    },
-    {
-      "type": "npm",
-      "script": "lint",
-      "problemMatcher": ["$eslint-stylish", "$eslint-compact"],
-      "label": "npm: lint",
-      "detail": "eslint"
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "lint:fix",
+			"problemMatcher": ["$eslint-stylish", "$eslint-compact"],
+			"label": "npm: lint:fix",
+			"detail": "eslint --fix"
+		},
+		{
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": ["$eslint-stylish", "$eslint-compact"],
+			"label": "npm: lint",
+			"detail": "eslint"
+		}
+	]
 }
