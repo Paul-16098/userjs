@@ -9,7 +9,6 @@ on:
       - "*/*.tsconfig.json"
       - ".github/workflows/Build.yml"
   pull_request:
-    types: [closed]
     paths:
       - "*/*.user.ts"
       - "*/*.less"
