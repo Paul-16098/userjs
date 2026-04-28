@@ -175,7 +175,7 @@ class Site_tw {
             return this.End.pattern.test(pathname);
         },
     };
-    isSite = location.host === "twkan.com";
+    static isSite = location.host === "twkan.com";
 }
 class Site_69shuba {
     SELECTORS = {
@@ -222,7 +222,7 @@ class Site_69shuba {
             return false;
         },
     };
-    isSite = location.host === "www.69shuba.com";
+    static isSite = location.host === "www.69shuba.com";
 }
 class BookManager {
     Site;
@@ -586,7 +586,9 @@ const i18nData = {
         updatesAvailable: "個更新",
     },
 };
-const SiteList = [new Site_tw(), new Site_69shuba()];
+const SiteList = [Site_tw, Site_69shuba];
+// @ts-ignore-next-line
+let currentSite = new (SiteList.find((site) => site.isSite))();
 /** 初始化書籍管理器 */
-new BookManager(SiteList.find((site) => site.isSite));
+new BookManager(currentSite);
 //# sourceMappingURL=69shuba%20auto%20%E6%9B%B8%E7%B0%BD.user.js.map

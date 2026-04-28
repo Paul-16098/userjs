@@ -75,7 +75,6 @@ interface Site {
         pattern?: RegExp;
         Is: (pathname?: string) => boolean;
     };
-    readonly isSite: boolean;
 }
 declare class Site_tw implements Site {
     SELECTORS: {
@@ -106,7 +105,7 @@ declare class Site_tw implements Site {
         pattern: RegExp;
         Is: (pathname?: string) => boolean;
     };
-    isSite: boolean;
+    static readonly isSite: boolean;
 }
 declare class Site_69shuba implements Site {
     SELECTORS: {
@@ -133,7 +132,7 @@ declare class Site_69shuba implements Site {
     End: {
         Is: () => boolean;
     };
-    isSite: boolean;
+    static readonly isSite: boolean;
 }
 declare class BookManager {
     readonly Site: Site;
@@ -184,4 +183,5 @@ declare class BookManager {
 declare const config: Config;
 /** i18n 設定 */
 declare const i18nData: typeof I18n.prototype.langJson;
-declare const SiteList: Site[];
+declare const SiteList: (new () => Site)[];
+declare let currentSite: Site;

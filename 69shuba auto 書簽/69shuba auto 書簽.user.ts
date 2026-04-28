@@ -193,7 +193,7 @@ interface Site {
 		Is: (pathname?: string) => boolean;
 	};
 
-	readonly isSite: boolean;
+	// static readonly isSite: boolean;
 }
 
 class Site_tw implements Site {
@@ -246,7 +246,7 @@ class Site_tw implements Site {
 			return this.End.pattern.test(pathname);
 		},
 	};
-	isSite = location.host === "twkan.com";
+	static readonly isSite = location.host === "twkan.com";
 }
 
 class Site_69shuba implements Site {
@@ -297,7 +297,7 @@ class Site_69shuba implements Site {
 			return false;
 		},
 	};
-	isSite = location.host === "www.69shuba.com";
+	static readonly isSite = location.host === "www.69shuba.com";
 }
 
 class BookManager {
@@ -710,6 +710,10 @@ const i18nData: typeof I18n.prototype.langJson = {
 	},
 };
 
-const SiteList: Site[] = [new Site_tw(), new Site_69shuba()];
+const SiteList: (new () => Site)[] = [Site_tw, Site_69shuba];
+
+// @ts-ignore-next-line
+let currentSite: Site = new (SiteList.find((site) => site.isSite)!)();
+
 /** 初始化書籍管理器 */
-new BookManager(SiteList.find((site) => site.isSite)!);
+new BookManager(currentSite);
