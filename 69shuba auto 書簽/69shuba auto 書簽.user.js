@@ -9,7 +9,7 @@
 // #tag www.69shuba.com
 // @match        https://www.69shuba.com/txt/*/*
 // @match        https://www.69shuba.com/modules/article/bookcase.php*
-// @match        https://www.69shuba.com/book/*
+// @match        https://www.69shuba.com/book/*.htm
 // #tag twkan.com
 // @match        https://twkan.com/txt/*/*
 // @match        https://twkan.com/bookcase*
