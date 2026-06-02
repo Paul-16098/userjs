@@ -71,7 +71,7 @@ async function run() {
 	for (const file of lessFiles) {
 		const res = await compileFile(file);
 		results.push(res);
-		console.log(`✔ ${path.relative(root, res.out)}`);
+		console.log(`\t${path.relative(root, res.out)}`);
 	}
 	console.log(`Compiled ${results.length} file(s).`);
 }
