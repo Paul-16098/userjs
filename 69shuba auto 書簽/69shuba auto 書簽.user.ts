@@ -401,7 +401,7 @@ class BookManager {
 		this.insertAuthorLink();
 		this.updateNextPageLink();
 		this.replaceText();
-		GM_registerMenuCommand(this.t("ReplaceNow"), this.replaceText);
+		GM_registerMenuCommand(this.t("ReplaceNow"), this.replaceText.bind(this));
 	}
 
 	/** 替換文本內容，根據替換字典進行替換 */
