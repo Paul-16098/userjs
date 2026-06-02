@@ -6,7 +6,7 @@
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"paths": { "*": ["./*"] },
-		"inlineSourceMap": true,
+		"sourceMap": true,
 		"lib": ["ESNext", "ES7", "DOM"],
 		"target": "ESNext",
 		"module": "commonjs",

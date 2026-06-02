@@ -3,5 +3,6 @@ push-replace-data:
     git commit -m "chore(json): update regex patterns in RegReplace.json and StrReplace.json"
     git push
 build:
+    nu update_sourcemap.nu
     pnpm run build:less
     pnpm run build
