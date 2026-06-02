@@ -416,7 +416,7 @@ class BookManager {
 			if (config.Debug) console.log("replace_json: ", StrReplace);
 
 			for (const value of StrReplace) {
-				if (ele.innerText.includes(value))
+				if (ele.innerText.includes(value) && config.Debug)
 					console.log(`Value "${value}" found in text.`);
 				ele.innerText = ele.innerText.replaceAll(value, "");
 			}
@@ -431,7 +431,7 @@ class BookManager {
 			if (config.Debug) console.log("reg_replace_json: ", RegReplace);
 
 			for (const pattern of RegReplace) {
-				if (pattern.test(ele.innerText))
+				if (pattern.test(ele.innerText) && config.Debug)
 					console.log(`Pattern ${pattern} matched in text.`);
 				ele.innerText = ele.innerText.replaceAll(pattern, "");
 			}
