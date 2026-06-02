@@ -1,8 +1,3 @@
-/**
- * @description A type definition for supported languages, currently English and Chinese. This is used in the Config class to manage language settings and provide type safety for language-related properties.
- * @see i18nData
- */
-type Language = "en" | "zh";
 /** 用戶配置類，負責管理腳本的各項設置，並註冊菜單 */
 declare class Config {
     /** 是否開啟偵錯模式 */
@@ -25,6 +20,11 @@ declare class Config {
     /** 將當前配置寫入GM存儲 */
     private set;
 }
+/**
+ * @description A type definition for supported languages, currently English and Chinese. This is used in the Config class to manage language settings and provide type safety for language-related properties.
+ * @see i18nData
+ */
+type Language = "en" | "zh";
 /** 書籍數據接口 */
 interface BookData {
     Updata: {
