@@ -146,6 +146,8 @@ declare class BookManager {
     constructor(Site: Site);
     /** 書頁自動化處理: 樣式、導航、元素移除、書櫃、作者連結、下一頁鏈接 */
     private handleBookPage;
+    StrReplace?: string[];
+    StrRegReplace?: string[];
     /** 替換文本內容，根據替換字典進行替換 */
     private replaceText;
     /** 自動加入書櫃(如未在封鎖名單) */

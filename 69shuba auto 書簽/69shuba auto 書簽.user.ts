@@ -404,31 +404,42 @@ class BookManager {
 		GM_registerMenuCommand(this.t("ReplaceNow"), this.replaceText.bind(this));
 	}
 
+	StrReplace?: string[];
+	StrRegReplace?: string[];
 	/** 替換文本內容，根據替換字典進行替換 */
 	private replaceText(): void {
+		const StrReplace: string[] =
+			this.StrReplace ||
+			JSON.parse(
+				(() => {
+					const RawStrReplace = GM_getResourceText("StrReplace");
+					if (config.Debug) console.log("raw_replace_json: ", RawStrReplace);
+					return RawStrReplace;
+				})(),
+			);
+		if (config.Debug) console.log("replace_json: ", StrReplace);
+		this.StrReplace = StrReplace;
+
+		const RawRegReplace = GM_getResourceText("RegReplace");
+		if (config.Debug) console.log("raw_reg_replace_json: ", RawRegReplace);
+
+		const StrRegReplace: string[] =
+			this.StrRegReplace || JSON.parse(RawRegReplace);
+		this.StrRegReplace = StrRegReplace;
+
+		const RegReplace: RegExp[] = StrRegReplace.map((pattern) => {
+			return new RegExp(pattern, "g");
+		});
+		if (config.Debug) console.log("reg_replace_json: ", RegReplace);
+
 		if (this.Site instanceof Site_tw) {
 			const ele = document.querySelector<HTMLDivElement>("#txtcontent0")!;
-
-			const RawStrReplace = GM_getResourceText("StrReplace");
-			if (config.Debug) console.log("raw_replace_json: ", RawStrReplace);
-			const StrReplace: string[] = JSON.parse(RawStrReplace);
-
-			if (config.Debug) console.log("replace_json: ", StrReplace);
 
 			for (const value of StrReplace) {
 				if (ele.innerText.includes(value) && config.Debug)
 					console.log(`Value "${value}" found in text.`);
 				ele.innerText = ele.innerText.replaceAll(value, "");
 			}
-
-			const RawRegReplace = GM_getResourceText("RegReplace");
-			if (config.Debug) console.log("raw_reg_replace_json: ", RawRegReplace);
-			const StrRegReplace: string[] = JSON.parse(RawRegReplace);
-			const RegReplace: RegExp[] = StrRegReplace.map((pattern) => {
-				return new RegExp(pattern, "g");
-			});
-
-			if (config.Debug) console.log("reg_replace_json: ", RegReplace);
 
 			for (const pattern of RegReplace) {
 				if (pattern.test(ele.innerText) && config.Debug)
@@ -460,7 +471,7 @@ class BookManager {
 
 	/** 攔截全局alert，根據封鎖名單過濾 */
 	private hookAlert(): void {
-		const _alert: Function = alert;
+		const _alert: typeof alert = alert;
 		unsafeWindow.alert = (...message: any) => {
 			if (
 				!config.HookAlertBlockade.some(
