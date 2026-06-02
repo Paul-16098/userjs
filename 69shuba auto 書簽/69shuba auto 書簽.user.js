@@ -15,39 +15,6 @@
 // @match        https://twkan.com/bookcase*
 // @match        https://twkan.com/book/*.html
 // @exclude      https://twkan.com/book/*/index.html
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=69shuba.com
-// @grant        window.close
-// @grant        GM_addStyle
-// @grant        GM_getValue
-// @grant        GM_setValue
-// @grant        unsafeWindow
-// @grant        GM_registerMenuCommand
-// @grant        GM_openInTab
-// @grant        GM_getResourceText
-// @run-at       document-idle
-//#if debug
-// #@require file://c:\Users\pl816\OneDrive\文件\git\userjs\Tools\Tools.user.js
-// #@resource BookPageCss file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\BookPage.user.css
-// #@resource StrReplace file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\StrReplace.json
-// #@resource RegReplace file://c:\Users\pl816\OneDrive\文件\git\userjs\69shuba auto 書簽\RegReplace.json
-//#else
-// @require https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
-// @resource BookPageCss https://github.com/Paul-16098/userjs/raw/refs/heads/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/BookPage.user.css
-// @resource StrReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/StrReplace.json
-// @resource RegReplace https://github.com/Paul-16098/userjs/raw/dev/69shuba%20auto%20%E6%9B%B8%E7%B0%BD/RegReplace.json
-//#endif
-// @license      MIT
-// @supportURL   https://github.com/Paul-16098/userjs/issues/
-// @homepageURL  https://github.com/Paul-16098/userjs/README.md
-// ==/UserScript==
-/** 語言選項枚舉 */
-var Language;
-(function (Language) {
-    // eslint-disable-next-line no-unused-vars
-    Language["en"] = "en";
-    // eslint-disable-next-line no-unused-vars
-    Language["zh"] = "zh";
-})(Language || (Language = {}));
 /** 用戶配置類，負責管理腳本的各項設置，並註冊菜單 */
 class Config {
     /** 是否開啟偵錯模式 */
@@ -69,7 +36,7 @@ class Config {
         // opencclint-enable
     ]);
     /** 語言設定 */
-    Language = GM_getValue("Language", Language.zh);
+    Language = GM_getValue("Language", "zh");
     constructor() {
         this.set();
         this.registerConfigMenu();
@@ -80,9 +47,9 @@ class Config {
             const value = this[key];
             let menu = undefined;
             // 語言切換菜單
-            if (Object.values(Language).includes(value)) {
+            if (Object.values(["zh", "en"]).includes(value)) {
                 menu = () => {
-                    for (const lang of Object.values(Language)) {
+                    for (const lang of Object.values(["zh", "en"])) {
                         if (lang !== value) {
                             GM_setValue("Language", lang);
                             location.reload();
@@ -93,7 +60,7 @@ class Config {
             setMenu(key, menu, value, {
                 zh: "中文",
                 en: "English",
-                ...(this.Language == Language.zh
+                ...(this.Language == "zh"
                     ? {
                         Debug: "偵錯",
                         AutoAddBookcase: "自動添加書櫃",
@@ -320,6 +287,7 @@ class BookManager {
         this.insertAuthorLink();
         this.updateNextPageLink();
         this.replaceText();
+        GM_registerMenuCommand(this.t("ReplaceNow"), this.replaceText);
     }
     /** 替換文本內容，根據替換字典進行替換 */
     replaceText() {
@@ -576,6 +544,7 @@ const i18nData = {
         maxRetriesReached: "Max retries reached. No labels found.",
         noUpdates: "No updates",
         updatesAvailable: " updates available",
+        ReplaceNow: "Replace now",
     },
     zh: {
         noMatchingPattern: "未找到匹配的 URL 模式",
@@ -584,6 +553,7 @@ const i18nData = {
         maxRetriesReached: "已達到最大重試次數。未找到標籤。",
         noUpdates: "沒有更新",
         updatesAvailable: "個更新",
+        ReplaceNow: "立即替換",
     },
 };
 const SiteList = [Site_tw, Site_69shuba];

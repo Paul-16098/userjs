@@ -44,12 +44,7 @@
 // ==/UserScript==
 
 /** 語言選項枚舉 */
-enum Language {
-	// eslint-disable-next-line no-unused-vars
-	en = "en",
-	// eslint-disable-next-line no-unused-vars
-	zh = "zh",
-}
+type Language = "en" | "zh";
 
 /** 用戶配置類，負責管理腳本的各項設置，並註冊菜單 */
 class Config {
@@ -75,7 +70,7 @@ class Config {
 		// opencclint-enable
 	]);
 	/** 語言設定 */
-	Language: Language = GM_getValue("Language", Language.zh);
+	Language: Language = GM_getValue("Language", "zh");
 
 	constructor() {
 		this.set();
@@ -87,9 +82,9 @@ class Config {
 			const value: Config[keyof Config] = this[key as keyof Config];
 			let menu: undefined | (() => void) = undefined;
 			// 語言切換菜單
-			if (Object.values(Language).includes(value as Language)) {
+			if (Object.values(["zh", "en"]).includes(value as Language)) {
 				menu = () => {
-					for (const lang of Object.values(Language)) {
+					for (const lang of Object.values(["zh", "en"]) as Language[]) {
 						if (lang !== value) {
 							GM_setValue("Language", lang);
 							location.reload();
@@ -100,7 +95,7 @@ class Config {
 			setMenu(key, menu, value, {
 				zh: "中文",
 				en: "English",
-				...(this.Language == Language.zh
+				...(this.Language == "zh"
 					? {
 							Debug: "偵錯",
 							AutoAddBookcase: "自動添加書櫃",
@@ -403,6 +398,7 @@ class BookManager {
 		this.insertAuthorLink();
 		this.updateNextPageLink();
 		this.replaceText();
+		GM_registerMenuCommand(this.t("ReplaceNow"), this.replaceText);
 	}
 
 	/** 替換文本內容，根據替換字典進行替換 */
@@ -699,6 +695,7 @@ const i18nData: typeof I18n.prototype.langJson = {
 		maxRetriesReached: "Max retries reached. No labels found.",
 		noUpdates: "No updates",
 		updatesAvailable: " updates available",
+		ReplaceNow: "Replace now",
 	},
 	zh: {
 		noMatchingPattern: "未找到匹配的 URL 模式",
@@ -707,6 +704,7 @@ const i18nData: typeof I18n.prototype.langJson = {
 		maxRetriesReached: "已達到最大重試次數。未找到標籤。",
 		noUpdates: "沒有更新",
 		updatesAvailable: "個更新",
+		ReplaceNow: "立即替換",
 	},
 };
 

@@ -1,8 +1,5 @@
 /** 語言選項枚舉 */
-declare enum Language {
-    en = "en",
-    zh = "zh"
-}
+type Language = "en" | "zh";
 /** 用戶配置類，負責管理腳本的各項設置，並註冊菜單 */
 declare class Config {
     /** 是否開啟偵錯模式 */
