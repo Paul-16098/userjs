@@ -1,3 +1,7 @@
 {
-  "extends": "./../tsconfig.json"
+  "extends": "./../tsconfig.json",
+  "compilerOptions": {
+    "mapRoot": "https://github.com/Paul-16098/userjs/raw/dev/czbooksnet",
+    "sourceRoot": "https://github.com/Paul-16098/userjs/raw/dev/czbooksnet"
+  }
 }
