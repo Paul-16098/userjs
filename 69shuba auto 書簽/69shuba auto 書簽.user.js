@@ -325,19 +325,22 @@ class BookManager {
             if (config.Debug)
                 console.log("replace_json: ", StrReplace);
             for (const value of StrReplace) {
+                if (ele.innerText.includes(value))
+                    console.log(`Value "${value}" found in text.`);
                 ele.innerText = ele.innerText.replaceAll(value, "");
             }
             const RawRegReplace = GM_getResourceText("RegReplace");
             if (config.Debug)
                 console.log("raw_reg_replace_json: ", RawRegReplace);
             const StrRegReplace = JSON.parse(RawRegReplace);
-            const RegReplace = [];
-            StrRegReplace.forEach((pattern) => {
-                RegReplace.push(new RegExp(pattern, "g"));
+            const RegReplace = StrRegReplace.map((pattern) => {
+                return new RegExp(pattern, "g");
             });
             if (config.Debug)
                 console.log("reg_replace_json: ", RegReplace);
             for (const pattern of RegReplace) {
+                if (pattern.test(ele.innerText))
+                    console.log(`Pattern ${pattern} matched in text.`);
                 ele.innerText = ele.innerText.replaceAll(pattern, "");
             }
         }
