@@ -43,7 +43,10 @@
 // @homepageURL  https://github.com/Paul-16098/userjs/README.md
 // ==/UserScript==
 
-/** 語言選項枚舉 */
+/**
+ * @description A type definition for supported languages, currently English and Chinese. This is used in the Config class to manage language settings and provide type safety for language-related properties.
+ * @see i18nData
+ */
 type Language = "en" | "zh";
 
 /** 用戶配置類，負責管理腳本的各項設置，並註冊菜單 */
