@@ -32,18 +32,18 @@ GM_addStyle(css1);
  * 移除頁面不需要的元素，提升閱讀體驗
  */
 removeElement(
-  "body > div.header",
-  "body > div.footer",
-  "body > div.main > div:nth-child(3)",
-  "#go-to-top",
-  "#sticky-parent > div.chapter-detail > div.notice",
+	"body > div.header",
+	"body > div.footer",
+	"body > div.main > div:nth-child(3)",
+	"#go-to-top",
+	"#sticky-parent > div.chapter-detail > div.notice",
 );
 
 /**
  * 判斷是否為深色模式
  */
 const isDarkMode = globalThis.matchMedia?.(
-  "(prefers-color-scheme: dark)",
+	"(prefers-color-scheme: dark)",
 ).matches;
 
 /**
@@ -51,44 +51,44 @@ const isDarkMode = globalThis.matchMedia?.(
  * @param params - "default" 為深色，"white" 為淺色
  */
 function changeBackground(params: "default" | "white") {
-  switch (params) {
-    case "default": {
-      // 點擊預設主題按鈕
-      document
-        .querySelector<HTMLAnchorElement>(
-          "#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a",
-        )
-        ?.click();
-      break;
-    }
-    case "white": {
-      // 點擊白色主題按鈕
-      document
-        .querySelector<HTMLAnchorElement>(
-          "#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a",
-        )
-        ?.click();
-      break;
-    }
-  }
+	switch (params) {
+		case "default": {
+			// 點擊預設主題按鈕
+			document
+				.querySelector<HTMLAnchorElement>(
+					"#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a",
+				)
+				?.click();
+			break;
+		}
+		case "white": {
+			// 點擊白色主題按鈕
+			document
+				.querySelector<HTMLAnchorElement>(
+					"#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a",
+				)
+				?.click();
+			break;
+		}
+	}
 }
 
 // 根據系統主題自動切換背景
 if (isDarkMode) {
-  changeBackground("default");
+	changeBackground("default");
 } else {
-  changeBackground("white");
+	changeBackground("white");
 }
 
 /**
  * 監聽系統主題變化，自動切換背景
  */
 globalThis
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (e) => {
-    if (e.matches) {
-      changeBackground("default");
-    } else {
-      changeBackground("white");
-    }
-  });
+	.matchMedia("(prefers-color-scheme: dark)")
+	.addEventListener("change", (e) => {
+		if (e.matches) {
+			changeBackground("default");
+		} else {
+			changeBackground("white");
+		}
+	});

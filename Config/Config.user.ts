@@ -23,40 +23,40 @@
 // ==/UserScript==
 
 class Config {
-  private defaultValue: {
-    [key: string]: any;
-  };
-  constructor() {
-    this.defaultValue = {};
-  }
+	private defaultValue: {
+		[key: string]: any;
+	};
+	constructor() {
+		this.defaultValue = {};
+	}
 
-  public registerKey(key: string, defaultValue?: any) {
-    this.defaultValue[key] = defaultValue;
-    return this;
-  }
-  public registerKeys(keys: { [key: string]: any }) {
-    for (const key in keys) {
-      this.registerKey(key, keys[key]);
-    }
-    return this;
-  }
+	public registerKey(key: string, defaultValue?: any) {
+		this.defaultValue[key] = defaultValue;
+		return this;
+	}
+	public registerKeys(keys: { [key: string]: any }) {
+		for (const key in keys) {
+			this.registerKey(key, keys[key]);
+		}
+		return this;
+	}
 
-  public get(key: string): any {
-    return GM_getValue(key, this.defaultValue[key]);
-  }
-  public set(key: string, value: any) {
-    if (!(key in this.defaultValue)) {
-      throw new Error(`Config:set: key "${key}" is not registered.`);
-    }
-    GM_setValue(key, value);
-    return this;
-  }
-  public registerConfigMenu(
-    menu?: setMenuFn,
-    showMapping?: { [x: string]: string },
-  ) {
-    for (const key in this.defaultValue) {
-      setMenu(key, menu, this.defaultValue[key], showMapping);
-    }
-  }
+	public get(key: string): any {
+		return GM_getValue(key, this.defaultValue[key]);
+	}
+	public set(key: string, value: any) {
+		if (!(key in this.defaultValue)) {
+			throw new Error(`Config:set: key "${key}" is not registered.`);
+		}
+		GM_setValue(key, value);
+		return this;
+	}
+	public registerConfigMenu(
+		menu?: setMenuFn,
+		showMapping?: { [x: string]: string },
+	) {
+		for (const key in this.defaultValue) {
+			setMenu(key, menu, this.defaultValue[key], showMapping);
+		}
+	}
 }

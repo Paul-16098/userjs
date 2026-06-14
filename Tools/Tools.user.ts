@@ -28,39 +28,39 @@ const IS_DEBUG_LOG: boolean = GM_getValue("IS_DEBUG_LOG", false);
  * @returns [true, args] 或 [false, args, error]
  */
 function removeElement(...args: Array<string>) {
-  try {
-    if (args) {
-      args.forEach((args) => {
-        if (IS_DEBUG_LOG) {
-          console.log("args: ", args);
-          console.log(
-            "document.querySelectorAll(args): ",
-            document.querySelectorAll(args),
-          );
-        }
-        if (document.querySelectorAll(args).length === 0) {
-          console.debug(args, "is not a Html Element.");
-        } else {
-          document.querySelectorAll(args).forEach((ele) => {
-            ele.remove();
-          });
-        }
-      });
-    }
-  } catch (e) {
-    console.error(e);
-    return [false, args, e];
-  }
-  return [true, args];
+	try {
+		if (args) {
+			args.forEach((args) => {
+				if (IS_DEBUG_LOG) {
+					console.log("args: ", args);
+					console.log(
+						"document.querySelectorAll(args): ",
+						document.querySelectorAll(args),
+					);
+				}
+				if (document.querySelectorAll(args).length === 0) {
+					console.debug(args, "is not a Html Element.");
+				} else {
+					document.querySelectorAll(args).forEach((ele) => {
+						ele.remove();
+					});
+				}
+			});
+		}
+	} catch (e) {
+		console.error(e);
+		return [false, args, e];
+	}
+	return [true, args];
 }
 
 type setMenuFn = typeof GM_registerMenuCommand extends (
-  name: string,
-  fn: infer F,
-  ...args: any[]
+	name: string,
+	fn: infer F,
+	...args: any[]
 ) => any
-  ? F
-  : never;
+	? F
+	: never;
 /**
  * 註冊一個用戶菜單命令，支援布林值自動切換與自定義顯示。
  *
@@ -76,71 +76,71 @@ type setMenuFn = typeof GM_registerMenuCommand extends (
  * - 對於不支持的類型，當選擇菜單項時會記錄錯誤。
  */
 function setMenu(
-  name: string,
-  fn?: setMenuFn,
-  def?: any,
-  showMapping?: { [x: string]: string } | undefined,
+	name: string,
+	fn?: setMenuFn,
+	def?: any,
+	showMapping?: { [x: string]: string } | undefined,
 ): number {
-  // 顯示值的映射
-  const trueShowMapping: { [x: string]: string } = {
-    true: "開",
-    false: "關",
-    ...showMapping,
-  };
-  let support = false;
-  let showName: string = trueShowMapping[name] ?? name.replaceAll("_", " ");
-  let getValue: any = GM_getValue(name);
-  let showValue: string = "No support";
-  if (getValue === undefined && def !== undefined) {
-    // 如果沒有值，則使用默認值
-    GM_setValue(name, def);
-    getValue = def;
-    console.debug(`setMenu: ${name} set default value: ${def}`);
-  }
-  if (typeof getValue === "boolean") {
-    support = true;
-    showValue = getValue.toString();
-  }
-  showValue = trueShowMapping[getValue] ?? showValue;
+	// 顯示值的映射
+	const trueShowMapping: { [x: string]: string } = {
+		true: "開",
+		false: "關",
+		...showMapping,
+	};
+	let support = false;
+	let showName: string = trueShowMapping[name] ?? name.replaceAll("_", " ");
+	let getValue: any = GM_getValue(name);
+	let showValue: string = "No support";
+	if (getValue === undefined && def !== undefined) {
+		// 如果沒有值，則使用默認值
+		GM_setValue(name, def);
+		getValue = def;
+		console.debug(`setMenu: ${name} set default value: ${def}`);
+	}
+	if (typeof getValue === "boolean") {
+		support = true;
+		showValue = getValue.toString();
+	}
+	showValue = trueShowMapping[getValue] ?? showValue;
 
-  const trueFn =
-    fn ??
-    (support
-      ? function (ev: MouseEvent | KeyboardEvent) {
-          if (typeof getValue === "boolean") {
-            GM_setValue(name, !getValue);
-            globalThis.location.reload();
-          }
-        }
-      : () => {
-          let t = "the type is not supported: " + typeof getValue;
+	const trueFn =
+		fn ??
+		(support
+			? function (ev: MouseEvent | KeyboardEvent) {
+					if (typeof getValue === "boolean") {
+						GM_setValue(name, !getValue);
+						globalThis.location.reload();
+					}
+				}
+			: () => {
+					let t = "the type is not supported: " + typeof getValue;
 
-          console.error(t);
-        });
+					console.error(t);
+				});
 
-  return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
+	return GM_registerMenuCommand(`${showName}: ${showValue}`, trueFn);
 }
 
 const blackList: Array<string | RegExp> = [
-  "eval", // 防止執行惡意代碼
-  "function", // 防止構造新的函數對象
-  "let",
-  "var", // 防止變量聲明
-  "document", // 防止 DOM 操作
-  "alert", // 防止彈窗
-  "navigator", // 防止獲取瀏覽器相關信息
-  "localStorage",
-  "sessionStorage", // 防止訪問瀏覽器的存儲
-  "console", // 防止使用 console.log 或其他控制枱方法
-  "XMLHttpRequest",
-  "fetch", // 防止發起網絡請求
-  "import",
-  "export", // 防止模塊導入和導出
-  "async",
-  "await", // 防止定義異步函數
-  "with", // 防止使用 with 語句
-  "Promise", // 防止使用 Promise，可能導致複雜的異步操作
-  /window\.[\da-zA-Z_]+ *=/, // 檢查對 window 對象的屬性賦值
+	"eval", // 防止執行惡意代碼
+	"function", // 防止構造新的函數對象
+	"let",
+	"var", // 防止變量聲明
+	"document", // 防止 DOM 操作
+	"alert", // 防止彈窗
+	"navigator", // 防止獲取瀏覽器相關信息
+	"localStorage",
+	"sessionStorage", // 防止訪問瀏覽器的存儲
+	"console", // 防止使用 console.log 或其他控制枱方法
+	"XMLHttpRequest",
+	"fetch", // 防止發起網絡請求
+	"import",
+	"export", // 防止模塊導入和導出
+	"async",
+	"await", // 防止定義異步函數
+	"with", // 防止使用 with 語句
+	"Promise", // 防止使用 Promise，可能導致複雜的異步操作
+	/window\.[\da-zA-Z_]+ *=/, // 檢查對 window 對象的屬性賦值
 ];
 /**
  * 安全執行傳入的字串代碼，支援黑名單過濾。
@@ -150,29 +150,29 @@ const blackList: Array<string | RegExp> = [
  * @throws 若包含黑名單關鍵字則丟出錯誤
  */
 function newEval(stringCode: string, safety: boolean = true) {
-  // 檢查是否包含不允許的關鍵字或代碼
-  if (safety) {
-    // 遍歷不允許的字元或代碼列表
-    for (const value of blackList) {
-      if (typeof value === "string") {
-        if (stringCode.includes(value)) {
-          throw new Error(
-            `不允許的關鍵字或代碼: ${JSON.stringify(
-              value,
-            )},在代碼: ${stringCode}`,
-          );
-        }
-      } else if (value instanceof RegExp) {
-        if (value.test(stringCode)) {
-          throw new Error(
-            `不允許的關鍵字或代碼: ${value},在代碼: ${stringCode}`,
-          );
-        }
-      }
-    }
-  }
-  // 返回執行傳入字符串代碼的結果
-  return new Function(`${safety ? "return" : ""} ${stringCode}`)();
+	// 檢查是否包含不允許的關鍵字或代碼
+	if (safety) {
+		// 遍歷不允許的字元或代碼列表
+		for (const value of blackList) {
+			if (typeof value === "string") {
+				if (stringCode.includes(value)) {
+					throw new Error(
+						`不允許的關鍵字或代碼: ${JSON.stringify(
+							value,
+						)},在代碼: ${stringCode}`,
+					);
+				}
+			} else if (value instanceof RegExp) {
+				if (value.test(stringCode)) {
+					throw new Error(
+						`不允許的關鍵字或代碼: ${value},在代碼: ${stringCode}`,
+					);
+				}
+			}
+		}
+	}
+	// 返回執行傳入字符串代碼的結果
+	return new Function(`${safety ? "return" : ""} ${stringCode}`)();
 }
 
 // #region i18n
@@ -181,68 +181,68 @@ function newEval(stringCode: string, safety: boolean = true) {
  * 多語系(i18n)工具類，支援多語言字典與動態參數替換。
  */
 class I18n {
-  /** 語言字典資料 */
-  public readonly langJson: {
-    [lang: string]: {
-      [key: string]: string;
-    };
-  };
-  /** 語言優先順序列表 */
-  public langList: Array<string> = [];
+	/** 語言字典資料 */
+	public readonly langJson: {
+		[lang: string]: {
+			[key: string]: string;
+		};
+	};
+	/** 語言優先順序列表 */
+	public langList: Array<string> = [];
 
-  /**
-   * 建構子
-   * @param langJson - 語言字典
-   * @param lang - 語言代碼或語言代碼陣列
-   */
-  constructor(langJson: typeof this.langJson, lang: string | Array<string>) {
-    // 構造函數，接受語言和語言映射
-    this.langJson = langJson;
-    if (Array.isArray(lang)) {
-      // 如果傳入的是數組
-      this.langList.push(...lang);
-    } else if (typeof lang === "string") {
-      // 如果傳入的是單個語言
-      this.langList.push(lang);
-    } else {
-      throw new TypeError("i18n:constructor:parameter:lang: not allow type");
-    }
-  }
+	/**
+	 * 建構子
+	 * @param langJson - 語言字典
+	 * @param lang - 語言代碼或語言代碼陣列
+	 */
+	constructor(langJson: typeof this.langJson, lang: string | Array<string>) {
+		// 構造函數，接受語言和語言映射
+		this.langJson = langJson;
+		if (Array.isArray(lang)) {
+			// 如果傳入的是數組
+			this.langList.push(...lang);
+		} else if (typeof lang === "string") {
+			// 如果傳入的是單個語言
+			this.langList.push(lang);
+		} else {
+			throw new TypeError("i18n:constructor:parameter:lang: not allow type");
+		}
+	}
 
-  /**
-   * 取得本地化字串，支援參數替換。
-   * @param key - 字典鍵值
-   * @param args - 參數
-   * @returns 對應語言的字串，若無則回傳key
-   */
-  public get(
-    key: keyof (typeof this.langJson)[keyof typeof this.langJson],
-    ...args: Array<any>
-  ): string {
-    for (const lang of this.langList) {
-      // 遍歷語言列表
-      if (this.langJson[lang]?.[key]) {
-        // 檢查語言映射中是否存在該鍵
-        let text = this.langJson[lang][key]; // 獲取對應的語言文本
-        if (args && args.length > 0) {
-          // 如果傳入了參數
-          text = text.replaceAll(/{(\d+)}/g, (match, number) => {
-            if (number >= 0 && number < args.length) {
-              // 替換文本中的 {n} 參數
-              return args[number] ?? match;
-            }
-            return match;
-          });
-        }
-        return text;
-      }
-    }
-    console.warn(`Translation missing for key: "${key}"`); // 警告缺少的翻譯
-    return String(key); // 如果沒有找到對應的翻譯，返回key本身
-  }
-  /**
-   * 別名，等同 get
-   */
-  public t = this.get;
+	/**
+	 * 取得本地化字串，支援參數替換。
+	 * @param key - 字典鍵值
+	 * @param args - 參數
+	 * @returns 對應語言的字串，若無則回傳key
+	 */
+	public get(
+		key: keyof (typeof this.langJson)[keyof typeof this.langJson],
+		...args: Array<any>
+	): string {
+		for (const lang of this.langList) {
+			// 遍歷語言列表
+			if (this.langJson[lang]?.[key]) {
+				// 檢查語言映射中是否存在該鍵
+				let text = this.langJson[lang][key]; // 獲取對應的語言文本
+				if (args && args.length > 0) {
+					// 如果傳入了參數
+					text = text.replaceAll(/{(\d+)}/g, (match, number) => {
+						if (number >= 0 && number < args.length) {
+							// 替換文本中的 {n} 參數
+							return args[number] ?? match;
+						}
+						return match;
+					});
+				}
+				return text;
+			}
+		}
+		console.warn(`Translation missing for key: "${key}"`); // 警告缺少的翻譯
+		return String(key); // 如果沒有找到對應的翻譯，返回key本身
+	}
+	/**
+	 * 別名，等同 get
+	 */
+	public t = this.get;
 }
 // #endregion i18n

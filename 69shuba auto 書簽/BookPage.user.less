@@ -1,72 +1,72 @@
 #title {
-  font-size: large;
-  font-weight: bold;
-  color: #000;
-  height: 30px;
+	font-size: large;
+	font-weight: bold;
+	color: #000;
+	height: 30px;
 }
 
 .container {
-  margin: 0 !important;
-  min-height: 0 !important;
-  width: 100% !important;
-  max-width: none !important;
+	margin: 0 !important;
+	min-height: 0 !important;
+	width: 100% !important;
+	max-width: none !important;
 }
 
 .mybox {
-  padding: 0;
-  margin: 0;
+	padding: 0;
+	margin: 0;
 }
 
 body > div.mainbox {
-  margin: 0;
-  max-width: none;
-  .maincont {
-    padding: 0;
-  }
+	margin: 0;
+	max-width: none;
+	.maincont {
+		padding: 0;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #252525;
-    --abg: #3d3737;
-    --ac: #d6d6d6;
-  }
-  body {
-    background-color: var(--bg);
-    div.container > div.mybox {
-      background: var(--bg);
-      color: var(--ac);
-    }
-    div.container > div.mybox > div.page1 {
-      border: 0;
-      background: var(--bg);
-      a {
-        :hover {
-          background: var(--abg);
-        }
-      }
-    }
-  }
-  #title {
-    color: var(--ac);
-  }
-  #baocuo {
-    background: var(--bg);
-    li {
-      color: var(--ac);
-    }
-  }
-  #container {
-    div.mybox > div.page1 > a {
-      background: var(--abg);
-    }
-    div.page1 {
-      background: var(--bg);
-      border: 0;
-      a {
-        background: var(--abg);
-        color: var(--ac);
-      }
-    }
-  }
+	:root {
+		--bg: #252525;
+		--abg: #3d3737;
+		--ac: #d6d6d6;
+	}
+	body {
+		background-color: var(--bg);
+		div.container > div.mybox {
+			background: var(--bg);
+			color: var(--ac);
+		}
+		div.container > div.mybox > div.page1 {
+			border: 0;
+			background: var(--bg);
+			a {
+				:hover {
+					background: var(--abg);
+				}
+			}
+		}
+	}
+	#title {
+		color: var(--ac);
+	}
+	#baocuo {
+		background: var(--bg);
+		li {
+			color: var(--ac);
+		}
+	}
+	#container {
+		div.mybox > div.page1 > a {
+			background: var(--abg);
+		}
+		div.page1 {
+			background: var(--bg);
+			border: 0;
+			a {
+				background: var(--abg);
+				color: var(--ac);
+			}
+		}
+	}
 }

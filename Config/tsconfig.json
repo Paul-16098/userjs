@@ -1,7 +1,7 @@
 {
-  "extends": "./../tsconfig.json",
-  "compilerOptions": {
-    "mapRoot": "https://github.com/Paul-16098/userjs/raw/dev/Config",
-    "sourceRoot": "https://github.com/Paul-16098/userjs/raw/dev/Config"
-  }
+	"extends": "./../tsconfig.json",
+	"compilerOptions": {
+		"mapRoot": "https://github.com/Paul-16098/userjs/raw/dev/Config",
+		"sourceRoot": "https://github.com/Paul-16098/userjs/raw/dev/Config"
+	}
 }
