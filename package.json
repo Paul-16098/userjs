@@ -32,6 +32,7 @@
 		"build": "tsc -p ./Tools && tsc -p ./czbooksnet && tsc -p ./琉璃神社 && tsc -p \"./69shuba auto 書簽\" && tsc -p ./Config",
 		"build:less": "node ./scripts/compile-less.js",
 		"lint": "eslint",
-		"lint:fix": "eslint --fix"
+		"lint:fix": "eslint --fix",
+		"fmt": "prettier --write ."
 	}
 }

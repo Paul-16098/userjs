@@ -4,5 +4,6 @@ push-replace-data:
     git push
 build:
     nu update_sourcemap.nu
+    pnpm run fmt
     pnpm run build:less
     pnpm run build
