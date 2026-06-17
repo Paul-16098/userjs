@@ -1,3 +1,6 @@
 **/*.user.d.ts
-**/*.user.js
+**/*.js
 **/*.user.js.map
+**/*.css
+pnpm-lock.yaml
+**/*.md
