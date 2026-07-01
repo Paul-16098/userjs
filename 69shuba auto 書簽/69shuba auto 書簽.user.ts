@@ -435,6 +435,8 @@ class BookManager {
 		if (this.Site instanceof Site_tw) {
 			const ele = document.querySelector<HTMLDivElement>("#txtcontent0")!;
 
+			if (config.Debug) console.log("Raw dom", ele.innerText);
+
 			for (const value of StrReplace) {
 				if (ele.innerText.includes(value) && config.Debug)
 					console.log(`Value "${value}" found in text.`);
