@@ -27,7 +27,8 @@
 		"eslint-plugin-userscripts": "^0.5.6",
 		"globals": "^17.7.0",
 		"less": "^4.6.4",
-		"prettier": "^3.8.4"
+		"prettier": "^3.8.4",
+		"prettier-plugin-ignored": "^1.0.0"
 	},
 	"scripts": {
 		"build": "tsc -p ./Tools && tsc -p ./czbooksnet && tsc -p ./琉璃神社 && tsc -p \"./69shuba auto 書簽\" && tsc -p ./Config",
