@@ -152,7 +152,10 @@ declare class BookManager {
     private replaceText;
     /** 自動加入書櫃(如未在封鎖名單) */
     private addToBookcase;
-    /** 更新下一頁鏈接，附加FromBook參數 */
+    /**
+     * 更新下一頁鏈接，附加FromBook參數
+     * Only applicable for Site_69shuba, as Site_tw handles this differently.
+     */
     private updateNextPageLink;
     /** 攔截全局alert，根據封鎖名單過濾 */
     private hookAlert;

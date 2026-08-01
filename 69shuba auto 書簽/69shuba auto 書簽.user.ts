@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      4.2.2
+// @version      4.2.3
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag www.69shuba.com
@@ -461,10 +461,13 @@ class BookManager {
 		}
 	}
 
-	/** 更新下一頁鏈接，附加FromBook參數 */
+	/**
+	 * 更新下一頁鏈接，附加FromBook參數
+	 * Only applicable for Site_69shuba, as Site_tw handles this differently.
+	 */
 	private updateNextPageLink(): void {
 		const nextPageEle = this.getNextPageElement();
-		if (nextPageEle) {
+		if (nextPageEle && this.Site instanceof Site_69shuba) {
 			const href = new URL(nextPageEle.href);
 			href.searchParams.set("FromBook", "true");
 			nextPageEle.href = href.toString();
@@ -509,7 +512,8 @@ class BookManager {
 			)!.href;
 			if (nextPageLink) {
 				let href = new URL(nextPageLink);
-				href.searchParams.set("FromBook", "true");
+				if (this.Site instanceof Site_69shuba)
+					href.searchParams.set("FromBook", "true");
 				globalThis.location.href = href.toString();
 			}
 			if (this.Site.End.Is(nextPageLink)) {
