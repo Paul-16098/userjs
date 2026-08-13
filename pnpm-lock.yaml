@@ -38,7 +38,7 @@ importers:
         version: 17.8.0
       less:
         specifier: ^4.6.4
-        version: 4.8.1
+        version: 4.9.0
       prettier:
         specifier: ^3.8.4
         version: 3.9.6
@@ -512,8 +512,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  less@4.8.1:
-    resolution: {integrity: sha512-jQ3lRIo1aUtiWVYXZ7mk4+V4BjCGswF3IxTLJ+4RUta8ZiHh8lhkig2G8dya2eCcyR1dYUvzuV46EkJN8PSwww==}
+  less@4.9.0:
+    resolution: {integrity: sha512-umRhrCH7fCi8Uj2RcwKjJdvUORTjeWqkdKx0LbcZvjIwsAVsnIAGcxHaqowPeBFBjQuWOeC/bve0AlpFzF/+SQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -1089,7 +1089,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  less@4.8.1:
+  less@4.9.0:
     dependencies:
       copy-anything: 3.0.5
       parse-node-version: 1.0.1
