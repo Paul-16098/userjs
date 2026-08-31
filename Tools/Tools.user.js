@@ -4,7 +4,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.14.0
+// @version      2.3.0
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -210,4 +210,40 @@ class I18n {
     t = this.get;
 }
 // #endregion i18n
+function GetOrWaitForElement(selector, timeout = Infinity) {
+    return new Promise((resolve, reject) => {
+        // 1. Immediate check
+        const element = document.querySelector(selector);
+        if (element) {
+            return resolve(element);
+        }
+        let timerId = null;
+        // 2. Setup MutationObserver
+        const observer = new MutationObserver(() => {
+            const found = document.querySelector(selector);
+            if (found) {
+                cleanup();
+                resolve(found);
+            }
+        });
+        function cleanup() {
+            observer.disconnect();
+            if (timerId !== null) {
+                clearTimeout(timerId);
+            }
+        }
+        // 3. Handle optional timeout
+        if (Number.isFinite(timeout)) {
+            timerId = setTimeout(() => {
+                cleanup();
+                reject(new Error(`Timeout waiting for element: ${selector}`));
+            }, timeout);
+        }
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+        });
+    });
+}
 //# sourceMappingURL=https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js.map

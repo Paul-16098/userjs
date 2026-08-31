@@ -1,4 +1,4 @@
-declare const _unsafeWindow: Window & Omit<typeof globalThis, "GM" | "GM_addElement" | "GM_addStyle" | "GM_addValueChangeListener" | "GM_deleteValue" | "GM_download" | "GM_getResourceText" | "GM_getResourceURL" | "GM_getTab" | "GM_getTabs" | "GM_getValue" | "GM_info" | "GM_listValues" | "GM_log" | "GM_notification" | "GM_openInTab" | "GM_registerMenuCommand" | "GM_removeValueChangeListener" | "GM_saveTab" | "GM_setClipboard" | "GM_setValue" | "GM_unregisterMenuCommand" | "GM_xmlhttpRequest">;
+declare const _unsafeWindow: Window & Omit<typeof globalThis, "GM" | "GM_addElement" | "GM_addStyle" | "GM_addValueChangeListener" | "GM_audio" | "GM_cookie" | "GM_deleteValue" | "GM_deleteValues" | "GM_download" | "GM_getResourceText" | "GM_getResourceURL" | "GM_getTab" | "GM_getTabs" | "GM_getValue" | "GM_getValues" | "GM_info" | "GM_listValues" | "GM_log" | "GM_notification" | "GM_openInTab" | "GM_registerMenuCommand" | "GM_removeValueChangeListener" | "GM_saveTab" | "GM_setClipboard" | "GM_setValue" | "GM_setValues" | "GM_unregisterMenuCommand" | "GM_webRequest" | "GM_xmlhttpRequest">;
 declare const IS_DEBUG_LOG: boolean;
 /**
  * 從 DOM 中移除指定選擇器的所有元素。
@@ -63,3 +63,4 @@ declare class I18n {
      */
     t: (key: keyof (typeof this.langJson)[keyof typeof this.langJson], ...args: Array<any>) => string;
 }
+declare function GetOrWaitForElement<T extends Element>(selector: Parameters<typeof document.querySelector>[0], timeout?: number): Promise<T & NonNullable<ReturnType<typeof document.querySelector>>>;

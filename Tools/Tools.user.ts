@@ -3,7 +3,7 @@
 // @name         Tools
 // @namespace    Paul-16098
 // @description  paul Tools
-// @version      2.2.14.0
+// @version      2.3.0
 // @match        *://*/*
 // @author       paul
 // @license      MIT
@@ -246,3 +246,48 @@ class I18n {
 	public t = this.get;
 }
 // #endregion i18n
+
+function GetOrWaitForElement<T extends Element>(
+	selector: Parameters<typeof document.querySelector>[0],
+	timeout: number = Infinity,
+): Promise<T & NonNullable<ReturnType<typeof document.querySelector>>> {
+	return new Promise((resolve, reject) => {
+		// 1. Immediate check
+		const element = document.querySelector<T>(selector);
+		if (element) {
+			return resolve(element);
+		}
+
+		let timerId: ReturnType<typeof setTimeout> | null = null;
+
+		// 2. Setup MutationObserver
+		const observer = new MutationObserver(() => {
+			const found = document.querySelector<T>(selector);
+			if (found) {
+				cleanup();
+				resolve(found);
+			}
+		});
+
+		function cleanup() {
+			observer.disconnect();
+			if (timerId !== null) {
+				clearTimeout(timerId);
+			}
+		}
+
+		// 3. Handle optional timeout
+		if (Number.isFinite(timeout)) {
+			timerId = setTimeout(() => {
+				cleanup();
+				reject(new Error(`Timeout waiting for element: ${selector}`));
+			}, timeout);
+		}
+
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+			attributes: true,
+		});
+	});
+}
