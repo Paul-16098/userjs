@@ -14,7 +14,7 @@
 		"declaration": true,
 		"noImplicitAny": true,
 		"incremental": true,
-		"types": ["tampermonkey"]
+		"types": ["tampermonkey", "typed-query-selector"]
 	},
 	"exclude": ["node_modules", "**/node_modules/*"]
 }
