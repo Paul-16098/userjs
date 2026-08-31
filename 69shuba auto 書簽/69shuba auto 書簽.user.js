@@ -339,7 +339,7 @@ class BookManager {
         if (config.Debug)
             console.log("reg_replace_json: ", RegReplace);
         if (this.Site instanceof Site_tw) {
-            const ele = document.querySelector("#txtcontent0");
+            const ele = document.querySelector("div#txtcontent0");
             if (config.Debug)
                 console.log("Raw dom", ele.innerText);
             for (const value of StrReplace) {
@@ -420,7 +420,7 @@ class BookManager {
     /** 加入書櫃(根據不同站點呼叫不同API或模擬點擊) */
     addBookcase() {
         if (addbookcase.toString().includes("Ajax.Tip")) {
-            const addBookcaseLink = document.querySelector("#a_addbookcase");
+            const addBookcaseLink = document.querySelector("a#a_addbookcase");
             addBookcaseLink?.click();
         }
         else {
@@ -500,7 +500,7 @@ class BookManager {
     /** 遞迴收集書架書籍資料，最多重試5次 */
     async collectBookData(retryCount = 0) {
         const books = [];
-        const labels = document.querySelectorAll("[id^='book_']");
+        const labels = document.querySelectorAll("li[id^='book_']");
         if (config.Debug)
             console.groupCollapsed("collectBookData");
         if (labels.length === 0) {
@@ -518,7 +518,6 @@ class BookManager {
             console.log(labels);
         }
         labels.forEach((label) => {
-            const bookContainer = label;
             if (Array.from(label.querySelectorAll("label")).some((label) => label.textContent === "更新")) {
                 const bookContinueEle = label.querySelector("div.newright > a.btn.btn-tp");
                 const bookContinueLink = bookContinueEle.href;
@@ -534,7 +533,7 @@ class BookManager {
                     },
                     Mate: {
                         BookName: BookName,
-                        BookHtmlObj: bookContainer,
+                        BookHtmlObj: label,
                         BookImgUrl: bookImgUrl,
                     },
                 };
