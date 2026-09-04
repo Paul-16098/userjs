@@ -8,12 +8,16 @@ on:
       - "*/*.less"
       - "*/*.tsconfig.json"
       - ".github/workflows/Build.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
   pull_request:
     paths:
       - "*/*.user.ts"
       - "*/*.less"
       - "*/*.tsconfig.json"
       - ".github/workflows/Build.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
 
 permissions:
   contents: write
