@@ -20,7 +20,7 @@ importers:
         version: 10.0.1(eslint@10.9.1)
       '@paul-16098/prettier-config':
         specifier: git+https://github.com/Paul-16098/prettier-config.git
-        version: https://codeload.github.com/Paul-16098/prettier-config/tar.gz/a80417ab86415100837891b9246cbede0f7c7133(prettier@3.9.6)
+        version: https://codeload.github.com/Paul-16098/prettier-config/tar.gz/641bcad83d9b5388553aa7679de54ba5b30b65a4(prettier@3.9.8)
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.68.0
         version: 8.68.0(@typescript-eslint/parser@8.68.0(eslint@10.9.1)(typescript@7.0.2))(eslint@10.9.1)(typescript@7.0.2)
@@ -41,10 +41,10 @@ importers:
         version: 4.9.1
       prettier:
         specifier: ^3.9.6
-        version: 3.9.6
+        version: 3.9.8
       prettier-plugin-ignored:
         specifier: ^1.0.0
-        version: 1.0.0(prettier@3.9.6)
+        version: 1.0.0(prettier@3.9.8)
       typed-query-selector:
         specifier: ^2.12.2
         version: 2.12.2
@@ -110,8 +110,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@paul-16098/prettier-config@https://codeload.github.com/Paul-16098/prettier-config/tar.gz/a80417ab86415100837891b9246cbede0f7c7133':
-    resolution: {gitHosted: true, integrity: sha512-gtDhjPuBPHnx1yIdxNR6pio9mawnKDTl4lRnsfOmZACC5Zm6tqKEjYNtj62bEqG4iQ3f2UBLpS6kkPDi06fqXg==, tarball: https://codeload.github.com/Paul-16098/prettier-config/tar.gz/a80417ab86415100837891b9246cbede0f7c7133}
+  '@paul-16098/prettier-config@https://codeload.github.com/Paul-16098/prettier-config/tar.gz/641bcad83d9b5388553aa7679de54ba5b30b65a4':
+    resolution: {gitHosted: true, integrity: sha512-7IAJR4g6FkbtZPaHFO3I2EizCOsCjR1merg5t9/46Eq2npQS8+ZMfTxWZFcw5gQJE5fgBtLgo8etdSIfvnokwA==, tarball: https://codeload.github.com/Paul-16098/prettier-config/tar.gz/641bcad83d9b5388553aa7679de54ba5b30b65a4}
     version: 1.1.0
     peerDependencies:
       prettier: '>=3.8.4'
@@ -596,8 +596,8 @@ packages:
     peerDependencies:
       prettier: 3.x
 
-  prettier@3.9.6:
-    resolution: {integrity: sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==}
+  prettier@3.9.8:
+    resolution: {integrity: sha512-WRFq3Wn3WId7LLROfMLdH7xaFr2jR62wU8nLO6rQUOLOxNZUviyJQs1M0iIhLexSFy+L+w0ch66wtoO2jRjG0A==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -728,9 +728,9 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@paul-16098/prettier-config@https://codeload.github.com/Paul-16098/prettier-config/tar.gz/a80417ab86415100837891b9246cbede0f7c7133(prettier@3.9.6)':
+  '@paul-16098/prettier-config@https://codeload.github.com/Paul-16098/prettier-config/tar.gz/641bcad83d9b5388553aa7679de54ba5b30b65a4(prettier@3.9.8)':
     dependencies:
-      prettier: 3.9.6
+      prettier: 3.9.8
 
   '@types/esrecurse@4.3.1': {}
 
@@ -1169,11 +1169,11 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-ignored@1.0.0(prettier@3.9.6):
+  prettier-plugin-ignored@1.0.0(prettier@3.9.8):
     dependencies:
-      prettier: 3.9.6
+      prettier: 3.9.8
 
-  prettier@3.9.6: {}
+  prettier@3.9.8: {}
 
   probe-image-size@7.4.0:
     dependencies:
