@@ -525,7 +525,7 @@ class BookManager {
                 const bookImgEle = label.querySelector("a > img");
                 const bookImgUrl = bookImgEle.src;
                 const push_data = {
-                    Updata: {
+                    data: {
                         url: {
                             value: bookContinueLink,
                             URLParams: new URLSearchParams(bookContinueLink),
@@ -540,7 +540,7 @@ class BookManager {
                 if (config.Debug) {
                     console.group(push_data.Mate.BookName);
                     console.log(push_data.Mate);
-                    console.table(push_data.Updata);
+                    console.table(push_data.data);
                     console.groupEnd();
                 }
                 books.push(push_data);
@@ -556,7 +556,7 @@ class BookManager {
             ? this.t("noUpdates")
             : `${bookData.length}${this.t("updatesAvailable")}`}`, () => {
             for (const data of bookData) {
-                GM_openInTab(data.Updata.url.value);
+                GM_openInTab(data.data.url.value);
             }
         });
     }

@@ -27,7 +27,7 @@ declare class Config {
 type Language = "en" | "zh";
 /** 書籍數據接口 */
 interface BookData {
-    Updata: {
+    data: {
         url: {
             value: string;
             URLParams: URLSearchParams;

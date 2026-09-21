@@ -137,7 +137,7 @@ type Language = "en" | "zh";
 
 /** 書籍數據接口 */
 interface BookData {
-	Updata: {
+	data: {
 		url: {
 			value: string;
 			URLParams: URLSearchParams;
@@ -647,7 +647,7 @@ class BookManager {
 				const bookImgUrl = bookImgEle.src;
 
 				const push_data: BookData = {
-					Updata: {
+					data: {
 						url: {
 							value: bookContinueLink,
 							URLParams: new URLSearchParams(bookContinueLink),
@@ -662,7 +662,7 @@ class BookManager {
 				if (config.Debug) {
 					console.group(push_data.Mate.BookName);
 					console.log(push_data.Mate);
-					console.table(push_data.Updata);
+					console.table(push_data.data);
 					console.groupEnd();
 				}
 
@@ -683,7 +683,7 @@ class BookManager {
 			}`,
 			() => {
 				for (const data of bookData) {
-					GM_openInTab(data.Updata.url.value);
+					GM_openInTab(data.data.url.value);
 				}
 			},
 		);
