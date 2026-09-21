@@ -3,7 +3,7 @@
 // ==UserScript==
 // @name         69shuba auto 書簽
 // @namespace    Paul-16098
-// @version      4.2.3
+// @version      4.3.0
 // @description  自動書籤,更改css,可以在看書頁找到作者連結
 // @author       Paul-16098
 // #tag www.69shuba.com
@@ -386,6 +386,16 @@ class BookManager {
             }
             if (config.Debug)
                 console.log("Alert message:", message);
+        };
+        const _jqTip = jqTip ?? ((_i) => { });
+        unsafeWindow.jqTip = (i) => {
+            if (!config.HookAlertBlockade.some((blockade) => JSON.stringify([i]) === JSON.stringify(blockade) ||
+                JSON.stringify(blockade) === "*")) {
+                _jqTip(i);
+            }
+            if (config.Debug) {
+                console.log("Alert message:", i);
+            }
         };
     }
     /** 注入自定義CSS樣式 */

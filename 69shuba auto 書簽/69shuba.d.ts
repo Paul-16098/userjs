@@ -16,3 +16,4 @@ interface bookinfo {
 }
 declare const bookinfo: bookinfo;
 declare function addbookcase(aid: any, cid: any): void;
+declare function jqTip(i: string): void;
