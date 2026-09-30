@@ -435,18 +435,18 @@ class BookManager {
 		if (this.Site instanceof Site_tw) {
 			const ele = document.querySelector("div#txtcontent0")!;
 
-			if (config.Debug) console.log("Raw dom", ele.innerText);
+			if (config.Debug) console.log("Raw dom", ele.innerHTML);
 
 			for (const value of StrReplace) {
 				if (ele.innerText.includes(value) && config.Debug)
 					console.log(`Value "${value}" found in text.`);
-				ele.innerText = ele.innerText.replaceAll(value, "");
+				ele.innerHTML = ele.innerHTML.replaceAll(value, "");
 			}
 
 			for (const pattern of RegReplace) {
 				if (pattern.test(ele.innerText) && config.Debug)
 					console.log(`Pattern ${pattern} matched in text.`);
-				ele.innerText = ele.innerText.replaceAll(pattern, "");
+				ele.innerHTML = ele.innerHTML.replaceAll(pattern, "");
 			}
 		}
 	}
