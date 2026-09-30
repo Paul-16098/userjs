@@ -1,11 +1,14 @@
 def main [] {
-  const self_dir = path self .
-  cd $self_dir
+  const SELF_DIR = path self .
+  cd $SELF_DIR # nu-lint-ignore: catch_builtin_error_try
 
-  open ./RegReplaceKey.json | let keys
-  open ./RawRegReplace.json | par-each --keep-order {
-    tee { print $"do=($in | debug --raw-value)" } | str replace --all --regex '{([^)]*)}' {|key|
+  let keys = open ./RegReplaceKey.json # nu-lint-ignore: catch_builtin_error_try
+  # nu-lint-ignore: catch_builtin_error_try
+  open ./RawRegReplace.json | each {
+    tee { print $"do=($in | debug --raw-value)" }
+    | str replace --all --regex '{([^}]*)}' {|key|
+      print $"\tkey=($key)"
       $keys | get --optional $key | default $"{($key)}"
     }
-  } | collect | save --force ./RegReplace.json
+  } | save --force ./RegReplace.json # nu-lint-ignore: catch_builtin_error_try
 }
