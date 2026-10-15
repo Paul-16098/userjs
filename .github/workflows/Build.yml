@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@main
       - uses: actions/setup-python@main
         with:
-          python-version: "3.14"
+          python-version: "3.15"
 
       - name: Update version
         run: python update_version.py debug=0
