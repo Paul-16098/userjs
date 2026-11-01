@@ -20,7 +20,7 @@ importers:
         version: 10.0.1(eslint@10.11.0)
       '@paul-16098/prettier-config':
         specifier: git+https://github.com/Paul-16098/prettier-config.git
-        version: https://codeload.github.com/Paul-16098/prettier-config/tar.gz/641bcad83d9b5388553aa7679de54ba5b30b65a4(prettier@3.9.8)
+        version: https://codeload.github.com/Paul-16098/prettier-config/tar.gz/b0fefa84b79f7a058417898494debcd26a6100b4(prettier@3.9.8)
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.68.0
         version: 8.70.1(@typescript-eslint/parser@8.70.1(eslint@10.11.0)(typescript@7.0.2))(eslint@10.11.0)(typescript@7.0.2)
@@ -35,7 +35,7 @@ importers:
         version: 0.5.6(eslint@10.11.0)
       globals:
         specifier: ^17.11.0
-        version: 17.12.0
+        version: 17.14.0
       less:
         specifier: ^4.9.0
         version: 4.9.1
@@ -125,8 +125,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@paul-16098/prettier-config@https://codeload.github.com/Paul-16098/prettier-config/tar.gz/641bcad83d9b5388553aa7679de54ba5b30b65a4':
-    resolution: {gitHosted: true, integrity: sha512-7IAJR4g6FkbtZPaHFO3I2EizCOsCjR1merg5t9/46Eq2npQS8+ZMfTxWZFcw5gQJE5fgBtLgo8etdSIfvnokwA==, tarball: https://codeload.github.com/Paul-16098/prettier-config/tar.gz/641bcad83d9b5388553aa7679de54ba5b30b65a4}
+  '@paul-16098/prettier-config@https://codeload.github.com/Paul-16098/prettier-config/tar.gz/b0fefa84b79f7a058417898494debcd26a6100b4':
+    resolution: {gitHosted: true, integrity: sha512-0UpfuzaS4GFz+1DD+oRlLF4kpKuzpBTBBRiiP9Bo1B08F5zOxcEefSY4nb0BZ3Gkc6qEYzf7FSYnNoeoARqjEg==, tarball: https://codeload.github.com/Paul-16098/prettier-config/tar.gz/b0fefa84b79f7a058417898494debcd26a6100b4}
     version: 1.1.0
     peerDependencies:
       prettier: '>=3.8.4'
@@ -473,8 +473,8 @@ packages:
     resolution: {integrity: sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==}
     engines: {node: '>=10.13.0'}
 
-  globals@17.12.0:
-    resolution: {integrity: sha512-cezEd/DTyyht9cvSSURyygXPfy04GtWO/5e6ZPvH7fCtjKz9PYOmuawphw1Ctd1f6C+5JypXfGD7ahNMXvevBA==}
+  globals@17.14.0:
+    resolution: {integrity: sha512-UtdkTVyAJePQv0J2M9Xe4L0ruNSDV314XiIJsADI2Zf40bcdAonE/D/OhAU8AT99oij9mhLByb+NvA3QWZYgCg==}
     engines: {node: '>=18'}
 
   graceful-fs@4.2.11:
@@ -775,7 +775,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@paul-16098/prettier-config@https://codeload.github.com/Paul-16098/prettier-config/tar.gz/641bcad83d9b5388553aa7679de54ba5b30b65a4(prettier@3.9.8)':
+  '@paul-16098/prettier-config@https://codeload.github.com/Paul-16098/prettier-config/tar.gz/b0fefa84b79f7a058417898494debcd26a6100b4(prettier@3.9.8)':
     dependencies:
       prettier: 3.9.8
 
@@ -1098,7 +1098,7 @@ snapshots:
     dependencies:
       is-glob: 4.0.3
 
-  globals@17.12.0: {}
+  globals@17.14.0: {}
 
   graceful-fs@4.2.11:
     optional: true
