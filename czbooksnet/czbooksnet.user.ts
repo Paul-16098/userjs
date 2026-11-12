@@ -50,27 +50,8 @@ const isDarkMode = globalThis.matchMedia?.(
  * 切換背景主題（預設/白色）
  * @param params - "default" 為深色，"white" 為淺色
  */
-function changeBackground(params: "default" | "white") {
-	switch (params) {
-		case "default": {
-			// 點擊預設主題按鈕
-			document
-				.querySelector<HTMLAnchorElement>(
-					"#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a",
-				)
-				?.click();
-			break;
-		}
-		case "white": {
-			// 點擊白色主題按鈕
-			document
-				.querySelector<HTMLAnchorElement>(
-					"#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a",
-				)
-				?.click();
-			break;
-		}
-	}
+function changeBackground(params: "default" | "white"): any {
+	unsafeWindow.changeBackground(params);
 }
 
 // 根據系統主題自動切換背景

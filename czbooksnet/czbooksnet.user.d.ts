@@ -10,4 +10,4 @@ declare const isDarkMode: boolean;
  * 切換背景主題（預設/白色）
  * @param params - "default" 為深色，"white" 為淺色
  */
-declare function changeBackground(params: "default" | "white"): void;
+declare function changeBackground(params: "default" | "white"): any;
