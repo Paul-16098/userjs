@@ -8,11 +8,13 @@
 // @author       pl816098
 // @match        https://czbooks.net/n/*/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=czbooks.net
+// @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_registerMenuCommand
 // @grant        GM_getResourceText
+// @run-at       document-idle
 // @license      MIT
 //#if debug
 // #@require file://C:\Users\p\Documents\git\userjs\Tools\Tools.user.js
@@ -40,31 +42,18 @@ const isDarkMode = globalThis.matchMedia?.("(prefers-color-scheme: dark)").match
  * 切換背景主題（預設/白色）
  * @param params - "default" 為深色，"white" 為淺色
  */
-function changeBackground(params) {
-    switch (params) {
-        case "default": {
-            // 點擊預設主題按鈕
-            document
-                .querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(2) > a")
-                ?.click();
-            break;
-        }
-        case "white": {
-            // 點擊白色主題按鈕
-            document
-                .querySelector("#sticky-parent > div.chapter-detail > div.customs-function > ul:nth-child(2) > li:nth-child(3) > a")
-                ?.click();
-            break;
-        }
+function MyChangeBackground(params) {
+    return changeBackground(params);
+}
+window.onload = function () {
+    // 根據系統主題自動切換背景
+    if (isDarkMode) {
+        MyChangeBackground("default");
     }
-}
-// 根據系統主題自動切換背景
-if (isDarkMode) {
-    changeBackground("default");
-}
-else {
-    changeBackground("white");
-}
+    else {
+        MyChangeBackground("white");
+    }
+};
 /**
  * 監聽系統主題變化，自動切換背景
  */
@@ -72,10 +61,10 @@ globalThis
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (e) => {
     if (e.matches) {
-        changeBackground("default");
+        MyChangeBackground("default");
     }
     else {
-        changeBackground("white");
+        MyChangeBackground("white");
     }
 });
 //# sourceMappingURL=https://github.com/Paul-16098/userjs/raw/dev/czbooksnet/czbooksnet.user.js.map
