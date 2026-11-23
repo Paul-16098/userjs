@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         czbooks.net
 // @namespace    pl816098
-// @version      1.1.11.0
+// @version      1.1.12
 // @description  自用
 // @author       pl816098
 // @match        https://czbooks.net/n/*/*
@@ -53,10 +53,19 @@ const isDarkMode = globalThis.matchMedia?.(
  * @param params - "default" 為深色，"white" 為淺色
  */
 function MyChangeBackground(params: "default" | "white") {
-	return changeBackground(params);
+	if (unsafeWindow.changeBackground) {
+		console.log("changeBackground exists");
+		unsafeWindow.changeBackground(params);
+	} else {
+		console.log("changeBackground not exists");
+		setTimeout(() => {
+			MyChangeBackground(params);
+		}, 100);
+	}
 }
 
 window.onload = function () {
+	document.querySelector("body > header")!.remove();
 	// 根據系統主題自動切換背景
 	if (isDarkMode) {
 		MyChangeBackground("default");
