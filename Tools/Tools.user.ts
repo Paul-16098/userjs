@@ -17,11 +17,6 @@
 // @updateURL    https://github.com/Paul-16098/userjs/raw/dev/Tools/Tools.user.js
 // ==/UserScript==
 
-// 避免重複宣告 _unsafeWindow
-const _unsafeWindow = unsafeWindow ?? globalThis;
-
-const IS_DEBUG_LOG: boolean = GM_getValue("IS_DEBUG_LOG", false);
-
 /**
  * 從 DOM 中移除指定選擇器的所有元素。
  * @param args - CSS 選擇器字串陣列
@@ -31,13 +26,6 @@ function removeElement(...args: Array<string>) {
 	try {
 		if (args) {
 			args.forEach((args) => {
-				if (IS_DEBUG_LOG) {
-					console.log("args: ", args);
-					console.log(
-						"document.querySelectorAll(args): ",
-						document.querySelectorAll(args),
-					);
-				}
 				if (document.querySelectorAll(args).length === 0) {
 					console.debug(args, "is not a Html Element.");
 				} else {
